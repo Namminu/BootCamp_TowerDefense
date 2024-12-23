@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Changmin Kang" />
+    <title>내일배움캠프 Node.js 트랙 타워 디펜스 게임</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #2d2d2d;
+        flex-direction: column;
+      }
+      #gameCanvas {
+        border: 2px solid #000;
+        display: none;
+      }
+      .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .button-container button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="button-container">
+      <h1 style="color: white">내일배움캠프 Node.js 트랙 타워 디펜스 게임</h1>
+      <button id="registerButton">회원가입</button>
+      <button id="loginButton">로그인</button>
+      <button id="playButton">게임 플레이</button>
+    </div>
+    <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script type="module">
+      document
+        .getElementById("registerButton")
+        .addEventListener("click", () => {
+          window.location.href = "register.html";
+        });
+
+      document.getElementById("loginButton").addEventListener("click", () => {
+        window.location.href = "login.html";
+      });
+
+      document.getElementById("playButton").addEventListener("click", () => {
+        document.querySelector(".button-container").style.display = "none";
+        document.getElementById("gameCanvas").style.display = "block";
+        import("./src/game.js");
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Changmin Kang" />
+    <title>내일배움캠프 Node.js 트랙 타워 디펜스 게임</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #2d2d2d;
+        color: white;
+        font-family: Arial, sans-serif;
+      }
+      .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .form-container input {
+        margin: 10px;
+        padding: 10px;
+        font-size: 16px;
+      }
+      .form-container button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <h1>내일배움캠프 Node.js 트랙 타워 디펜스 게임</h1>
+      <h2>로그인</h2>
+      <input type="text" id="username" placeholder="아이디" />
+      <input type="password" id="password" placeholder="비밀번호" />
+      <button id="login">로그인</button>
+      <button id="back">뒤로가기</button>
+    </div>
+    <script>
+      document.getElementById("login").addEventListener("click", () => {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        /* 
+          로그인 API 호출 후 로그인 성공 시 index.html로 이동시켜주세요!
+          이 때, 엑세스 토큰은 어딘가에 저장을 해놔야겠죠?! 
+        */
+      });
+
+      document.getElementById("back").addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+    </script>
+  </body>
+</html>
