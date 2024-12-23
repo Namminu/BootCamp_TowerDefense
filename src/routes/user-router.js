@@ -47,7 +47,7 @@ try {
     // 비밀번호가 일치하면 JWT 생성
     const token = jwt.sign(
         {
-          username: user.username, // JWT 페이로드에 사용자 키 포함
+          username: user.username, // JWT 페이로드에 사용자 키 포함 여기서 유저 id(유저 구분을 위한 uuid) 넣기.
         },
         process.env.SECRET_KEY, // 비밀 키를 사용하여 서명
         { expiresIn: "1h" } // 토큰 유효 기간을 1시간으로 설정
