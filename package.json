@@ -1,0 +1,16 @@
+{
+  "name": "ch4_towerDefenseGameProject",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "path": "^0.12.7",
+    "socket.io": "^4.8.1"
+  }
+}
