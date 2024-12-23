@@ -9,6 +9,7 @@
     <style>
       body {
         display: flex;
+        flex-direction: column; /* 세로 방향으로 배치 */
         justify-content: center;
         align-items: center;
         height: 100vh;
@@ -18,10 +19,26 @@
       #gameCanvas {
         border: 2px solid #000;
       }
+
+      #buyTowerButton {
+        margin-top: 20px; /* Adds space between the canvas and the button */
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #4CAF50; /* Green background */
+        color: white;
+        border: none;
+        border-radius: 5px;
+      }
+
+      #buyTowerButton:hover {
+        background-color: #45a049; /* Darker green on hover */
+      }
     </style>
   </head>
   <body>
     <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+    <button id="buyTowerButton">타워 구입</button>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script type="module">
       import "./src/game.js";
