@@ -12,7 +12,7 @@ export class Base {
   draw(ctx, baseImage) {
     ctx.drawImage(
       baseImage,
-      this.x - this.width,
+      this.x - this.width/2,
       this.y - this.height / 2,
       this.width,
       this.height
@@ -22,7 +22,7 @@ export class Base {
     ctx.fillStyle = "white";
     ctx.fillText(
       `HP: ${this.hp}/${this.maxHp}`,
-      this.x - this.width,
+      this.x - this.width/2,
       this.y - this.height / 2 - 10
     );
   }
