@@ -1,9 +1,10 @@
 {
-  "name": "ch4_towerDefenseGameProject",
+  "name": "bootcamp-towerdeffense",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "type": "module",
+  "scripts": { "dev": "nodemon src/app.js" },
   "dependencies": {
     "@prisma/client": "^6.1.0",
     "bcrypt": "^5.1.1",

@@ -2,8 +2,6 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import { prisma } from "../utils/prisma/index.js";
-import { Prisma } from "@prisma/client";
 
 dotenv.config();
 
