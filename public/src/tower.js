@@ -1,5 +1,5 @@
 export class Tower {
-  constructor(x, y, cost) {
+  constructor(x, y, cost, type = 'normal', image, level = 1) {
     // 생성자 안에서 타워들의 속성을 정의한다고 생각하시면 됩니다!
     this.x = x; // 타워 이미지 x 좌표
     this.y = y; // 타워 이미지 y 좌표
@@ -11,10 +11,28 @@ export class Tower {
     this.cooldown = 0; // 타워 공격 쿨타임
     this.beamDuration = 0; // 타워 광선 지속 시간
     this.target = null; // 타워 광선의 목표
+    this.type = type;
+    this.level = level;
+    this.image = image;
   }
 
-  draw(ctx, towerImage) {
-    ctx.drawImage(towerImage, this.x, this.y, this.width, this.height);
+  draw(ctx) {
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+
+    let beamColor;
+    switch (this.type) {
+      case 'rage':
+        beamColor = 'red'; // 분노 타입일 때 빨간색
+        break;
+      case 'sadness':
+        beamColor = 'blue'; // 슬픔 타입일 때 파란색
+        break;
+      case 'normal':
+      default:
+        beamColor = 'gray'; // 기본은 회색
+        break;
+    }
+
     if (this.beamDuration > 0 && this.target) {
       ctx.beginPath();
       ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
@@ -22,7 +40,7 @@ export class Tower {
         this.target.x + this.target.width / 2,
         this.target.y + this.target.height / 2
       );
-      ctx.strokeStyle = "skyblue";
+      ctx.strokeStyle = beamColor;
       ctx.lineWidth = 10;
       ctx.stroke();
       ctx.closePath();

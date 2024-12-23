@@ -25,9 +25,14 @@ backgroundImage.src = "./images/bg.webp";
 const baseImage = new Image();
 baseImage.src = "./images/base.png";
 
-
 const towerImage = new Image();
 towerImage.src = "./images/tower.png";
+
+const towerImage2 = new Image();
+towerImage2.src = "./images/tower2.png";
+
+const towerImage3 = new Image();
+towerImage3.src = "./images/tower3.png";
 
 // 몬스터 컨트롤 객체
 const monsterControl = new MonsterControl();
@@ -45,11 +50,25 @@ function placeBase(monsterPath) {
   base.draw(ctx, baseImage);
 }
 
-function placeNewTower() { //타워 배치를 알리는 함수. 타워 배치는 밑에서 한다.
-   //if 타워 돈보다 많을때
-    isPlacingTower = true; // 타워 배치를 시작
-    previewTower = new Tower(0, 0, towerCost); // 초기 위치는 (0, 0)으로 설정 여기서 나타나서 바로 마우스로 이동함.
-    document.body.style.cursor = "crosshair"; // 사용자에게 배치 모드임을 알림
+function placeNewTower(type) { // 타입을 매개변수로 받아 타워를 설정
+  isPlacingTower = true; // 타워 배치를 시작
+  let towerImageToUse;
+  switch (type) {
+    case 'normal':
+      towerImageToUse = towerImage;  // 기본 타워 이미지
+      break;
+    case 'rage':
+      towerImageToUse = towerImage2;  // 분노 타워 이미지
+      break;
+    case 'sadness':
+      towerImageToUse = towerImage3;  // 슬픔 타워 이미지
+      break;
+    default:
+      towerImageToUse = towerImage;  // 기본 타워 이미지
+      break;
+  }
+  previewTower = new Tower(0, 0, towerCost, type, towerImageToUse); // 타입에 맞는 타워 생성
+  document.body.style.cursor = "crosshair"; // 사용자에게 배치 모드임을 알림
 }
 
 
@@ -61,7 +80,7 @@ function gameLoop() {
   // 몬스터 처리
 
   towers.forEach((tower) => {
-    tower.draw(ctx, towerImage);
+    tower.draw(ctx);
     tower.updateCooldown();
     monsterControl.monsters.forEach((monster) => {
       const distance = Math.sqrt(
@@ -76,7 +95,7 @@ function gameLoop() {
 
   if (isPlacingTower && previewTower) {
     // 미리보기 타워 렌더링 (타워 이미지와 동일하게)
-    previewTower.draw(ctx, towerImage);
+    previewTower.draw(ctx);
   }
 
   base.draw(ctx, baseImage); // 기지 다시 그리기
@@ -138,7 +157,7 @@ canvas.addEventListener("click", (event) => { //실제로 설치
   if (isPlacingTower && previewTower) {
     // 골드 차감 및 타워 설치
     //userGold -= towerCost;
-    towers.push(new Tower(previewTower.x, previewTower.y, previewTower.cost));
+    towers.push(new Tower(previewTower.x, previewTower.y, previewTower.cost, previewTower.type, previewTower.image)); //애는 왜 이미지지???
 
     // 배치 상태 초기화
     isPlacingTower = false;
@@ -158,8 +177,12 @@ canvas.addEventListener("contextmenu", (event) => {
 });
 
 
-const buyTowerButton = document.getElementById("buyTowerButton");
+const buyTowerButton1 = document.getElementById("buyTowerButton1");
+const buyTowerButton2 = document.getElementById("buyTowerButton2");
+const buyTowerButton3 = document.getElementById("buyTowerButton3");
 
-buyTowerButton.addEventListener("click", placeNewTower);
+buyTowerButton1.addEventListener("click", () => placeNewTower('normal')); // 노말 타입 타워 배치
+buyTowerButton2.addEventListener("click", () => placeNewTower('rage')); // 분노 타입 타워 배치
+buyTowerButton3.addEventListener("click", () => placeNewTower('sadness')); // 슬픔 타입 타워 배치
 
-document.body.appendChild(buyTowerButton);
+document.body.appendChild(buyTowerButton1);
