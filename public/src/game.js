@@ -2,30 +2,6 @@ import { Base } from "./base.js";
 import { Monster } from "./monster.js";
 import { Tower } from "./tower.js";
 
-/* 
-  어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
-*/
-
-/*
-
-
-
-
-추가하고 싶은거?
-2. 경로를 3개정도로 추가해 여러 방향에서 오도록 하기.
-3. 스테이지 구분,
-4. 포탑 업그레이드. , 포탑판매. --> 이거 하려면 중복되면 안됨. 그니까. 겹치면 안됨.
-5. 보스 몬스터 등장. -> 그냥 스폰 몬스터 이미지만 바꾸고 능력치 바꾸면 될듯? 아님 레벨 올리던가. 특별한 능력 추가해도 되고.
-6. 게임 종료시 그 스테이지 반환?
-
- 서버에서 할일
-1. 점수 관리. - 점수 계산.
-2. 스테이지 관리.
-3. 몬스터 잡은 수 관리. --> 게임 껏다 키면 (즉 스테이지 관리시 힘드니까. "스테이지 넘어갈때" 만 주는걸로.)
-4. 
-
-*/
-
 let serverSocket; // 서버 웹소켓 객체
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -54,8 +30,16 @@ let previewTower = null; // 미리보기를 위한 타워 객체
 const backgroundImage = new Image();
 backgroundImage.src = "./images/bg.webp";
 
-const towerImage = new Image();
-towerImage.src = "./images/tower.png";
+const towerImages = {
+  normal: new Image(),
+  sad: new Image(),
+  angry: new Image(),
+};
+
+towerImages.normal.src = "./images/tower.png";
+towerImages.sad.src = "./images/towersad.png";
+towerImages.angry.src = "./images/towerangry.png";
+
 
 const baseImage = new Image();
 baseImage.src = "./images/base.png";
@@ -71,6 +55,10 @@ for (let i = 1; i <= NUM_OF_MONSTERS; i++) {
 }
 
 let monsterPath;
+
+let selectedTowerType
+
+
 
 function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
   const path = [];
@@ -174,16 +162,17 @@ function placeInitialTowers() {  //타워를 초기에 배치하는 함수
   */
   for (let i = 0; i < numOfInitialTowers; i++) {
     const { x, y } = getRandomPositionNearPath(200); //200만큼 떨어지게? 만드는듯.
-    const tower = new Tower(x, y, towerCost); 
+    const tower = new Tower(x, y, towerCost, 'normal'); 
     towers.push(tower);
-    tower.draw(ctx, towerImage);
+    tower.draw(ctx, towerImages.normal);
   }
 }
 
-function placeNewTower() { //타워 배치를 알리는 함수. 타워 배치는 밑에서 한다.
+function placeNewTower(type) {
   if (userGold >= towerCost) {
     isPlacingTower = true; // 타워 배치를 시작
-    previewTower = new Tower(0, 0, towerCost); // 초기 위치는 (0, 0)으로 설정 여기서 나타나서 바로 마우스로 이동함.
+    selectedTowerType = type; // 선택한 타워 타입 설정
+    previewTower = new Tower(0, 0, towerCost, selectedTowerType); // 선택된 타입으로 미리보기 타워 생성
     document.body.style.cursor = "crosshair"; // 사용자에게 배치 모드임을 알림
   }
 }
@@ -215,7 +204,7 @@ function gameLoop() { //게임 반복.
 
   // 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
   towers.forEach((tower) => {
-    tower.draw(ctx, towerImage);
+    tower.draw(ctx, towerImages[tower.type]);
     tower.updateCooldown();
     monsters.forEach((monster) => {
       const distance = Math.sqrt(
@@ -231,10 +220,7 @@ function gameLoop() { //게임 반복.
     });
   });
 
-  if (isPlacingTower && previewTower) {
-    // 미리보기 타워 렌더링 (타워 이미지와 동일하게)
-    previewTower.draw(ctx, towerImage);
-  }
+  renderPreviewTower(ctx);
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
   base.draw(ctx, baseImage);
@@ -288,7 +274,9 @@ function initGame() {
   ),
 ]).then(() => {
   /* 서버 접속 코드 (여기도 완성해주세요!) */
+  
   let somewhere;
+
   /* serverSocket = io("http://localhost:3000", {
     auth: {
       token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
@@ -305,30 +293,51 @@ function initGame() {
   */
 // });
 
+createTowerButton("노말 타워", "normal", 10);
+createTowerButton("세드 타워", "sad", 50);
+createTowerButton("앵그리 타워", "angry", 90);
+
+
 if (!isInitGame) {
   initGame();
 }
 
 
-canvas.addEventListener("mousemove", (event) => { //타워의 미리보기 위치
+function renderPreviewTower(ctx, event) {
   if (isPlacingTower && previewTower) {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
 
-    // 미리보기 타워의 위치를 마우스 위치에 맞게 설정
-    previewTower.x = mouseX - previewTower.width / 2;
-    previewTower.y = mouseY - previewTower.height / 2;
+    // 미리보기 타워 위치 설정
+    previewTower.x = x - previewTower.width / 2;
+    previewTower.y = y - previewTower.height / 2;
+
+    // 미리보기 타워 렌더링
+    previewTower.draw(ctx, towerImages[selectedTowerType]);
+  }
+}
+
+canvas.addEventListener("mousemove", (event) => {
+  if (isPlacingTower && previewTower) {
+    renderPreviewTower(ctx, event); // event 객체 전달
   }
 });
 
 
 
-canvas.addEventListener("click", (event) => { //실제로 설치
+
+
+canvas.addEventListener("click", (event) => {
   if (isPlacingTower && previewTower) {
+    // 마우스 좌표 기준 타워 위치 설정
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
     // 골드 차감 및 타워 설치
     userGold -= towerCost;
-    towers.push(new Tower(previewTower.x, previewTower.y, previewTower.cost));
+    towers.push(new Tower(x, y, towerCost, selectedTowerType));
 
     // 배치 상태 초기화
     isPlacingTower = false;
@@ -343,20 +352,25 @@ canvas.addEventListener("contextmenu", (event) => {
     event.preventDefault(); // 우클릭 기본 메뉴 방지
     isPlacingTower = false;
     previewTower = null;
-    document.body.style.cursor = "default"; // 커서 복원
+    document.body.style.cursor = "default"; // 기본 커서로 복원
   }
 });
 
 
-const buyTowerButton = document.createElement("button");
-buyTowerButton.textContent = "타워 구입";
-buyTowerButton.style.position = "absolute";
-buyTowerButton.style.top = "10px";
-buyTowerButton.style.right = "10px";
-buyTowerButton.style.padding = "10px 20px";
-buyTowerButton.style.fontSize = "16px";
-buyTowerButton.style.cursor = "pointer";
+function createTowerButton(text, type, topPosition) {
+  const button = document.createElement("button");
+  button.textContent = text;
+  button.style.position = "absolute";
+  button.style.top = `${topPosition}px`;
+  button.style.right = "10px";
+  button.style.padding = "10px 20px";
+  button.style.fontSize = "16px";
+  button.style.cursor = "pointer";
 
-buyTowerButton.addEventListener("click", placeNewTower);
+  button.addEventListener("click", () => placeNewTower(type));
+  document.body.appendChild(button);
+}
 
-document.body.appendChild(buyTowerButton);
+
+
+
