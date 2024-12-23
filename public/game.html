@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Changmin Kang" />
+    <title>타워 디펜스 게임</title>
+    <link rel="icon" type="image/x-icon" href="/tower_defense_client/images/favicon.ico" />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #2d2d2d;
+      }
+      #gameCanvas {
+        border: 2px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script type="module">
+      import "./src/game.js";
+    </script>
+  </body>
+</html>

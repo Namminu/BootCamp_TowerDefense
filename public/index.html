@@ -7,7 +7,7 @@
     <title>내일배움캠프 Node.js 트랙 타워 디펜스 게임</title>
     <link rel="icon" type="image/x-icon" href="/tower_defense_client/images/favicon.ico" />
     <style>
-      body {
+        body {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -15,10 +15,6 @@
         margin: 0;
         background-color: #2d2d2d;
         flex-direction: column;
-      }
-      #gameCanvas {
-        border: 2px solid #000;
-        display: none;
       }
       .button-container {
         display: flex;
@@ -40,8 +36,6 @@
       <button id="loginButton">로그인</button>
       <button id="playButton">게임 플레이</button>
     </div>
-    <canvas id="gameCanvas" width="1920" height="1080"></canvas>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script type="module">
       const BASE_URL = "http://localhost:3000/api";
 
@@ -91,13 +85,11 @@
       });
 
       document.getElementById("playButton").addEventListener("click", () => {
-        document.querySelector(".button-container").style.display = "none";
-        document.getElementById("gameCanvas").style.display = "block";
-        import("./src/game.js");
+        window.location.href = "game.html";
       });
 
 
-      fetchUserInfo();
+     // fetchUserInfo();
     </script>
   </body>
 </html>
