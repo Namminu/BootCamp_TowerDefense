@@ -1,6 +1,8 @@
 // import { clearStage, getStage, setStage } from "../models/stage.model.js";
 // import { getHightScore, setHightScore } from "../models/user.model.js";
 
+import { updateHighScore } from "../models/rank.model";
+
 export const gameStart = (uuid, payload) => {
   const { stages } = getGameAssets();
 
@@ -11,9 +13,20 @@ export const gameStart = (uuid, payload) => {
   return { status: "success" };
 };
 
-export const gameOver = (uuid, payload) => {
-  //여기서 최종 점수 계산.
-  //여기서 점수 검증, 최종 보스임.
+// Base의 Hp <= 0 일 시 호출되는 이벤트
+export const gameOver = async (uuid, payload) => {
+  const rounds = getStage(uuid);
+  if (!rounds.length) return { status: 'fail', message: 'No Rounds Found for User' };
 
-  return { status: "success", message: "게임 끝", score };
-};
+  const userId = payload.userId;
+  const currentRound = payload.currentRound;
+
+  //최고 기록보다 현재 기록이 높다면 DB 갱신
+  const result = await updateHighScore(userId, currentRound);
+
+  return {
+    status: 'success',
+    message: result.updated ? '최고 기록 갱신!' : '게임 오버',
+    score: result.currentHighScore
+  };
+}
