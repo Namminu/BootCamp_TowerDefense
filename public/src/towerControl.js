@@ -20,7 +20,8 @@ export class TowerControl {
     const damage = towerData.data[index].damage;
     const range = towerData.data[index].range;
     const cost = towerData.data[index].cost;
-    const newTower = new Tower(this.ctx, x, y, damage, range, cost, image);
+    const id = towerData.data[index].id;
+    const newTower = new Tower(this.ctx, x, y, damage, range, cost, image, id);
     this.towers.push(newTower);
     return newTower;
   }
@@ -32,7 +33,7 @@ export class TowerControl {
     });
   }
 
-  attackMonstersInRange(monsters) {
+  attackMonstersInRange(monsters, score, userGold, monsterLevel) {
     this.towers.forEach((tower) => {
       monsters.forEach((monster) => {
         const distance = Math.sqrt(
@@ -40,6 +41,10 @@ export class TowerControl {
         );
         if (distance < tower.range) {
           tower.attack(monster);
+          if (monster.hp <= 0) {
+            score += monsterLevel;
+            userGold += 10;
+          }
         }
       });
     });

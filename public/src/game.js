@@ -40,7 +40,7 @@ let baseHp = 500; // 기지 체력
 
 let towerCost = 100; // 타워 구입 비용
 let towerImage; // 타워 이미지
-let numOfInitialTowers = 3; // 초기 타워 개수
+let numOfInitialTowers = 2; // 초기 타워 개수
 let monsterLevel = 1; // 몬스터 레벨
 let monsterSpawnInterval = 3; // 몬스터 생성 주기 ms
 const monsters = [];
@@ -198,11 +198,12 @@ function placeInitialTowers() {
   }
 }
 
-function placeNewTower(tower) {
+function placeNewTower() {
   //타워 배치를 알리는 함수. 타워 배치는 밑에서 한다.
   if (userGold >= towerCost) {
     isPlacingTower = true; // 타워 배치를 시작
-    previewTower = new Tower(0, 0, towerCost); // 초기 위치는 (0, 0)으로 설정 여기서 나타나서 바로 마우스로 이동함.
+    const towerControl = new TowerControl(ctx, towerImages);
+    previewTower = towerControl.addTower(0, 0); // 초기 위치는 (0, 0)으로 설정 여기서 나타나서 바로 마우스로 이동함.
     document.body.style.cursor = "crosshair"; // 사용자에게 배치 모드임을 알림
   }
 }
@@ -237,7 +238,7 @@ function gameLoop() {
 
   // 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
   towers.forEach((tower) => {
-    tower.draw(ctx, tower.image);
+    tower.draw();
     tower.updateCooldown();
     monsters.forEach((monster) => {
       const distance = Math.sqrt(
@@ -256,7 +257,7 @@ function gameLoop() {
 
   if (isPlacingTower && previewTower) {
     // 미리보기 타워 렌더링 (타워 이미지와 동일하게)
-    previewTower.draw(ctx, towerImage);
+    previewTower.draw();
   }
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
@@ -287,7 +288,7 @@ function initGame() {
   }
 
   isInitGame = true;
-  userGold = 100; // 초기 골드 설정
+  userGold = 1000; // 초기 골드 설정
   score = 0;
   monsterLevel = 1;
   monsterSpawnInterval = 2000;
@@ -350,7 +351,9 @@ canvas.addEventListener("click", (event) => {
   if (isPlacingTower && previewTower) {
     // 골드 차감 및 타워 설치
     userGold -= towerCost;
-    towers.push(new Tower(previewTower.x, previewTower.y, previewTower.cost));
+    const towerControl = new TowerControl(ctx, towerImages);
+    const tower = towerControl.addTower(previewTower.x, previewTower.y);
+    towers.push(tower);
 
     // 배치 상태 초기화
     isPlacingTower = false;
