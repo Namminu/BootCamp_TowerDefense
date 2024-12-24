@@ -1,0 +1,20 @@
+{
+  "name": "tower",
+  "version": "1.0.0",
+  "data": [
+    {
+      "id": 1,
+      "name": "원거리 포탑",
+      "damage": 50,
+      "range": 200,
+      "atkSpeed": 10
+    },
+    {
+      "id": 2,
+      "name": "근거리 포탑",
+      "damage": 70,
+      "range": 100,
+      "atkSpeed": 10
+    }
+  ]
+}
