@@ -194,6 +194,7 @@ function placeBase() { //플레이어 베이스를 만드는 함수.
   base.draw(ctx, baseImage);
 } 
 
+//여기서 생성하되 서버에 보내줘야 함
 function spawnMonster() { //몬스터를 monsters 에 넣는 함수.
   monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
 } 
