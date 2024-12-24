@@ -1,0 +1,33 @@
+{
+  "name": "tower",
+  "version": "1.0.0",
+  "data": [
+    {
+      "id": 1,
+      "name": "원거리 포탑",
+      "damage": 30,
+      "range": 600,
+      "atkSpeed": 10,
+      "cost": 100,
+      "image": "../images/tower3.png"
+    },
+    {
+      "id": 2,
+      "name": "근거리 포탑",
+      "damage": 50,
+      "range": 300,
+      "atkSpeed": 14,
+      "cost": 150,
+      "image": "../images/tower2.png"
+    },
+    {
+      "id": 3,
+      "name": "평범한 포탑",
+      "damage": 40,
+      "range": 450,
+      "atkSpeed": 12,
+      "cost": 120,
+      "image": "../images/tower1.png"
+    }
+  ]
+}
