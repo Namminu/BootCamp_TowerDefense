@@ -4,7 +4,7 @@ import { prisma } from "../utils/prisma/index.js";
 const router = express.Router();
 
 // 랭킹 조회 API
-router.get('/rank', async (res, req) => {
+router.get('/rank', authmiddlewares, async (res, req) => {
     try {
         // highScores 테이블 조회
         const rankers = await prisma.highScores.findMany({
