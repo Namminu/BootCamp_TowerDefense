@@ -16,8 +16,35 @@ export class Tower {
     this.image = image;
   }
 
-  draw(ctx) {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  draw(ctx, isPreview = false, canPlace = true) {
+    if (isPreview) {
+      ctx.globalAlpha = 0.5; // 투명도 설정
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height); // 투명한 타워 이미지
+
+    //공격범위 표시. 
+    ctx.beginPath();
+    ctx.arc(
+      this.x + this.width / 2, // 원의 중심 X 좌표 (타워 중심)
+      this.y + this.height / 2, // 원의 중심 Y 좌표 (타워 중심)
+      this.range, // 반지름 (타워의 공격 범위)
+      0,
+      Math.PI * 2
+    );
+    ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; // 흰색, 투명도 0.5
+    ctx.fill();
+
+    if (!canPlace) {
+      // 설치가 불가능할 경우 빨간색 오버레이
+      ctx.globalAlpha = 0.5; // 오버레이 투명도
+      ctx.fillStyle = "red";
+      ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+
+    ctx.globalAlpha = 1.0;
+    } else {
+      // 정식 타워를 그릴 때는 원래 이미지 사용
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
 
     let beamColor;
     switch (this.type) {

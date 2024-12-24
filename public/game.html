@@ -34,13 +34,55 @@
       #buyTowerButton:hover {
         background-color: #45a049; /* Darker green on hover */
       }
+
+      #towerInfoModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 30px;
+  cursor: pointer;
+}
+
     </style>
   </head>
   <body>
+
+    <div id="towerInfoModal" style="display: none;">
+      <div class="modal-content">
+        <span id="closeModal" class="close-btn">&times;</span>
+        <h2>타워 정보</h2>
+        <p id="towerLevel">레벨: </p>
+        <p id="towerAttackPower">공격력: </p>
+        <p id="towerRange">사거리: </p>
+        <p id="towerCost">비용: </p>
+      </div>
+    </div>
+
     <canvas id="gameCanvas" width="1920" height="1080"></canvas>
     <button id="buyTowerButton1" class="buyButton">1번 타워 구입</button>
     <button id="buyTowerButton2" class="buyButton">2번 타워 구입</button>
     <button id="buyTowerButton3" class="buyButton">3번 타워 구입</button>
+
+  
     
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script type="module">
