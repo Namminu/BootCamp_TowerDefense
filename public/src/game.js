@@ -209,8 +209,18 @@ function placeBase() {
   base = new Base(lastPoint.x, lastPoint.y, baseHp);
   base.draw(ctx, baseImage);
 }
+
+function sendMonsterSpawnInterval() {
+  const payload = {
+    interval: monsterSpawnInterval,
+    timestamp: Date.now(),
+  };
+  sendEvent(13, payload);
+}
+
 //여기서 생성하되 서버에 보내줘야 함
-function spawnMonster() {
+export function spawnMonster() {
+  console.log("몬스터가 생성되었습니다!");
   //몬스터를 monsters 에 넣는 함수.
   monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
 }
@@ -290,7 +300,9 @@ function initGame() {
   initMap(); // 맵 초기화 (배경, 경로 그리기)
   placeInitialTowers(); // 초기 타워 배치
   placeBase(); // 기지 배치
-  setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
+  //setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
+  // 서버에 몬스터 스폰 주기와 타이밍 동기화
+  sendMonsterSpawnInterval(); 
   gameLoop(); // 게임 루프 시작
 } //이게 시작이네. 
 
