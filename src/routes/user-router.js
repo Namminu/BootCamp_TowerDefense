@@ -11,16 +11,25 @@ const router = express.Router();
 // ** 회원가입 API **
 router.post("/sign-up", async (req, res) => {
   try {
-    const { userId, password } = req.body;
-    // 비밀번호를 암호화(bcrypt 사용)하여 저장.
+    const { userId, password, nickName} = req.body;
+
+    const existingUser = await prisma.users.findUnique({
+      where: { nickName },
+    });
+    if (existingUser) {
+      return res.status(400).json({
+        errorMessage: "닉네임이 이미 존재합니다.",
+      });
+    }
+
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const nickName = "test";
 
     await prisma.users.create({
       data: {
-        userId,
+        userId, 
         password: hashedPassword,
-        nickName,
+        nickName, 
       },
     });
 
