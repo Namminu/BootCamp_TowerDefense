@@ -1,6 +1,9 @@
 import { Base } from "./base.js";
 import { Monster } from "./monster.js";
 import { Tower } from "./tower.js";
+import towerData from "../assets/tower.json" with { type: "json" };
+import { TowerControl } from "./towerControl.js";
+import { sendEvent } from "./Socket.js";
 
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
@@ -37,6 +40,7 @@ let base; // 기지 객체
 let baseHp = 500; // 기지 체력
 
 let towerCost = 100; // 타워 구입 비용
+let towerImage; // 타워 이미지
 let numOfInitialTowers = 3; // 초기 타워 개수
 let monsterLevel = 1; // 몬스터 레벨
 let monsterSpawnInterval = 3; // 몬스터 생성 주기 ms
@@ -49,12 +53,18 @@ let isInitGame = false;
 
 let isPlacingTower = false; // 현재 타워를 배치 중인지 확인하는 플래그
 let previewTower = null; // 미리보기를 위한 타워 객체
+// 타워 이미지 배열
+const TOWER_CONFIG = towerData.data;
 
 // 이미지 로딩 파트
 const backgroundImage = new Image();
 backgroundImage.src = "./images/bg.webp";
 
-const towerImage = new Image();
+const towerImages = TOWER_CONFIG.map((tower) => {
+  const image = new Image();
+  image.src = tower.image;
+  return { image, id: tower.id };
+});
 towerImage.src = "./images/tower.png";
 
 const baseImage = new Image();
@@ -167,20 +177,25 @@ function getRandomPositionNearPath(maxDistance) {  // maxDistance 범위 내에�
   };
 }
 
-function placeInitialTowers() {  //타워를 초기에 배치하는 함수
+function placeInitialTowers() {
+  //타워를 초기에 배치하는 함수
   /* 
     타워를 초기에 배치하는 함수입니다.
     무언가 빠진 코드가 있는 것 같지 않나요?  
   */
   for (let i = 0; i < numOfInitialTowers; i++) {
     const { x, y } = getRandomPositionNearPath(200); //200만큼 떨어지게? 만드는듯.
-    const tower = new Tower(x, y, towerCost); 
+    const towerControl = new TowerControl(ctx, towerImages);
+    const tower = towerControl.addTower(x, y);
+    towerImage = tower.image;
+    towerCost = tower.cost;
     towers.push(tower);
-    tower.draw(ctx, towerImage);
+    towerControl.drawAndUpdateTowers();
   }
 }
 
-function placeNewTower() { //타워 배치를 알리는 함수. 타워 배치는 밑에서 한다.
+function placeNewTower(tower) {
+  //타워 배치를 알리는 함수. 타워 배치는 밑에서 한다.
   if (userGold >= towerCost) {
     isPlacingTower = true; // 타워 배치를 시작
     previewTower = new Tower(0, 0, towerCost); // 초기 위치는 (0, 0)으로 설정 여기서 나타나서 바로 마우스로 이동함.
@@ -188,16 +203,17 @@ function placeNewTower() { //타워 배치를 알리는 함수. 타워 배치는
   }
 }
 
-function placeBase() { //플레이어 베이스를 만드는 함수.
+function placeBase() {
+  //플레이어 베이스를 만드는 함수.
   const lastPoint = monsterPath[monsterPath.length - 1];
   base = new Base(lastPoint.x, lastPoint.y, baseHp);
   base.draw(ctx, baseImage);
-} 
-
+}
 //여기서 생성하되 서버에 보내줘야 함
-function spawnMonster() { //몬스터를 monsters 에 넣는 함수.
+function spawnMonster() {
+  //몬스터를 monsters 에 넣는 함수.
   monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
-} 
+}
 
 function gameLoop() { //게임 반복.
   // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
