@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,12 +8,11 @@ datasource db {
 }
 
 model Users {
-  id       Int    @id @default(autoincrement()) @map("id")
-  userId   String @unique @map("userId")
-  password String @map("password")
-  createAt String @map("createAt")
-  nickName String @unique @map("nickName")
-
+  id         Int         @id @default(autoincrement()) @map("id")
+  userId     String      @unique @map("userId")
+  password   String      @map("password")
+  createdAt   DateTime   @default(now())   @map("createAt")
+  nickName   String      @unique @map("nickName")
   highScores HighScores?
 
   @@map("Users")
@@ -30,33 +23,7 @@ model HighScores {
   userId    Int      @unique @map("userId")
   highScore Int      @map("highScore")
   createdAt DateTime @default(now()) @map("createdAt")
-
-  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users     Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("HighScores")
 }
-
-// model Towers {
-//   id       Int    @id @default(autoincrement()) @map("id")
-//   name     String @unique @map("name")
-//   gold     Int    @map("gold")
-//   atk      Int    @map("atk")
-//   range    Int    @map("range")
-//   atkSpeed Int    @map("atkSpeed")
-
-//   @@map("Towers")
-// }
-
-// model Monsters {
-//   id    Int    @id @default(autoincrement()) @map("id")
-//   name  String @unique @map("name")
-//   hp    Int    @map("hp")
-//   atk   Int    @map("atk")
-//   def   Int    @map("def")
-//   speed Int    @map("spped")
-//   gold  Int    @map("gold")
-
-//   isBoss Boolean @map("isBoss")
-
-//   @@map("Monsters")
-// }
