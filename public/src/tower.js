@@ -1,15 +1,5 @@
 export class Tower {
-  constructor(
-    ctx,
-    x,
-    y,
-    damage,
-    range,
-    cost,
-    image,
-    type = "normal",
-    level = 1
-  ) {
+  constructor(ctx, x, y, damage, range, cost, image, id = 3, level = 1) {
     // 코스트랑 타입은 에셋에서 다운받아서 넣어준다.
     // 생성자 안에서 타워들의 속성을 정의한다고 생각하시면 됩니다!
     this.ctx = ctx; // 캔버스 컨텍스트
@@ -23,7 +13,7 @@ export class Tower {
     this.cooldown = 0; // 타워 공격 쿨타임
     this.beamDuration = 0; // 타워 광선 지속 시간
     this.target = null; // 타워 광선의 목표
-    this.type = type;
+    this.id = id;
     this.level = level;
     this.image = image;
   }
@@ -32,14 +22,14 @@ export class Tower {
     this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 
     let beamColor;
-    switch (this.type) {
-      case "rage":
-        beamColor = "red"; // 근거리일 때 빨간색
-        break;
-      case "sadness":
+    switch (this.id) {
+      case 1:
         beamColor = "blue"; // 원거리일 때 파란색
         break;
-      case "normal":
+      case 2:
+        beamColor = "red"; // 근거리일 때 빨간색
+        break;
+      case 3:
       default:
         beamColor = "gray"; // 기본은 회색
         break;
@@ -63,7 +53,7 @@ export class Tower {
   attack(monster) {
     // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
     if (this.cooldown <= 0) {
-      monster.hp -= this.attackPower;
+      monster.hp -= this.damage;
       this.cooldown = 180; // 3초 쿨타임 (초당 60프레임)
       this.beamDuration = 30; // 광선 지속 시간 (0.5초)
       this.target = monster; // 광선의 목표 설정
