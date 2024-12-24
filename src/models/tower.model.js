@@ -17,15 +17,22 @@ export const setTower = (uuid, x, y, range, attackPower, cost, cooldown, level) 
 export const removeTower = (uuid, x, y) => {
     const index = towers[uuid].findIndex((tower) => tower.x === x && tower.y === y );
   if (index !== -1) {//-1이면 없는거니까 뭐..
-    return towers[uuid].splice(index, 1)[0];
+    towers[uuid].splice(index, 1)[0];
+    return true;
   }
+  return false;
 };
 
 
-export const upgradeTower = (uuid, x, y) => {
+export const upTower = (uuid, x, y, level) => {
     const index = towers[uuid].findIndex((tower) => tower.x === x && tower.y === y );
   if (index !== -1) {//-1이면 없는거니까 뭐..
-    towers[uuid][index].level += 1;
-    return towers[uuid][index];
+    if(towers[uuid][index].level + 1 === level);
+    {
+      towers[uuid][index].level += 1;
+      return true;
+    }
+    
   }
+  return false;
 };
