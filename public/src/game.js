@@ -198,7 +198,7 @@ function placeInitialTowers() {
   }
 }
 
-function placeNewTower(tower) {
+function placeNewTower() {
   //타워 배치를 알리는 함수. 타워 배치는 밑에서 한다.
   if (userGold >= towerCost) {
     isPlacingTower = true; // 타워 배치를 시작
@@ -287,7 +287,7 @@ function initGame() {
   }
 
   isInitGame = true;
-  userGold = 100; // 초기 골드 설정
+  userGold = 1000; // 초기 골드 설정
   score = 0;
   monsterLevel = 1;
   monsterSpawnInterval = 2000;
