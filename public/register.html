@@ -39,26 +39,26 @@
       <h1>내일배움캠프 Node.js 트랙 타워 디펜스 게임</h1>
       <h2>회원가입</h2>
       <form id="signUpForm">
-        <input type="text" id="username" placeholder="아이디" required />
+        <input type="text" id="userId" placeholder="아이디" required />
         <input type="password" id="password" placeholder="비밀번호" required />
         <button type="submit">회원가입</button>
       </form>
       <button id="backButton">뒤로가기</button>
     </div>
     <script>
-      const BASE_URL = 'http://localhost:3000/api';
+      const BASE_URL = 'http://localhost:8080/api';
 
       // 회원가입 폼 제출 이벤트 처리
       document.getElementById('signUpForm').addEventListener('submit', async (e) => {
         e.preventDefault(); // 폼의 기본 동작(페이지 새로고침) 방지
-        const username = document.getElementById("username").value;
+        const userId = document.getElementById("userId").value;
         const password = document.getElementById("password").value;
 
         try { 
           const response = await fetch(`${BASE_URL}/sign-up`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ userId, password }),
           });
           const result = await response.json();
           if (response.ok) {

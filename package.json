@@ -4,13 +4,16 @@
   "main": "index.js",
   "license": "MIT",
   "type": "module",
-  "scripts": { "dev": "nodemon src/app.js" },
+  "scripts": {
+    "dev": "nodemon src/app.js"
+  },
   "dependencies": {
     "@prisma/client": "^6.1.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "http-server": "^14.1.1",
     "jsonwebtoken": "^9.0.2",
     "path": "^0.12.7",
     "prisma": "^6.1.0",

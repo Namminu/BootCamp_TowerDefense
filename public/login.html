@@ -40,21 +40,21 @@
     <div class="form-container">
       <h1>내일배움캠프 Node.js 트랙 타워 디펜스 게임</h1>
       <h2>로그인</h2>
-      <input type="text" id="username" placeholder="아이디" required />
+      <input type="text" id="userId" placeholder="아이디" required />
       <input type="password" id="password" placeholder="비밀번호" required />
       <button id="login">로그인</button>
       <button id="register">회원가입</button>
       <button id="back">뒤로가기</button>
     </div>
     <script>
-      const BASE_URL = "http://localhost:3000/api"; // 서버의 API URL
+      const BASE_URL = "http://localhost:8080/api"; // 서버의 API URL
 
       // 로그인 버튼 클릭 이벤트
       document.getElementById("login").addEventListener("click", async () => {
-        const username = document.getElementById("username").value.trim();
+        const userId = document.getElementById("userId").value.trim();
         const password = document.getElementById("password").value.trim();
 
-        if (!username || !password) {
+        if (!userId || !password) {
           alert("아이디와 비밀번호를 모두 입력해주세요.");
           return;
         }
@@ -64,7 +64,7 @@
           const response = await fetch(`${BASE_URL}/sign-in`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ userId, password }),
             credentials: "include", // 쿠키 전달 가능
           });
 

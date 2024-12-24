@@ -1,0 +1,30 @@
+{
+  "name": "monster",
+  "version": "1.0.0",
+  "data": [
+    {
+      "id": 101,
+      "name": "외눈박이 괴물",
+      "damage": 50,
+      "hp": 200,
+      "speed": 10,
+      "gold": 500
+    },
+    {
+      "id": 102,
+      "name": "고블린 자폭병",
+      "damage": 100,
+      "hp": 20,
+      "speed": 50,
+      "gold": 500
+    },
+    {
+      "id": 103,
+      "name": "말라비틀어진 애벌레",
+      "damage": 60,
+      "hp": 50,
+      "speed": 5,
+      "gold": 500
+    }
+  ]
+}
