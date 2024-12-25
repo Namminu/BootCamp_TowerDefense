@@ -76,8 +76,8 @@ export class Tower {
   async feverTime() {
     this.feverMode = true;
 
-    this.damage = 2 * this.originalDamage;
-    this.range = 2 * this.originalRange;
+    this.damage = 1.5 * this.originalDamage;
+    this.range = 1.2 * this.originalRange;
 
     return new Promise((resolve) => {
       setTimeout(() => {

@@ -38,6 +38,7 @@ let baseHp = 500; // 기지 체력
 let towerCost; // 타워 구입 비용
 let towerImage; // 타워 이미지
 let numOfInitialTowers = 3; // 초기 타워 개수
+let ableToMoveRound = false; // 라운드 이동 가능 여부
 let monsterLevel = 1; // 몬스터 레벨
 let monsterSpawnInterval = 3; // 몬스터 생성 주기 ms
 const monsters = [];
@@ -162,7 +163,11 @@ function drawRotatedImage(image, x, y, width, height, angle) {
 function getRandomPositionNearPath(maxDistance) {
   // maxDistance 범위 내에서 랜덤한 위치를 반환하는 함수
   // 타워 배치를 위한 몬스터가 지나가는 경로 상에서 maxDistance 범위 내에서 랜덤한 위치를 반환하는 함수!
-  const segmentIndex = Math.floor(Math.random() * (monsterPath.length - 1));
+  // 초기 타워들이 좀 중앙에 생겼으면 해서 segmentIndex의 범위를 조정
+  const segmentIndex = Math.floor(
+    Math.random() * (monsterPath.length - 20) + 10
+  );
+  console.log(segmentIndex);
   const startX = monsterPath[segmentIndex].x;
   const startY = monsterPath[segmentIndex].y;
   const endX = monsterPath[segmentIndex + 1].x;
@@ -265,6 +270,11 @@ function gameLoop() {
             killCount += 1;
             console.log(`killCount: ${killCount}`); // 몬스터 처치 수 출력
           }
+
+          if (ableToMoveRound) {
+            monsterLevel += 1;
+            ableToMoveRound = false;
+          }
         }
       }
     });
@@ -277,6 +287,7 @@ function gameLoop() {
       await tower.feverTime();
       console.log("fever time end");
       killCount = 0; // killCount 초기화
+      ableToMoveRound = true;
 
       // 피버 모드가 끝난 후 플래그 초기화
       setTimeout(() => {
