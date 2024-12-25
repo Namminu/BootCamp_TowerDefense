@@ -43,6 +43,9 @@ let monsterSpawnInterval = 3; // 몬스터 생성 주기 ms
 const monsters = [];
 const towers = [];
 
+let killCount = 0; // 몬스터 처치 수
+let feverTriggered = false; // 피버 모드 실행 여부를 확인하는 플래그
+
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
@@ -241,10 +244,12 @@ function gameLoop() {
   ctx.fillText(`현재 레벨: ${monsterLevel}`, 100, 200); // 최고 기록 표시
 
   // 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
-  towers.forEach((tower) => {
+  towers.forEach(async (tower) => {
     tower.draw();
     tower.updateCooldown();
     monsters.forEach((monster) => {
+      if (monster.isDead) return; // 이미 죽은 몬스터는 무시
+
       const distance = Math.sqrt(
         Math.pow(tower.x - monster.x, 2) + Math.pow(tower.y - monster.y, 2)
       );
@@ -252,12 +257,33 @@ function gameLoop() {
         //여기서 뭔갈 해야함.(몬스터 뭐 스택 올리는거나. 그런거.)
         tower.attack(monster);
         if (monster.hp <= 0) {
+          monster.dead();
           score += monsterLevel;
           userGold += 10;
+
+          if (!tower.feverMode) {
+            killCount += 1;
+            console.log(`killCount: ${killCount}`); // 몬스터 처치 수 출력
+          }
         }
       }
     });
   });
+
+  if (!feverTriggered && killCount === 20 && killCount !== 0) {
+    towers.forEach(async (tower) => {
+      feverTriggered = true;
+      console.log("fever time start");
+      await tower.feverTime();
+      console.log("fever time end");
+      killCount = 0; // killCount 초기화
+
+      // 피버 모드가 끝난 후 플래그 초기화
+      setTimeout(() => {
+        feverTriggered = false;
+      }, 5000); // feverTime 메서드 실행 시간과 일치하도록 설정
+    });
+  }
 
   if (isPlacingTower && previewTower) {
     // 미리보기 타워 렌더링 (타워 이미지와 동일하게)
@@ -269,6 +295,11 @@ function gameLoop() {
 
   for (let i = monsters.length - 1; i >= 0; i--) {
     const monster = monsters[i];
+    if (monster.isDead) {
+      monsters.splice(i, 1); // 이미 죽은 몬스터 제거
+      continue;
+    }
+
     if (monster.hp > 0) {
       const isDestroyed = monster.move(base);
       if (isDestroyed) {
@@ -279,6 +310,7 @@ function gameLoop() {
       monster.draw(ctx);
     } else {
       /* 몬스터가 죽었을 때 */
+      monster.dead();
       monsters.splice(i, 1);
     }
   }

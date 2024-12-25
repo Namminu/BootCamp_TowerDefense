@@ -16,6 +16,7 @@ export class Monster {
     this.image = monsterImages[this.monsterNumber]; // 몬스터 이미지
     this.level = level; // 몬스터 레벨
     this.init(level);
+    this.isDead = false; // 몬스터가 죽었는지 여부
   }
 
   init(level) {
@@ -57,5 +58,9 @@ export class Monster {
       this.x,
       this.y - 5
     );
+  }
+
+  dead() {
+    this.isDead = true; // 몬스터를 죽음 상태로 표시
   }
 }

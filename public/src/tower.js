@@ -9,6 +9,8 @@ export class Tower {
     this.height = 150; // 타워 이미지 세로 길이
     this.damage = damage; // 타워 공격력
     this.range = range; // 타워 사거리
+    this.originalDamage = damage; // 타워 공격력
+    this.originalRange = range; // 타워 사거리
     this.cost = cost; // 타워 구입 비용
     this.cooldown = 0; // 타워 공격 쿨타임
     this.beamDuration = 0; // 타워 광선 지속 시간
@@ -16,6 +18,7 @@ export class Tower {
     this.id = id;
     this.level = level;
     this.image = image;
+    this.feverMode = false;
   }
 
   draw() {
@@ -57,6 +60,10 @@ export class Tower {
       this.cooldown = 180; // 3초 쿨타임 (초당 60프레임)
       this.beamDuration = 30; // 광선 지속 시간 (0.5초)
       this.target = monster; // 광선의 목표 설정
+
+      if (this.feverMode) {
+        this.cooldown = 90; // 1.5초 쿨타임
+      }
     }
   }
 
@@ -64,5 +71,22 @@ export class Tower {
     if (this.cooldown > 0) {
       this.cooldown--;
     }
+  }
+
+  async feverTime() {
+    this.feverMode = true;
+
+    this.damage = 2 * this.originalDamage;
+    this.range = 2 * this.originalRange;
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        this.damage = this.originalDamage;
+        this.range = this.originalRange;
+        this.feverMode = false;
+
+        resolve();
+      }, 5000);
+    });
   }
 }
