@@ -244,7 +244,7 @@ function gameLoop() {
       const distance = Math.sqrt(
         Math.pow(tower.x - monster.x, 2) + Math.pow(tower.y - monster.y, 2)
       );
-      if (distance < tower.range) {
+      if (distance < tower.range) { //이거 타워가 여러명 때릴수 있기에. 여기서 타워 단일 공격인지, 범위 공격인지 정해야 한다.
         //여기서 뭔갈 해야함.(몬스터 뭐 스택 올리는거나. 그런거.)
         tower.attack(monster);
         if (monster.hp <= 0) {
