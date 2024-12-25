@@ -11,7 +11,7 @@ model Users {
   id         Int         @id @default(autoincrement()) @map("id")
   userId     String      @unique @map("userId")
   password   String      @map("password")
-  createdAt   DateTime   @default(now())   @map("createAt")
+  createdAt  DateTime   @default(now())   @map("createAt")
   nickName   String      @unique @map("nickName")
   highScores HighScores?
 

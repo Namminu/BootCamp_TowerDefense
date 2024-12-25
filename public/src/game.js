@@ -10,9 +10,6 @@ import { TowerControl } from "./towerControl.js";
 
 /*
 
-
-
-
 추가하고 싶은거?
 2. 경로를 3개정도로 추가해 여러 방향에서 오도록 하기.
 3. 스테이지 구분,
@@ -20,7 +17,7 @@ import { TowerControl } from "./towerControl.js";
 5. 보스 몬스터 등장. -> 그냥 스폰 몬스터 이미지만 바꾸고 능력치 바꾸면 될듯? 아님 레벨 올리던가. 특별한 능력 추가해도 되고.
 6. 게임 종료시 그 스테이지 반환?
 
- 서버에서 할일
+서버에서 할일
 1. 점수 관리. - 점수 계산.
 2. 스테이지 관리.
 3. 몬스터 잡은 수 관리. --> 게임 껏다 키면 (즉 스테이지 관리시 힘드니까. "스테이지 넘어갈때" 만 주는걸로.)
@@ -38,9 +35,9 @@ let userGold = 0; // 유저 골드
 let base; // 기지 객체
 let baseHp = 500; // 기지 체력
 
-let towerCost = 100; // 타워 구입 비용
+let towerCost; // 타워 구입 비용
 let towerImage; // 타워 이미지
-let numOfInitialTowers = 2; // 초기 타워 개수
+let numOfInitialTowers = 3; // 초기 타워 개수
 let monsterLevel = 1; // 몬스터 레벨
 let monsterSpawnInterval = 3; // 몬스터 생성 주기 ms
 const monsters = [];
@@ -53,7 +50,7 @@ let isInitGame = false;
 let isPlacingTower = false; // 현재 타워를 배치 중인지 확인하는 플래그
 let previewTower = null; // 미리보기를 위한 타워 객체
 
-// 타워 이미지 배열
+// 게임 에셋 로드
 const TOWER_CONFIG = towerData.data;
 
 // 이미지 로딩 파트
@@ -196,14 +193,21 @@ function placeInitialTowers() {
     towers.push(tower);
     towerControl.drawAndUpdateTowers();
   }
+
+  towerImage = null;
+  towerCost = null;
 }
 
 function placeNewTower() {
   //타워 배치를 알리는 함수. 타워 배치는 밑에서 한다.
+  const towerControl = new TowerControl(ctx, towerImages);
+  previewTower = towerControl.addTower(0, 0); // 초기 위치는 (0, 0)으로 설정 여기서 나타나서 바로 마우스로 이동함.
+
+  towerImage = previewTower.image;
+  towerCost = previewTower.cost;
+
   if (userGold >= towerCost) {
     isPlacingTower = true; // 타워 배치를 시작
-    const towerControl = new TowerControl(ctx, towerImages);
-    previewTower = towerControl.addTower(0, 0); // 초기 위치는 (0, 0)으로 설정 여기서 나타나서 바로 마우스로 이동함.
     document.body.style.cursor = "crosshair"; // 사용자에게 배치 모드임을 알림
   }
 }
@@ -288,7 +292,7 @@ function initGame() {
   }
 
   isInitGame = true;
-  userGold = 1000; // 초기 골드 설정
+  userGold = 100; // 초기 골드 설정
   score = 0;
   monsterLevel = 1;
   monsterSpawnInterval = 2000;
@@ -351,9 +355,7 @@ canvas.addEventListener("click", (event) => {
   if (isPlacingTower && previewTower) {
     // 골드 차감 및 타워 설치
     userGold -= towerCost;
-    const towerControl = new TowerControl(ctx, towerImages);
-    const tower = towerControl.addTower(previewTower.x, previewTower.y);
-    towers.push(tower);
+    towers.push(previewTower);
 
     // 배치 상태 초기화
     isPlacingTower = false;
@@ -381,6 +383,6 @@ buyTowerButton.style.padding = "10px 20px";
 buyTowerButton.style.fontSize = "16px";
 buyTowerButton.style.cursor = "pointer";
 
-buyTowerButton.addEventListener("click", placeNewTower());
+buyTowerButton.addEventListener("click", placeNewTower);
 
 document.body.appendChild(buyTowerButton);
