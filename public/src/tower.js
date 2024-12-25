@@ -19,11 +19,13 @@ export class Tower {
     this.level = level;
     this.image = image;
     this.feverMode = false;
+    this.isMouseOver = false;
   }
 
   draw() {
     this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 
+    // 타워 광선 그리기
     let beamColor;
     switch (this.id) {
       case 1:
@@ -51,6 +53,22 @@ export class Tower {
       this.ctx.closePath();
       this.beamDuration--;
     }
+  }
+
+  drawRangeCircle() {
+    // 타워 사정거리를 나타내는 원 그리기
+    this.ctx.beginPath();
+    this.ctx.arc(
+      this.x + this.width / 2, // 타워 중심의 x좌표
+      this.y + this.height / 2, // 타워 중심의 y좌표
+      this.range, // 사정거리 (반지름)
+      0, // 시작 각도
+      2 * Math.PI // 끝 각도 (360도)
+    );
+    this.ctx.strokeStyle = "red"; // 빨간색
+    this.ctx.lineWidth = 5; // 선 두께
+    this.ctx.stroke(); // 선 그리기
+    this.ctx.closePath();
   }
 
   attack(monster) {

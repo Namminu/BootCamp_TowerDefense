@@ -252,6 +252,12 @@ function gameLoop() {
   towers.forEach(async (tower) => {
     tower.draw();
     tower.updateCooldown();
+
+    // 마우스가 타워 위에 있을 때만 사정거리 표시하기
+    if (tower.isMouseOver) {
+      tower.drawRangeCircle();
+    }
+
     monsters.forEach((monster) => {
       if (monster.isDead) return; // 이미 죽은 몬스터는 무시
 
@@ -298,7 +304,9 @@ function gameLoop() {
 
   if (isPlacingTower && previewTower) {
     // 미리보기 타워 렌더링 (타워 이미지와 동일하게)
+    const isMouseOver = true;
     previewTower.draw();
+    previewTower.drawRangeCircle();
   }
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
@@ -415,6 +423,26 @@ canvas.addEventListener("contextmenu", (event) => {
     previewTower = null;
     document.body.style.cursor = "default"; // 커서 복원
   }
+});
+
+canvas.addEventListener("mousemove", (event) => {
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = event.clientX - rect.left;
+  const mouseY = event.clientY - rect.top;
+
+  towers.forEach((tower) => {
+    const isMouseOverTower =
+      mouseX >= tower.x &&
+      mouseX <= tower.x + tower.width &&
+      mouseY >= tower.y &&
+      mouseY <= tower.y + tower.height;
+
+    if (isMouseOverTower) {
+      tower.isMouseOver = true;
+    } else {
+      tower.isMouseOver = false;
+    }
+  });
 });
 
 const buyTowerButton = document.createElement("button");
