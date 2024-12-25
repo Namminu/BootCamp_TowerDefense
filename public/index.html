@@ -1,11 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Changmin Kang" />
     <title>내일배움캠프 Node.js 트랙 타워 디펜스 게임</title>
-    <link rel="icon" type="image/x-icon" href="/tower_defense_client/images/favicon.ico" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/tower_defense_client/images/favicon.ico"
+    />
     <style>
       body {
         display: flex;
@@ -45,8 +49,8 @@
     <script type="module">
       const BASE_URL = "http://localhost:8080/api";
 
-    // 토큰 확인 및 유저 정보 가져오기 함수
-       async function fetchUserInfo() {
+      // 토큰 확인 및 유저 정보 가져오기 함수
+      async function fetchUserInfo() {
         const token = localStorage.getItem("authToken");
 
         if (!token) {
@@ -79,7 +83,6 @@
         }
       }
 
-
       document
         .getElementById("registerButton")
         .addEventListener("click", () => {
@@ -96,8 +99,7 @@
         import("./src/game.js");
       });
 
-
-      fetchUserInfo();
+      //fetchUserInfo();
     </script>
   </body>
 </html>

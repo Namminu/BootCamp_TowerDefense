@@ -1,5 +1,5 @@
 export class Tower {
-  constructor(ctx, x, y, damage, range, cost, image, id = 3, level = 1) {
+  constructor(ctx, x, y, damage, range, cost, image, type, id, level = 1) {
     // 코스트랑 타입은 에셋에서 다운받아서 넣어준다.
     // 생성자 안에서 타워들의 속성을 정의한다고 생각하시면 됩니다!
     this.ctx = ctx; // 캔버스 컨텍스트
@@ -15,6 +15,7 @@ export class Tower {
     this.cooldown = 0; // 타워 공격 쿨타임
     this.beamDuration = 0; // 타워 광선 지속 시간
     this.target = null; // 타워 광선의 목표
+    this.type = type; // 타워 타입
     this.id = id;
     this.level = level;
     this.image = image;
@@ -22,36 +23,48 @@ export class Tower {
     this.isMouseOver = false;
   }
 
-  draw() {
-    this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  draw(isPlacingTower, canPlace) {
+    if (isPlacingTower && !canPlace) {
+      this.ctx.globalAlpha = 0.5; // 투명도 설정
 
-    // 타워 광선 그리기
-    let beamColor;
-    switch (this.id) {
-      case 1:
-        beamColor = "blue"; // 원거리일 때 파란색
-        break;
-      case 2:
-        beamColor = "red"; // 근거리일 때 빨간색
-        break;
-      case 3:
-      default:
-        beamColor = "gray"; // 기본은 회색
-        break;
-    }
+      if (!canPlace) {
+        // 설치가 불가능할 경우 빨간색 오버레이
+        this.ctx.globalAlpha = 0.5; // 오버레이 투명도
+        this.ctx.fillStyle = "red";
+        this.ctx.fillRect(this.x, this.y, this.width, this.height);
+      }
+      this.ctx.globalAlpha = 1.0;
+    } else if ((isPlacingTower && canPlace) || !isPlacingTower) {
+      this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 
-    if (this.beamDuration > 0 && this.target) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
-      this.ctx.lineTo(
-        this.target.x + this.target.width / 2,
-        this.target.y + this.target.height / 2
-      );
-      this.ctx.strokeStyle = beamColor;
-      this.ctx.lineWidth = 10;
-      this.ctx.stroke();
-      this.ctx.closePath();
-      this.beamDuration--;
+      // 타워 광선 그리기
+      let beamColor;
+      switch (this.type) {
+        case 1:
+          beamColor = "blue"; // 원거리일 때 파란색
+          break;
+        case 2:
+          beamColor = "red"; // 근거리일 때 빨간색
+          break;
+        case 3:
+        default:
+          beamColor = "gray"; // 기본은 회색
+          break;
+      }
+
+      if (this.beamDuration > 0 && this.target) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
+        this.ctx.lineTo(
+          this.target.x + this.target.width / 2,
+          this.target.y + this.target.height / 2
+        );
+        this.ctx.strokeStyle = beamColor;
+        this.ctx.lineWidth = 10;
+        this.ctx.stroke();
+        this.ctx.closePath();
+        this.beamDuration--;
+      }
     }
   }
 
