@@ -21,6 +21,7 @@ export class Tower {
     this.image = image;
     this.feverMode = false;
     this.isMouseOver = false;
+    this.isClicked = false;
   }
 
   draw() {
@@ -66,10 +67,12 @@ export class Tower {
       0, // 시작 각도
       2 * Math.PI // 끝 각도 (360도)
     );
-    this.ctx.strokeStyle = "red"; // 빨간색
+    this.ctx.strokeStyle = "white"; // 빨간색
     this.ctx.lineWidth = 5; // 선 두께
     this.ctx.stroke(); // 선 그리기
     this.ctx.closePath();
+    this.ctx.fillStyle = "rgba(254, 235, 255, 0.67)"; // 투명도 조절
+    this.ctx.fill(); // 원 내부 채우기
   }
 
   attack(monster) {
@@ -107,5 +110,20 @@ export class Tower {
         resolve();
       }, 5000);
     });
+  }
+
+  showTowerInfo(tower) {
+    const infoX = tower.x - tower.width - 10; // 타워 왼쪽에 표시
+    const infoY = tower.y;
+
+    this.ctx.fillStyle = "rgb(0, 0, 0)";
+    this.ctx.fillRect(infoX, infoY, 150, 100); // 정보창 배경
+
+    this.ctx.fillStyle = "white";
+    this.ctx.font = "14px Arial";
+    this.ctx.fillText(`ID: ${tower.id}`, infoX + 10, infoY + 20);
+    this.ctx.fillText(`Damage: ${tower.damage}`, infoX + 10, infoY + 40);
+    this.ctx.fillText(`Range: ${tower.range}`, infoX + 10, infoY + 60);
+    this.ctx.fillText(`Level: ${tower.level}`, infoX + 10, infoY + 80);
   }
 }

@@ -89,7 +89,7 @@ let gageBarWidth = maxRage * gageBarWidthCoeff;
 
 const gageBar = {
   x: 300,
-  y: 100,
+  y: 20,
   maxWidth: maxRage * gageBarWidthCoeff,
   width: maxRage * gageBarWidthCoeff,
   height: 40,
@@ -282,12 +282,17 @@ function gameLoop() {
 
   // 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
   towerControl.towers.forEach(async (tower) => {
-    tower.draw();
-    tower.updateCooldown();
-
     // 마우스가 타워 위에 있을 때만 사정거리 표시하기
     if (tower.isMouseOver) {
       tower.drawRangeCircle();
+    }
+
+    tower.draw();
+    tower.updateCooldown();
+
+    if (tower.isClicked) {
+      // 타워 정보를 표시하는 함수 호출
+      tower.showTowerInfo(tower);
     }
 
     monsters.forEach((monster) => {
@@ -553,6 +558,45 @@ canvas.addEventListener("mousemove", (event) => {
   });
 });
 
+let activeTowerInfo = null;
+
+canvas.addEventListener("click", (event) => {
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = event.clientX - rect.left;
+  const mouseY = event.clientY - rect.top;
+
+  if (activeTowerInfo) {
+    // 클릭이 정보창 외부인지 확인
+    const isOutsideInfo =
+      mouseX < activeTowerInfo.x ||
+      mouseX > activeTowerInfo.x + 150 ||
+      mouseY < activeTowerInfo.y ||
+      mouseY > activeTowerInfo.y + 100;
+
+    if (isOutsideInfo) {
+      towerControl.towers.forEach((tower) => {
+        tower.isClicked = false; // 타워 클릭 상태 비활성화
+      });
+      activeTowerInfo = null; // 정보창 닫기
+      return; // 정보창 외부 클릭만 처리
+    }
+  }
+
+  towerControl.towers.forEach((tower) => {
+    const isClicked =
+      mouseX >= tower.x &&
+      mouseX <= tower.x + tower.width &&
+      mouseY >= tower.y &&
+      mouseY <= tower.y + tower.height;
+
+    if (isClicked) {
+      activeTowerInfo = { x: tower.x - tower.width - 10, y: tower.y }; // 정보창 위치 저장
+      tower.isClicked = true; // 타워 클릭 상태 활성화
+      tower.showTowerInfo(tower);
+    }
+  });
+});
+
 // 인벤토리 클릭
 canvas.addEventListener("click", (event) => {
   const rect = canvas.getBoundingClientRect();
@@ -596,16 +640,3 @@ canvas.addEventListener("click", (event) => {
     });
   }
 });
-
-const buyTowerButton = document.createElement("button");
-buyTowerButton.textContent = "타워 구입";
-buyTowerButton.style.position = "absolute";
-buyTowerButton.style.top = "10px";
-buyTowerButton.style.right = "10px";
-buyTowerButton.style.padding = "10px 20px";
-buyTowerButton.style.fontSize = "16px";
-buyTowerButton.style.cursor = "pointer";
-
-buyTowerButton.addEventListener("click", placeNewTower);
-
-document.body.appendChild(buyTowerButton);
