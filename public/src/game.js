@@ -82,6 +82,39 @@ for (let i = 1; i <= NUM_OF_MONSTERS; i++) {
 
 const towerControl = new TowerControl(ctx, towerImages);
 
+// 피버 타임 게이지바 너비 계수
+const gageBarWidthCoeff = 10;
+const maxRage = 20;
+let gageBarWidth = maxRage * gageBarWidthCoeff;
+
+const gageBar = {
+  x: 300,
+  y: 100,
+  maxWidth: maxRage * gageBarWidthCoeff,
+  width: maxRage * gageBarWidthCoeff,
+  height: 40,
+  drawBG() {
+    ctx.fillStyle = "#F5F5F5";
+    ctx.fillRect(this.x, this.y, this.maxWidth, this.height);
+  },
+  draw() {
+    const my_gradient = ctx.createLinearGradient(
+      0,
+      this.y,
+      0,
+      this.y + this.height
+    ); // gradient
+    my_gradient.addColorStop(0, "#FF8C00");
+    my_gradient.addColorStop(0.5, "#FFA500");
+    my_gradient.addColorStop(1, "#FFD700");
+    ctx.fillStyle = my_gradient;
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 3;
+    ctx.fillRect(this.x, this.y, killCount * gageBarWidthCoeff, this.height);
+    ctx.strokeRect(this.x, this.y, this.maxWidth, this.height);
+  },
+};
+
 let monsterPath;
 
 function generateRandomMonsterPath() {
@@ -285,7 +318,7 @@ function gameLoop() {
     });
   });
 
-  if (!feverTriggered && killCount === 20 && killCount !== 0) {
+  if (!feverTriggered && killCount === maxRage) {
     towerControl.towers.forEach(async (tower) => {
       feverTriggered = true;
       console.log("fever time start");
@@ -334,7 +367,11 @@ function gameLoop() {
   }
 
   // 인벤토리 그리기
-  towerControl.drawInventory(ctx, canvas);
+  towerControl.drawqueue(ctx, canvas);
+
+  // 피버 게이지바 그리기
+  gageBar.drawBG();
+  gageBar.draw();
 
   // console.log(`previewTower: ${previewTower}`);
 
@@ -470,7 +507,7 @@ canvas.addEventListener("click", (event) => {
 
       // 설치 후 초기화
       isPlacingTower = false;
-      towerControl.towerInventory.splice(towerIndex, 1); // 인벤토리에서 타워 제거
+      towerControl.towerqueue.splice(towerIndex, 1); // 인벤토리에서 타워 제거
       previewTower = null;
       towerImage = null;
       towerCost = null;
@@ -522,26 +559,26 @@ canvas.addEventListener("click", (event) => {
   const mouseX = event.clientX - rect.left;
   const mouseY = event.clientY - rect.top;
 
-  const inventoryY = canvas.height - 180; // 인벤토리 Y 위치
+  const queueY = canvas.height - 180; // 인벤토리 Y 위치
   const towerWidth = 220 / 1.5;
   const towerHeight = 270 / 1.5;
   const towerPadding = 160;
   let currentX = 60;
 
   // 인벤토리 클릭 감지
-  if (mouseY >= inventoryY) {
-    towerControl.towerInventory.forEach((tower, index) => {
+  if (mouseY >= queueY) {
+    towerControl.towerqueue.forEach((tower, index) => {
       if (
         mouseX >= currentX &&
         mouseX <= currentX + towerWidth &&
-        mouseY >= inventoryY &&
-        mouseY <= inventoryY + towerHeight
+        mouseY >= queueY &&
+        mouseY <= queueY + towerHeight
       ) {
         // 타워를 선택하고 설치 모드 활성화
         if (userGold >= tower.cost) {
           // isPreview = true;
           userGold -= tower.cost;
-          previewTower = towerControl.buyInventoryTower(0, 0, index); // 선택된 타워 생성
+          previewTower = towerControl.buyqueueTower(0, 0, index); // 선택된 타워 생성
           if (!previewTower) {
             console.error("Failed to create preview tower.");
             return;
