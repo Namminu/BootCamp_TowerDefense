@@ -42,8 +42,6 @@ let towerIndex; // 타워 인덱스
 let numOfInitialTowers = 3; // 초기 타워 개수
 let isPlacingTower = false; // 현재 타워를 배치 중인지 확인하는 플래그
 let previewTower = null; // 미리보기를 위한 타워 객체
-// let isPreview = false; // 미리보기 모드인지 확인하는 플래그
-let canPlace = false; // 타워를 배치할 수 있는지 확인하는 플래그
 
 const monsters = [];
 let ableToMoveRound = false; // 라운드 이동 가능 여부
@@ -169,7 +167,7 @@ function getRandomPositionNearPath(maxDistance) {
   // 타워 배치를 위한 몬스터가 지나가는 경로 상에서 maxDistance 범위 내에서 랜덤한 위치를 반환하는 함수!
   // 초기 타워들이 좀 중앙에 생겼으면 해서 segmentIndex의 범위를 조정
   const segmentIndex = Math.floor(
-    Math.random() * (monsterPath.length - 20) + 10
+    Math.random() * (monsterPath.length - 10) + 5
   );
   console.log(segmentIndex);
   const startX = monsterPath[segmentIndex].x;
@@ -197,11 +195,10 @@ function placeInitialTowers() {
     무언가 빠진 코드가 있는 것 같지 않나요?  
   */
   for (let i = 0; i < numOfInitialTowers; i++) {
-    const { x, y } = getRandomPositionNearPath(200); //200만큼 떨어지게? 만드는듯.
+    const { x, y } = getRandomPositionNearPath(50); //200만큼 떨어지게? 만드는듯.
     const tower = towerControl.addTower(x, y);
     towerImage = tower.image;
     towerCost = tower.cost;
-    towerControl.towers.push(tower);
     towerControl.drawAndUpdateTowers();
   }
 
@@ -234,32 +231,6 @@ function spawnMonster() {
   monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
 }
 
-// function drawInventory() {
-//   //타워 인벤토리를 가져옴.
-//   const inventoryTowers = towerControl.getTowerInventory();
-
-//   console.log(`inventoryTowers: ${inventoryTowers}`);
-
-//   // 인벤토리 영역 설정
-//   const inventoryHeight = 200; // 인벤토리 높이
-//   const inventoryY = canvas.height - inventoryHeight; // 인벤토리 위치
-//   ctx.fillStyle = "rgba(255, 136, 0, 0.5)";
-//   ctx.fillRect(0, inventoryY, canvas.width, inventoryHeight);
-
-//   const towerSize = 100; // 타워 크기
-
-//   inventoryTowers.forEach((tower, index) => {
-//     ctx.drawImage(tower.image, currentX, inventoryY, towerSize, towerSize);
-
-//     ctx.font = "16px Arial";
-//     ctx.fillStyle = "white";
-//     ctx.fillText(`$${tower.cost}`, currentX, inventoryY + towerSize + 20);
-
-//     // 영역 업데이트
-//     currentX += towerSize + towerPadding;
-//   });
-// }
-
 function gameLoop() {
   //게임 반복.
   // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
@@ -278,7 +249,7 @@ function gameLoop() {
 
   // 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
   towerControl.towers.forEach(async (tower) => {
-    tower.draw(isPlacingTower, canPlace);
+    tower.draw();
     tower.updateCooldown();
 
     // 마우스가 타워 위에 있을 때만 사정거리 표시하기
@@ -333,7 +304,7 @@ function gameLoop() {
   if (isPlacingTower && previewTower) {
     // 미리보기 타워 렌더링 (타워 이미지와 동일하게)
     const isMouseOver = true;
-    previewTower.draw(isPlacingTower, canPlace);
+    previewTower.draw();
     previewTower.drawRangeCircle();
   }
 
@@ -364,6 +335,8 @@ function gameLoop() {
 
   // 인벤토리 그리기
   towerControl.drawInventory(ctx, canvas);
+
+  // console.log(`previewTower: ${previewTower}`);
 
   // TO DO : 피버타임 때?
   // 캔버스 한 번 지워주기
@@ -423,22 +396,48 @@ if (!isInitGame) {
 }
 
 function canPlaceTower(x, y) {
-  // 타워가 다른 타워와 겹치는지 확인
+  const towerWidth = previewTower ? previewTower.width : 0;
+  const towerHeight = previewTower ? previewTower.height : 0;
+
+  const newTowerCenterX = x + towerWidth / 2;
+  const newTowerCenterY = y + towerHeight / 2;
+
   for (const tower of towerControl.towers) {
+    if (Math.abs(tower.x - x) < 1 && Math.abs(tower.y - y) < 1) {
+      console.log("Cannot place tower: duplicate position.");
+      return false;
+    }
+
+    const towerCenterX = tower.x + tower.width / 2;
+    const towerCenterY = tower.y + tower.height / 2;
+
     const distance = Math.sqrt(
-      Math.pow(tower.x - x, 2) + Math.pow(tower.y - y, 2)
-    );
-    if (distance < tower.width) {
-      return false; // 겹침
+      Math.pow(towerCenterX - newTowerCenterX, 2) +
+        Math.pow(towerCenterY - newTowerCenterY, 2)
+    ).toFixed(2); // 소수점 둘째 자리까지 반올림
+
+    console.log("Distance between towers:", distance);
+
+    // 두 타워의 중심 간 거리가 타워 너비 이상이어야 설치 가능
+    if (distance < 150) {
+      console.log("Cannot place tower: overlaps with another tower.");
+      return false;
     }
   }
 
-  return (
+  // 맵 경계 확인
+  const withinBounds =
     x >= 0 &&
     y >= 0 &&
-    x + previewTower.width <= canvas.width &&
-    y + previewTower.height <= canvas.height
-  );
+    x + towerWidth <= canvas.width &&
+    y + towerHeight <= canvas.height;
+
+  if (!withinBounds) {
+    console.log("Cannot place tower: out of bounds.");
+    return false;
+  }
+
+  return true;
 }
 
 canvas.addEventListener("mousemove", (event) => {
@@ -465,6 +464,9 @@ canvas.addEventListener("click", (event) => {
       previewTower.x = mouseX - previewTower.width / 2;
       previewTower.y = mouseY - previewTower.height / 2;
       towerControl.towers.push(previewTower);
+
+      console.log("Tower placed at:", previewTower.x, previewTower.y);
+      console.log("All towers:", towerControl.towers);
 
       // 설치 후 초기화
       isPlacingTower = false;
@@ -499,12 +501,6 @@ canvas.addEventListener("mousemove", (event) => {
   const mouseX = event.clientX - rect.left;
   const mouseY = event.clientY - rect.top;
 
-  if (isPlacingTower) {
-    if (!canPlaceTower(mouseX, mouseY)) {
-      canPlace = false;
-    }
-  }
-
   towerControl.towers.forEach((tower) => {
     const isMouseOverTower =
       mouseX >= tower.x &&
@@ -526,19 +522,20 @@ canvas.addEventListener("click", (event) => {
   const mouseX = event.clientX - rect.left;
   const mouseY = event.clientY - rect.top;
 
-  const inventoryY = canvas.height - 200; // 인벤토리 Y 위치
-  const towerSize = 78;
-  const towerPadding = 20;
-  let currentX = towerPadding;
+  const inventoryY = canvas.height - 180; // 인벤토리 Y 위치
+  const towerWidth = 220 / 1.5;
+  const towerHeight = 270 / 1.5;
+  const towerPadding = 160;
+  let currentX = 60;
 
   // 인벤토리 클릭 감지
   if (mouseY >= inventoryY) {
     towerControl.towerInventory.forEach((tower, index) => {
       if (
         mouseX >= currentX &&
-        mouseX <= currentX + towerSize &&
+        mouseX <= currentX + towerWidth &&
         mouseY >= inventoryY &&
-        mouseY <= inventoryY + towerSize
+        mouseY <= inventoryY + towerHeight
       ) {
         // 타워를 선택하고 설치 모드 활성화
         if (userGold >= tower.cost) {
@@ -558,7 +555,7 @@ canvas.addEventListener("click", (event) => {
           console.log("골드가 부족합니다!");
         }
       }
-      currentX += towerSize + towerPadding; // 다음 타워 위치로 이동
+      currentX += towerWidth + towerPadding; // 다음 타워 위치로 이동
     });
   }
 });

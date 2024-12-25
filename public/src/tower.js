@@ -5,8 +5,8 @@ export class Tower {
     this.ctx = ctx; // 캔버스 컨텍스트
     this.x = x; // 타워 이미지 x 좌표
     this.y = y; // 타워 이미지 y 좌표
-    this.width = 78; // 타워 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
-    this.height = 150; // 타워 이미지 세로 길이
+    this.width = 220 / 1.5; // 타워 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
+    this.height = 270 / 1.5; // 타워 이미지 세로 길이
     this.damage = damage; // 타워 공격력
     this.range = range; // 타워 사거리
     this.originalDamage = damage; // 타워 공격력
@@ -23,48 +23,36 @@ export class Tower {
     this.isMouseOver = false;
   }
 
-  draw(isPlacingTower, canPlace) {
-    if (isPlacingTower && !canPlace) {
-      this.ctx.globalAlpha = 0.5; // 투명도 설정
+  draw() {
+    this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 
-      if (!canPlace) {
-        // 설치가 불가능할 경우 빨간색 오버레이
-        this.ctx.globalAlpha = 0.5; // 오버레이 투명도
-        this.ctx.fillStyle = "red";
-        this.ctx.fillRect(this.x, this.y, this.width, this.height);
-      }
-      this.ctx.globalAlpha = 1.0;
-    } else if ((isPlacingTower && canPlace) || !isPlacingTower) {
-      this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    // 타워 광선 그리기
+    let beamColor;
+    switch (this.type) {
+      case 1:
+        beamColor = "blue"; // 원거리일 때 파란색
+        break;
+      case 2:
+        beamColor = "red"; // 근거리일 때 빨간색
+        break;
+      case 3:
+      default:
+        beamColor = "gray"; // 기본은 회색
+        break;
+    }
 
-      // 타워 광선 그리기
-      let beamColor;
-      switch (this.type) {
-        case 1:
-          beamColor = "blue"; // 원거리일 때 파란색
-          break;
-        case 2:
-          beamColor = "red"; // 근거리일 때 빨간색
-          break;
-        case 3:
-        default:
-          beamColor = "gray"; // 기본은 회색
-          break;
-      }
-
-      if (this.beamDuration > 0 && this.target) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
-        this.ctx.lineTo(
-          this.target.x + this.target.width / 2,
-          this.target.y + this.target.height / 2
-        );
-        this.ctx.strokeStyle = beamColor;
-        this.ctx.lineWidth = 10;
-        this.ctx.stroke();
-        this.ctx.closePath();
-        this.beamDuration--;
-      }
+    if (this.beamDuration > 0 && this.target) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
+      this.ctx.lineTo(
+        this.target.x + this.target.width / 2,
+        this.target.y + this.target.height / 2
+      );
+      this.ctx.strokeStyle = beamColor;
+      this.ctx.lineWidth = 10;
+      this.ctx.stroke();
+      this.ctx.closePath();
+      this.beamDuration--;
     }
   }
 

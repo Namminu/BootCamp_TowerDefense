@@ -31,32 +31,45 @@ export class TowerControl {
       });
     }
 
-    console.log(`towerInventory: ${JSON.stringify(this.towerInventory)}`);
+    // console.log(`towerInventory: ${JSON.stringify(this.towerInventory)}`);
   }
 
   drawInventory(ctx, canvas) {
     // 인벤토리 관련 변수
-    const towerPadding = 20; // 타워 간 간격
-    const startX = towerPadding; // 첫 번째 타워 시작 위치
+    const towerPadding = 160; // 타워 간 간격
+    const startX = 60; // 첫 번째 타워 시작 위치
     let currentX = startX;
 
     this.getTowerInventory();
     // 인벤토리 영역 설정
-    const inventoryHeight = 250; // 인벤토리 높이
+    const inventoryHeight = 200; // 인벤토리 높이
     const inventoryY = canvas.height - inventoryHeight; // 인벤토리 위치
-    ctx.fillStyle = "rgba(255, 222, 150, 0.5)";
-    ctx.fillRect(0, inventoryY, canvas.width, inventoryHeight);
+    ctx.fillStyle = "rgba(255, 182, 249, 0.7)";
+    ctx.fillRect(0, inventoryY - 15, canvas.width, inventoryHeight);
 
-    const imageWidth = 78;
-    const imageHeight = 150;
+    const imageWidth = 220 / 1.5;
+    const imageHeight = 270 / 1.5;
+    const textOffsetX = 10; // 이미지 오른쪽으로 이동할 간격
 
     this.towerInventory.forEach((tower, index) => {
       ctx.drawImage(tower.image, currentX, inventoryY, imageWidth, imageHeight);
 
       ctx.font = "16px Arial";
       ctx.fillStyle = "white";
-      ctx.fillText(`${tower.cost}G`, currentX, inventoryY + imageHeight + 20);
-      ctx.fillText(`${tower.name}`, currentX, inventoryY + imageHeight + 40);
+
+      // 비용 텍스트
+      ctx.fillText(
+        `${tower.cost}G`,
+        currentX + imageWidth + textOffsetX, // 이미지 오른쪽
+        inventoryY + 40 // 이미지 높이에 맞게 조정
+      );
+
+      // 이름 텍스트
+      ctx.fillText(
+        `${tower.name}`,
+        currentX + imageWidth + textOffsetX, // 이미지 오른쪽
+        inventoryY + 70 // 두 번째 줄 (간격 추가)
+      );
 
       // 영역 업데이트
       currentX += imageWidth + towerPadding;
