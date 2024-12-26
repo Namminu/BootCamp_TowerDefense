@@ -555,6 +555,7 @@ canvas.addEventListener("click", (event) => {
       // isPreview = false;
       document.body.style.cursor = "default";
     } else {
+      previewTower.isInvalidPlacement = true;
       console.log("해당 위치에 타워를 설치할 수 없습니다!");
     }
   }
