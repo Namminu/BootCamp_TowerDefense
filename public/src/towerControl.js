@@ -19,38 +19,38 @@ export class TowerControl {
   
   async getTowerqueue() {
 
-    const TowerQueueTyep = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
+    // const TowerQueueTyep = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
 
-    console.log(TowerQueueTyep)
-    this.towerqueue = [];
+    // console.log(TowerQueueTyep)
+    // this.towerqueue = [];
 
-    for (let i = 0; i < TowerQueueTyep.length; i++) {
-      const towerType = TowerQueueTyep[i].type;
-      const towerIndex = 1+towerData.data.findIndex(tower => tower.type === towerType); // towerData에서 타입이 일치하는 타워 찾기
+    // for (let i = 0; i < TowerQueueTyep.length; i++) {
+    //   const towerType = TowerQueueTyep[i].type;
+    //   const towerIndex = 1+towerData.data.findIndex(tower => tower.type === towerType); // towerData에서 타입이 일치하는 타워 찾기
       
-      if (towerIndex !== -1) {
-        this.towerqueue.push({
-          image: this.towerImages[towerIndex],
-          name: towerData.data[towerIndex].name,
-          cost: towerData.data[towerIndex].cost,
-        });
-      }
+    //   if (towerIndex !== -1) {
+    //     this.towerqueue.push({
+    //       image: this.towerImages[towerIndex],
+    //       name: towerData.data[towerIndex].name,
+    //       cost: towerData.data[towerIndex].cost,
+    //     });
+    //   }
+    // }
+
+    // return this.towerqueue;
+
+
+    if (this.towerqueue.length === 5) {
+      return this.towerqueue;
     }
-
-    return this.towerqueue;
-
-
-    // if (this.towerqueue.length === 5) {
-    //   return this.towerqueue;
-    // }
-    // while (this.towerqueue.length < 5) {
-    //   const index = this.getRandomNumber(0, this.towerImages.length - 1);
-    //   this.towerqueue.push({
-    //     image: this.towerImages[index],
-    //     name: towerData.data[index].name,
-    //     cost: towerData.data[index].cost,
-    //   });
-    // }
+    while (this.towerqueue.length < 5) {
+      const index = this.getRandomNumber(0, this.towerImages.length - 1);
+      this.towerqueue.push({
+        image: this.towerImages[index],
+        name: towerData.data[index].name,
+        cost: towerData.data[index].cost,
+      });
+    }
 
     
 
@@ -110,7 +110,7 @@ export class TowerControl {
     const towerName = this.towerqueue[queueIndex].name;
     const index = towerData.data.findIndex((data) => data.name === towerName);
 
-    sendEvent(5,{type:towerData.data[index].type, x, y,timestamp:Date.now(),index});
+    //sendEvent(5,{type:towerData.data[index].type, x, y,timestamp:Date.now(),index});
 
     const image = this.towerImages[index];
     const damage = towerData.data[index].damage;
