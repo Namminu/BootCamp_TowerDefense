@@ -439,8 +439,8 @@ Promise.all([
   ),
 ]).then(() => {
   /* 서버 접속 코드 (여기도 완성해주세요!) */
-  let somewhere;
-
+  let somewhere = localStorage.getItem("authToken");
+  
   serverSocket = io("http://localhost:8080", {
     auth: {
       token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!

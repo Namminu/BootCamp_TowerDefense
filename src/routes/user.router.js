@@ -70,7 +70,7 @@ router.post('/sign-in', async (req, res) => {
         userId: user.userId, // JWT 페이로드에 사용자 키 포함 여기서 유저 id(유저 구분을 위한 uuid) 넣기.
       },
       process.env.JWT_KEY, // 비밀 키를 사용하여 서명
-      { expiresIn: '1h' } // 토큰 유효 기간을 1시간으로 설정
+      { expiresIn: '8h' } // 토큰 유효 기간을 8시간으로 설정
     );
     // 성공 시 authorization 헤더에 토큰 추가
     res.setHeader('authorization', `Bearer ${token}`);

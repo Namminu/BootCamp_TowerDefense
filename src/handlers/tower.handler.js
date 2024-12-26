@@ -27,7 +27,7 @@ if (isTooClose) {
 
 
 
-setTower(userId, payload.x, payload.y ,payload.range, payload.attackPower, payload.cost, payload.cooldown, payload.level);
+setTower(userId, payload.x, payload.y, payload.level);
 
 return { status: 'success', message: "타워 배치 성공적." };
 };

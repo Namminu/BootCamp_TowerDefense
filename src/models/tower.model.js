@@ -2,6 +2,9 @@ const towers = {};
 
 
 export const createTower = (uuid) => {
+    
+
+
     towers[uuid] = [];
 }
 
