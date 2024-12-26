@@ -29,4 +29,4 @@ const registerHandler = (io) => {
     })// socket.on은 하나의 대상만.
 }
 
-export default registerHandler
+export default registerHandler;

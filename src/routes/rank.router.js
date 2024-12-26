@@ -13,6 +13,7 @@ router.get('/rank', authmiddlewares, async (req, res) => {
                 highScore: true
             }
         });
+        if (!rankers) return res.status(404).json({ message: "Rank Data Not Found" });
 
         // highScore 컬럼명 Round 로 가공
         const transformRankers = rankers.map(rank => ({

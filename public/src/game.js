@@ -36,7 +36,7 @@ const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
-let baseHp = 500; // 기지 체력
+let baseHp = 10; // 기지 체력
 
 // 타워 관련 변수
 let towerCost; // 타워 구입 비용
@@ -115,7 +115,7 @@ const gageBar = {
       0,
       this.y + this.height
     ); // gradient
-    
+
     my_gradient.addColorStop(0, "#F5EEE6");
     my_gradient.addColorStop(0.5, "#F3D7CA");
     my_gradient.addColorStop(1, "#E6A4B4");
@@ -166,9 +166,9 @@ function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로�
 
 function initMap() {// 배경 이미지 그리기
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-  for(let i = 0; i < 3; i++){
+  for (let i = 0; i < 3; i++) {
     paths[i] = drawPath();
-  } 
+  }
 }
 
 function drawPath() {  //경로에 따라 길을 그리는것.
@@ -198,7 +198,7 @@ function drawPath() {  //경로에 따라 길을 그리는것.
   }
 }
 
-function drawRotatedImage(image, x, y, width, height, angle) { 
+function drawRotatedImage(image, x, y, width, height, angle) {
   ctx.save();
   ctx.translate(x + width / 2, y + height / 2);
   ctx.rotate(angle);
@@ -279,6 +279,7 @@ export function spawnMonster() {
 }
 
 async function gameLoop() {
+  const currentTime = performance.now();
   //게임 반복.
   // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
@@ -305,10 +306,12 @@ async function gameLoop() {
     if (monster.hp > 0) {
       const isDestroyed = monster.move(base);
       if (isDestroyed) {
+        const testRound = 1;
         /* 게임 오버 */
-        alert('게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ');
+        //alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
         // 게임 종료 시 서버로 gameOver 이벤트 전송
-        location.reload();
+        sendEvent(3, { currentRound: testRound });
+        //location.reload();
       }
       monster.draw(ctx);
     } else {
@@ -429,7 +432,7 @@ async function gameLoop() {
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
   base.draw(ctx, baseImage);
-  base.selfHeal();
+  //base.selfHeal(currentTime);
 
   // 인벤토리 그리기
   towerControl.drawqueue(ctx, canvas, monsterLevel);
@@ -463,12 +466,12 @@ function initGame() {
   placeBase(); // 기지 배치
   //setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
   // 서버에 몬스터 스폰 주기와 타이밍 동기화
-  sendEvent(13, { round: 0, timestamp: Date.now()});
+  sendEvent(13, { round: 0, timestamp: Date.now() });
   gameLoop(); // 게임 루프 시작
 } //이게 시작이네. 
 
 if (!isInitGame) {
-  sendEvent(2,{timestamp: Date.now()})
+  sendEvent(2, { timestamp: Date.now() })
   initGame();
 }
 
@@ -510,7 +513,7 @@ function canPlaceTower(x, y) {
 
     const distance = Math.sqrt(
       Math.pow(towerCenterX - newTowerCenterX, 2) +
-        Math.pow(towerCenterY - newTowerCenterY, 2)
+      Math.pow(towerCenterY - newTowerCenterY, 2)
     ).toFixed(2); // 소수점 둘째 자리까지 반올림
 
     console.log('Distance between towers:', distance);
