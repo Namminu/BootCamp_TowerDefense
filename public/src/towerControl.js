@@ -22,10 +22,11 @@ export class TowerControl {
     }
 
     while (this.towerqueue.length < 5) {
-      let index = this.getRandomNumber(0, monsterLevel - 1);
-      if (monsterLevel > towerData.data.length) {
-        index = this.getRandomNumber(0, towerData.data.length - 1);
-      }
+      const index = this.getRandomNumber(0, towerData.data.length - 1);
+      // let index = this.getRandomNumber(0, monsterLevel - 1);
+      // if (monsterLevel > towerData.data.length) {
+      //   index = this.getRandomNumber(0, towerData.data.length - 1);
+      // }
       this.towerqueue.push({
         image: this.towerImages[index],
         name: towerData.data[index].name,
@@ -90,6 +91,7 @@ export class TowerControl {
     const image = this.towerImages[index];
     const damage = towerData.data[index].damage;
     const range = towerData.data[index].range;
+    const cooldown = towerData.data[index].cooldown;
     const cost = towerData.data[index].cost;
     const type = towerData.data[index].type;
     const id = this.id;
@@ -99,6 +101,7 @@ export class TowerControl {
       y,
       damage,
       range,
+      cooldown,
       cost,
       image,
       type,
@@ -115,6 +118,7 @@ export class TowerControl {
     const image = this.towerImages[index];
     const damage = towerData.data[index].damage;
     const range = towerData.data[index].range;
+    const cooldown = towerData.data[index].cooldown;
     const cost = towerData.data[index].cost;
     const type = towerData.data[index].type;
     const id = this.id;
@@ -124,6 +128,7 @@ export class TowerControl {
       y,
       damage,
       range,
+      cooldown,
       cost,
       image,
       type,

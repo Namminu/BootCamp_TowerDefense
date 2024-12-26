@@ -43,6 +43,9 @@ let numOfInitialTowers = 3; // 초기 타워 개수
 let isPlacingTower = false; // 현재 타워를 배치 중인지 확인하는 플래그
 let previewTower = null; // 미리보기를 위한 타워 객체
 
+// 메시지 출력 플래그
+let printMessage = false;
+
 const monsters = [];
 let ableToMoveRound = false; // 라운드 이동 가능 여부
 let monsterLevel = 1; // 몬스터 레벨
@@ -104,9 +107,9 @@ const gageBar = {
       0,
       this.y + this.height
     ); // gradient
-    my_gradient.addColorStop(0, "#FF8C00");
-    my_gradient.addColorStop(0.5, "#FFA500");
-    my_gradient.addColorStop(1, "#FFD700");
+    my_gradient.addColorStop(0, "#F5EEE6");
+    my_gradient.addColorStop(0.5, "#F3D7CA");
+    my_gradient.addColorStop(1, "#E6A4B4");
     ctx.fillStyle = my_gradient;
     ctx.strokeStyle = "black";
     ctx.lineWidth = 3;
@@ -354,15 +357,30 @@ async function gameLoop() {
       const upgradePrice = tower.upgradeTower(tower, userGold);
       userGold -= upgradePrice; // 업그레이드 비용 차감
       tower.upgradeBtnClicked = false;
+      tower.isClicked = false;
     } else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
       console.log("Not enough gold to upgrade the tower.");
+      printMessage = true;
       tower.upgradeBtnClicked = false;
+      tower.isClicked = false;
     }
+
+    if (printMessage) {
+      ctx.fillStyle = "pink";
+      ctx.font = "20px Arial";
+      ctx.fillText("돈이 모자라요!", tower.x, tower.y);
+
+      setTimeout(() => {
+        printMessage = false;
+      }, 3000);
+    }
+
     // 자세히 보기 창에서 판매 버튼을 클릭했을 때
     if (tower.isClicked && tower.sellBtnClicked) {
       const sellPrice = tower.sellTower(tower);
       userGold += sellPrice; // 타워 판매 시 골드 추가
       tower.sellBtnClicked = false;
+      tower.isClicked = false;
     }
   });
 
@@ -391,7 +409,7 @@ async function gameLoop() {
     if (previewTower.isInvalidPlacement) {
       ctx.fillStyle = "red";
       ctx.font = "20px Arial";
-      ctx.fillText("Invalid placement!", previewTower.x, previewTower.y - 10);
+      ctx.fillText("너무 가까워요!", previewTower.x, previewTower.y - 10);
     }
   }
 
@@ -708,6 +726,7 @@ canvas.addEventListener("click", (event) => {
           isPlacingTower = true; // 설치 모드 활성화
           document.body.style.cursor = "crosshair"; // 커서 변경
         } else {
+          printMessage = true;
           console.log("골드가 부족합니다!");
         }
       }

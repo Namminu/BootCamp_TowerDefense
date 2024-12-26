@@ -1,7 +1,19 @@
 import { towerControl } from "./game.js";
 
 export class Tower {
-  constructor(ctx, x, y, damage, range, cost, image, type, id, level = 1) {
+  constructor(
+    ctx,
+    x,
+    y,
+    damage,
+    range,
+    cooldown,
+    cost,
+    image,
+    type,
+    id,
+    level = 1
+  ) {
     // 코스트랑 타입은 에셋에서 다운받아서 넣어준다.
     // 생성자 안에서 타워들의 속성을 정의한다고 생각하시면 됩니다!
     this.ctx = ctx; // 캔버스 컨텍스트
@@ -11,10 +23,10 @@ export class Tower {
     this.height = 270 / 1.5; // 타워 이미지 세로 길이
     this.damage = damage; // 타워 공격력
     this.range = range; // 타워 사거리
-    this.cooldown = 0; // 타워 공격 쿨타임
+    this.cooldown = cooldown; // 타워 공격 쿨타임
     this.originalDamage = damage; // 타워 공격력
     this.originalRange = range; // 타워 사거리
-    this.originalCooldown = 180; // 타워 공격 쿨타임
+    this.originalCooldown = cooldown; // 타워 공격 쿨타임
     this.cost = cost; // 타워 구입 비용
     this.beamDuration = 0; // 타워 광선 지속 시간
     this.target = null; // 타워 광선의 목표
@@ -90,7 +102,7 @@ export class Tower {
       this.target = monster; // 광선의 목표 설정
 
       if (this.feverMode) {
-        this.cooldown = this.originalCooldown / 2; // 1.5초 쿨타임
+        this.cooldown = this.originalCooldown / 2;
       }
     }
   }
@@ -158,7 +170,7 @@ export class Tower {
   }
 
   upgradeTower(tower, userGold) {
-    const upgradeCost = tower.cost * 1.5; // 업그레이드 비용은 타워 가격의 120%
+    const upgradeCost = tower.cost * 1.2; // 업그레이드 비용은 타워 가격의 120%
 
     if (userGold < upgradeCost) {
       return 0; // 골드 부족
@@ -168,8 +180,8 @@ export class Tower {
     tower.originalDamage *= 1.5; // 공격력 1.2배 증가
     // tower.range *= 1.5; // 사정거리 1.2배 증가
     // tower.originalRange *= 1.5; // 사정거리 1.2배 증가
-    tower.cooldown -= 20; // 쿨타임 0.2초 감소
-    tower.originalCooldown -= 20; // 쿨타임 0.2초 감소
+    tower.cooldown -= 10; // 쿨타임 0.1초 감소
+    tower.originalCooldown -= 10; // 쿨타임 0.1초 감소
     tower.level += 1; // 타워 레벨 증가
 
     // 업그레이드에 사용된 포탑 2개 제거
