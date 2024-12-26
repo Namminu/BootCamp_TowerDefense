@@ -13,8 +13,6 @@ export class Monster {
     // monster.json 데이터 가져오기
     const monsterData = monsterConfig[this.monsterNumber];
 
-    console.log(monsterData);
-
     this.id = monsterData.id;
     this.name = monsterData.name;
 
