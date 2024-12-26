@@ -36,3 +36,13 @@ export const upTower = (uuid, x, y, level) => {
   }
   return false;
 };
+
+export const canPlaceTower = (uuid, x,y) => {
+  // 타워를 돌려서 타워 너비 안에 있는지 확인. 이건 클라랑 상의해 보기.
+
+}
+
+export const canRangeTower = (uuid, x,y ,towerid) => {
+  // 타워를 돌려서 타워의  공격 범위 안에 있는지 확인. 이건 클라랑 상의해 보기.
+
+}

@@ -59,11 +59,15 @@ export const upgradeTower = (userId, payload) => {
 };
 
 
-export const compareTower = (userId,payload)=> {
+export const atteckTower = (userId,payload)=> {
+
+    //타워가 있는지 확인, 사거리가 되는지 확인. 된다면성공 보네주고, 성공이면 저장하게.
+
+}
 
 
-    //1. 페이 로드에서 타워만 꺼내기. 
+export const killTower = (userId,payload)=> {
 
-
+    //타워가 있는지 확인, 사거리가 되는지 확인, 전부 가져와서 공격 속도가 되는지 확인, 성공시 다음으로.
 
 }
