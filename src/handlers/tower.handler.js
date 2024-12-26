@@ -5,15 +5,13 @@ import { getGameAssets } from "../init/assets.js";
 import { getTower, getTowerQueue, removeTower, removeTowerQueue, setTower, setTowerQueue, upTower } from "../models/tower.model.js";
 import { getUserData, setUserGold } from "../models/userData.model.js";
 
-//페이로드는 1. 인덱스. 2. 타입번호 3. 좌표 4.타임스템프.
+
 export const buyTower = (userId, payload, socket) => {
 
     const { tower } = getGameAssets();
     const currentUserData = getUserData(userId);
     let currentTowersQueue = getTowerQueue(userId);
-    console.log("currentTowersQueue",currentTowersQueue);
     const selectedTower = tower.data.find(tower => tower.type === payload.type);
-    console.log("selectedTower",selectedTower);
     const selectedTowerInQueue = currentTowersQueue[payload.index];
 
     if (selectedTowerInQueue && selectedTowerInQueue.towerDataIndex === selectedTower.type) {
@@ -56,6 +54,8 @@ export const buyTower = (userId, payload, socket) => {
   removeTowerQueue(userId, payload.index);
 
   currentUserData.gold -= selectedTower.cost;
+
+  console.log("currentUserData.gold:",currentUserData.gold);
   
   setUserGold(userId, currentUserData.gold);
   setTowerQueue(userId, tower);
@@ -64,27 +64,85 @@ export const buyTower = (userId, payload, socket) => {
 return { status: 'success', message: "타워 배치 성공적." };
 };
 
+
 export const sellingTower = (userId, payload, socket) => {
+
+    const { tower } = getGameAssets();
+    const currentUserData = getUserData(userId);
+    const currentTowers = getTower(userId);
+    
+    const matchingTower = currentTowers.find(tower => 
+        tower.x === payload.x && 
+        tower.y === payload.y && 
+        tower.type === payload.type
+    );
+
+    if (!matchingTower) {
+        return { status: 'fail', message: "타워정보가 다름." };
+    }
+
+    const selectedTower = tower.data.find(tower => tower.type === payload.type);
 
     const isRemoved = removeTower(userId, payload.x, payload.y);
 
     if (!isRemoved) {
         return { status: 'fail', message: '타워가 없음' };
     } 
-      
 
+    currentUserData.gold+=selectedTower.cost*0.7;
+    setUserGold(userId, currentUserData.gold);
+    console.log("currentUserData.gold:",currentUserData.gold);
+      
     return { status: 'success', message: '판매 완료.' };
 };
 
 export const upgradeTower = (userId, payload) => {
+    
+    const { tower } = getGameAssets();
+    const currentUserData = getUserData(userId);
+    const currentTowers = getTower(userId);
+    const currentTowersQueue = getTowerQueue(userId);
+ 
+    const matchingTower = currentTowers.find(tower => 
+        tower.x === payload.x && 
+        tower.y === payload.y && 
+        tower.type === payload.type
+    );
 
-    const isUpgrade = upTower(userId, payload.x, payload.y, payload.level); //이 레벨을 올라가고 싶은 레벨임.
+    if (!matchingTower) {
+        return { status: 'fail', message: "타워정보가 다름." };
+    }
+
+    const index = tower.data.findIndex(tower => 
+        tower.type === matchingTower.type
+    );
+    
+    
+
+    const matchingTowerQueueIndex = currentTowersQueue.findIndex(tower => 
+        tower.towerDataIndex === index
+    );
+
+    if (!  matchingTowerQueueIndex) {
+        return { status: 'fail', message: "타워가 인벤토리에 없음." };
+    }
+
+    const matchingTowerData = tower.data[index];
+
+    if( currentUserData.gold < 1.2*matchingTowerData.cost){
+        return { status: 'fail', message: "돈 없음" };
+    }
+
+    currentUserData.gold -= 1.2*matchingTowerData.cost;
+    const isUpgrade =  upTower(userId, payload.x, payload.y, payload.level);//이 레벨을 올라가고 싶은 레벨임. 안에서 레벨검증함.
+    removeTowerQueue(userId, matchingTowerQueueIndex);
+    setUserGold(userId, currentUserData.gold);
+    setTowerQueue(userId, tower);
 
     if (!isUpgrade) {
         return { status: 'fail', message: '업그레이드 실패' };
     } 
       
-
     return { status: 'success', message: '업그레이드 성공' };
 
 

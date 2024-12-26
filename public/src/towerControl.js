@@ -24,7 +24,6 @@ export class TowerControl {
   async getTowerqueue(monsterLevel) {
 
     const TowerQueueTyep = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
-    console.log(TowerQueueTyep);
     this.towerqueue = [];
 
     for (let i = 0; i < TowerQueueTyep.length; i++) {
@@ -117,8 +116,6 @@ export class TowerControl {
     const towerName = this.towerqueue[queueIndex].name;
     const index = towerData.data.findIndex((data) => data.name === towerName);
 
-    sendEvent(5,{type:towerData.data[index].type, x, y,timestamp:Date.now(),index});
-
     const image = this.towerImages[index];
     const damage = towerData.data[index].damage;
     const range = towerData.data[index].range;
@@ -138,6 +135,8 @@ export class TowerControl {
       type,
       id
     );
+
+   
 
     this.id++;
 

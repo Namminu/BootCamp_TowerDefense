@@ -568,7 +568,8 @@ canvas.addEventListener('click', (event) => {
       previewTower.x = mouseX - previewTower.width / 2;
       previewTower.y = mouseY - previewTower.height / 2;
       towerControl.towers.push(previewTower);
-
+      //타워 구매 - sendEvent
+      sendEvent(5,{type:previewTower.type, x:previewTower.x, y:previewTower.y ,timestamp:Date.now(),index:towerIndex}); 
       console.log('Tower placed at:', previewTower.x, previewTower.y);
       console.log('All towers:', towerControl.towers);
 
