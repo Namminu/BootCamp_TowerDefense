@@ -1,8 +1,11 @@
+// 몬스터 데이터 asssets/monster.json 파일에서 가져오기
+// 현재 하드코딩 되어 있는 부분들 (이동 속도, 공격력, 체력 등) 변경
+
 export class Monster {
   constructor(path, monsterImages, level) {
     // 생성자 안에서 몬스터의 속성을 정의한다고 생각하시면 됩니다!
     if (!path || path.length <= 0) {
-      throw new Error("몬스터가 이동할 경로가 필요합니다.");
+      throw new Error('몬스터가 이동할 경로가 필요합니다.');
     }
 
     this.monsterNumber = Math.floor(Math.random() * monsterImages.length); // 몬스터 번호 (1 ~ 5. 몬스터를 추가해도 숫자가 자동으로 매겨집니다!)
@@ -25,7 +28,7 @@ export class Monster {
     this.speed = 2; // 몬스터의 이동 속도
     this.isDead = false; // 몬스터가 죽었는지 여부
   }
-
+  //생성 시간 추가해서 경로와 속도를 계산 살아있어야 할 시간보다 오래살아 있다면 ..버그를 쓴거겠지.
   init(level) {
     this.maxHp = 100 + 10 * level; // 몬스터의 현재 HP
     this.hp = this.maxHp; // 몬스터의 현재 HP
@@ -58,8 +61,8 @@ export class Monster {
 
   draw(ctx) {
     ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-    ctx.font = "12px Arial";
-    ctx.fillStyle = "white";
+    ctx.font = '12px Arial';
+    ctx.fillStyle = 'white';
     ctx.fillText(
       `(레벨 ${this.level}) ${this.hp}/${this.maxHp}`,
       this.x,
