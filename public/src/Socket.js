@@ -1,9 +1,8 @@
 import { spawnMonster } from "./game.js";
 
 let somewhere = localStorage.getItem("authToken");
-let socket; // 서버 웹소켓 객체
 
-socket = io("http://localhost:8080", {
+const socket = io("http://localhost:8080", {
   query: {
     token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
   },
@@ -48,5 +47,4 @@ socket.on("spawnMonster", (data) => {
     console.log("서버로부터 몬스터 생성 명령 수신", data);
     spawnMonster(); // 클라이언트의 spawnMonster 함수 호출
 });
-
 export { sendEvent, loadTowerQueue  };

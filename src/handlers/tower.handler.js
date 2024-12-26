@@ -6,7 +6,7 @@ import { getTower, getTowerQueue, removeTower, removeTowerQueue, setTower, setTo
 import { getUserData } from "../models/userData.model.js";
 
 //페이로드는 1. 인덱스. 2. 타입번호 3. 좌표 4.타임스템프.
-export const buyTower = (userId, payload) => {
+export const buyTower = (userId, payload, socket) => {
 
     const { tower } = getGameAssets();
     const currentUserData = getUserData(userId);
@@ -63,7 +63,7 @@ export const buyTower = (userId, payload) => {
 return { status: 'success', message: "타워 배치 성공적." };
 };
 
-export const sellingTower = (userId, payload) => {
+export const sellingTower = (userId, payload, socket) => {
 
     const isRemoved = removeTower(userId, payload.x, payload.y);
 
@@ -90,7 +90,7 @@ export const upgradeTower = (userId, payload) => {
 };
 
 
-export const atteckTower = (userId,payload)=> {
+export const atteckTower = (userId,payload, socket)=> {
 
     // 위치 동기화가 된다면. 여기서 타워 공격을 관리하고, 서버에 보내주는 형식으로 해도 괜찮을듯. 검증은 필요 없으니까.
     //타워가 있는지 확인, 사거리가 되는지 확인. 된다면성공 보네주고, 성공이면 저장하게.
@@ -98,7 +98,7 @@ export const atteckTower = (userId,payload)=> {
 }
 
 
-export const killTower = (userId,payload)=> {
+export const killTower = (userId,payload, socket)=> {
 
     //타워가 있는지 확인, 사거리가 되는지 확인,체력이 공격을 맞아 알맞게 피가 까였는지, 전부 가져와서 공격 속도가 되는지 확인, 성공시 다음으로.
     //애는 리스트를 받고, 그 리스트에 있는 타워를 한번에 가져온뒤(뭐 있음 그 목록안에 있는거만 가져오는. 아냐 타워 개수가 수천개 되는게 아니잖아. 그냥 해도 될듯.). 사거리, 공격 속도 확인.
