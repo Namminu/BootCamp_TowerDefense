@@ -1,4 +1,5 @@
 import { gameOver, gameStart } from "./game.handler.js";
+import { monsterCreate } from "./monster.handler.js";
 // import { moveStageHandler } from "./stage.handler.js";
 
 const handlerMappings = {
@@ -9,7 +10,7 @@ const handlerMappings = {
   // 7: upgradeTower,                    // 업그레이드 할때.
   // 8: killMonsters,                    // 몬스터를 죽일때.
   // 11: moveRoundHandler,               // 라운드를 이동할때.
-  // 13: createMonsterHandler,           // 몬스터 생성 핸들러
+   13: monsterCreate,           // 몬스터 생성 핸들러
   // 라운드 종료 핸들러?
 };
 
