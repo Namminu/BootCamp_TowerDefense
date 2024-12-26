@@ -12,10 +12,9 @@ export const getTower = (uuid) => {
     return towers[uuid];
 }
 
-
 //타워 추가
-export const setTower = (uuid, x, y, range, attackPower, cost, cooldown, level) => { //여기서, 공속, 사거리, 그런걸 확인해야함.피버타입인걸 확인해야 겠는데.
-    return towers[uuid].push({ x, y, range, attackPower, cost, cooldown, level });
+export const setTower = (uuid, type, x, y, level, timestamp) => { //여기서, 공속, 사거리, 그런걸 확인해야함.피버타입인걸 확인해야 겠는데.
+    return towers[uuid].push({ type, x, y, level, timestamp });
 }
 
 
@@ -56,18 +55,15 @@ export const getTowerQueue = (uuid) => {
 
 //타워 인벤토리 추가. //여기서 5개 이하면 뭐 추가되게 로직을 짜기.
 export const setTowerQueue = (uuid, towers) => { //towers는 에셋.
-  const randomNumber = Math.floor(Math.random() * (towers.data.length - 0 + 1) + 0);
-
   while (towersqueue[uuid].length < 5) {
-    const type = randomNumber;
+    const type = Math.floor(Math.random() * (towers.data.length));
     towersqueue[uuid].push({type});
   }
   
 }
 
 //타워를 타워를 지정하면, 그 타워가 사라짐.
-export const removeTowerQueue = (uuid) => {
-  const index = towersqueue[uuid].findIndex((tower) => tower.x === x && tower.y === y );
+export const removeTowerQueue = (uuid, index) => {
 if (index !== -1) {//-1이면 없는거니까 뭐..
   towersqueue[uuid].splice(index, 1)[0];
   return true;

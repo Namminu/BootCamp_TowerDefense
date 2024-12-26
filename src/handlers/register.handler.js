@@ -1,3 +1,4 @@
+import { getTowerQueue } from '../models/tower.model.js';
 import { addUser } from '../models/user.model.js';
 import { handleConnection, handleDisconnect, handlerEvent } from "./helper.js";
 import dotenv from 'dotenv';
@@ -14,8 +15,10 @@ const registerHandler = (io) => {
 
         addUser({ uuid: userId, socketId: socket.id });
 
-        socket.on('requestTowerQueue', () => { const TowerQueueTyep = getTowerQueue();
-        socket.emit('TowerQueueData', TowerQueueTyep);
+        //타워인벤토리를 보네는 소켓입니다.
+        socket.on('requestTowerQueue', () => { 
+        const towerQueueTyep = getTowerQueue(userId);
+        socket.emit('TowerQueueData', towerQueueTyep);
         });
 
 

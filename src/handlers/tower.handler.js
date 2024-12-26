@@ -1,33 +1,64 @@
 // 여기선 유저의 타워를 확인하고, 골드를 확인하고, 몬스터 잡을때 그 타워의 거리를 확인함.
 // 여기서 유저 골드도 확인해야 할듯. 알맞게 설치가 되고 있는지.
 // 몬스터 잡을때 올리면 되고.
-import { getTower, removeTower, setTower, upTower } from "../models/tower.model";
+import { getGameAssets } from "../init/assets.js";
+import { getTower, getTowerQueue, removeTower, removeTowerQueue, setTower, setTowerQueue, upTower } from "../models/tower.model.js";
+import { getUserData } from "../models/userData.model.js";
 
+//페이로드는 1. 인덱스. 2. 타입번호 3. 좌표 4.타임스템프.
 export const buyTower = (userId, payload) => {
 
-let currentTowers = getTower(userId);
+    const { towers } = getGameAssets();
+    const currentUserData = getUserData(userId);
+    let currentTowersQueue = getTowerQueue(userId);
+    const selectedTower = null;
+    console.log()
 
-const width = 220 / 1.5; // 타워 너비
-const height = 270 / 1.5; // 타워 높이
+    const selectedTowerInQueue = currentTowersQueue[payload.index];
 
-const newTowerX = payload.x;
-const newTowerY = payload.y;
+    if (selectedTowerInQueue && selectedTowerInQueue.type === payload.type) {
+        selectedTower = towers.data.find(tower => tower.type === payload.type);
+        if (!selectedTower) {
+            return { status: 'fail', message: "타워를 찾을 수 없음" };
+        }
 
-const isTooClose = currentTowers.some((tower) => {
-    const dx = tower.x - newTowerX;
-    const dy = tower.y - newTowerY;
+        if (currentUserData.gold < selectedTower.cost) {
+            return { status: 'fail', message: "돈이 부족함" }; 
+        }
+        
 
-    const distance = Math.sqrt(dx * dx + dy * dy); 
-    return distance < (width / 2 + height / 2); 
-});
+    }
 
-if (isTooClose) {
-    return { status: 'fail', message: "타워가 너무 가까워서 배치할 수 없습니다." };
-}
+    const towerWidth = 220 / 1.5;
+    const towerHeight = 270 / 1.5;
+    const newTowerCenterX = payload.x + towerWidth / 2;
+    const newTowerCenterY = payload.y + towerHeight / 2;
 
+    let currentTowers = getTower(userId);
 
+     for (const tower of currentTowers) {
 
-setTower(userId, payload.id, payload.type, payload.x, payload.y, payload.level);
+    const towerCenterX = tower.x + tower.width / 2;
+    const towerCenterY = tower.y + tower.height / 2;
+
+    const distance = Math.sqrt(
+        Math.pow(towerCenterX - newTowerCenterX, 2) +
+          Math.pow(towerCenterY - newTowerCenterY, 2)
+      );
+
+    // 두 타워의 중심 간 거리가 타워 너비 이상이어야 설치 가능
+    if (distance < 250) {
+        return { status: 'fail', message: '타워가 겹쳐서 설치할 수 없습니다.' };
+    }
+  }
+
+  removeTowerQueue(userId, payload.index);
+  
+
+  currentUserData.gold -= selectedTower.cost;
+  setUserGold(userId, currentUserData.gold);
+  setTowerQueue(userId, towers);
+  setTower(userId, payload.type, payload.x, payload.y, level = 1, payload.timestamp );
 
 return { status: 'success', message: "타워 배치 성공적." };
 };
