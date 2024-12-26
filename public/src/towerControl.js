@@ -70,7 +70,7 @@ export class TowerControl {
 
       // 업그레이드 비용 텍스트
       ctx.fillText(
-        `업그레이드: ${tower.cost * 1.5}G`,
+        `업그레이드: ${tower.cost * 1.2}G`,
         currentX + imageWidth + textOffsetX, // 이미지 오른쪽
         queueY + 70 // 두 번째 줄 (간격 추가)
       );

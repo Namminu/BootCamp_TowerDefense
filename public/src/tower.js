@@ -27,6 +27,7 @@ export class Tower {
     this.isClicked = false;
     this.upgradeBtnClicked = false;
     this.sellBtnClicked = false;
+    this.isInvalidPlacement = false;
   }
 
   draw() {
@@ -117,19 +118,31 @@ export class Tower {
     });
   }
 
-  showTowerInfo(tower) {
-    const infoX = tower.x - tower.width - 10; // 타워 왼쪽에 표시
-    const infoY = tower.y;
+  showTowerInfo() {
+    const infoX = this.x - this.width - 10; // 타워 왼쪽에 표시
+    const infoY = this.y;
 
     this.ctx.fillStyle = "rgb(0, 0, 0)";
-    this.ctx.fillRect(infoX, infoY, 180, 150); // 정보창 배경
+    this.ctx.fillRect(infoX, infoY, 180, 140); // 정보창 배경
 
     this.ctx.fillStyle = "white";
     this.ctx.font = "14px Arial";
-    this.ctx.fillText(`ID: ${tower.id}`, infoX + 10, infoY + 20);
-    this.ctx.fillText(`Damage: ${tower.damage}`, infoX + 10, infoY + 40);
-    this.ctx.fillText(`Range: ${tower.range}`, infoX + 10, infoY + 60);
-    this.ctx.fillText(`Level: ${tower.level}`, infoX + 10, infoY + 80);
+    this.ctx.fillText(`ID: ${this.id}`, infoX + 10, infoY + 20);
+    this.ctx.fillText(
+      `Damage: ${Math.floor(this.damage)}`,
+      infoX + 10,
+      infoY + 40
+    );
+    this.ctx.fillText(
+      `Range: ${Math.floor(this.range)}`,
+      infoX + 10,
+      infoY + 60
+    );
+    this.ctx.fillText(
+      `Level: ${Math.floor(this.level)}`,
+      infoX + 10,
+      infoY + 80
+    );
 
     // 업그레이드 버튼
     this.ctx.fillStyle = "rgb(255, 255, 255)";
@@ -145,15 +158,18 @@ export class Tower {
   }
 
   upgradeTower(tower, userGold) {
-    const upgradeCost = tower.cost * 1.5; // 업그레이드 비용은 타워 가격의 150%
+    const upgradeCost = tower.cost * 1.5; // 업그레이드 비용은 타워 가격의 120%
 
     if (userGold < upgradeCost) {
       return 0; // 골드 부족
     }
 
-    tower.damage *= 2; // 공격력 2배 증가
-    tower.range *= 1.5; // 사정거리 1.5배 증가
-    tower.originalCooldown -= 30; // 쿨타임 0.3초 감소
+    tower.damage *= 1.5; // 공격력 1.2배 증가
+    tower.originalDamage *= 1.5; // 공격력 1.2배 증가
+    tower.range *= 1.5; // 사정거리 1.2배 증가
+    tower.originalRange *= 1.5; // 사정거리 1.2배 증가
+    tower.cooldown -= 20; // 쿨타임 0.2초 감소
+    tower.originalCooldown -= 20; // 쿨타임 0.2초 감소
     tower.level += 1; // 타워 레벨 증가
 
     // 업그레이드에 사용된 포탑 2개 제거

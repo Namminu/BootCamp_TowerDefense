@@ -320,7 +320,7 @@ async function gameLoop() {
         if (monster.hp <= 0) {
           monster.dead();
           score += monsterLevel;
-          userGold += 10;
+          userGold += 10 * monsterLevel;
 
           if (!tower.feverMode) {
             killCount += 1;
@@ -336,25 +336,25 @@ async function gameLoop() {
     });
 
     // 타워 그리기 & 마우스가 타워 위에 있을 때만 사정거리 표시하기
-    tower.draw();
-    tower.updateCooldown();
     if (tower.isMouseOver) {
       tower.drawRangeCircle();
     }
+    tower.draw();
+    tower.updateCooldown();
     // 타워를 클릭했을 때 자세히 보기 창을 띄우기
     if (tower.isClicked) {
-      tower.showTowerInfo(tower);
+      tower.showTowerInfo();
     }
     // 자세히 보기 창에서 업그레이드 버튼을 클릭했을 때
     if (
       tower.isClicked &&
       tower.upgradeBtnClicked &&
-      userGold >= tower.cost * 1.5
+      userGold >= tower.cost * 1.2
     ) {
       const upgradePrice = tower.upgradeTower(tower, userGold);
       userGold -= upgradePrice; // 업그레이드 비용 차감
       tower.upgradeBtnClicked = false;
-    } else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.5) {
+    } else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
       console.log("Not enough gold to upgrade the tower.");
       tower.upgradeBtnClicked = false;
     }
@@ -385,9 +385,14 @@ async function gameLoop() {
 
   // 미리보기 타워 그리기
   if (isPlacingTower && previewTower) {
-    const isMouseOver = true;
     previewTower.draw();
     previewTower.drawRangeCircle();
+
+    if (previewTower.isInvalidPlacement) {
+      ctx.fillStyle = "red";
+      ctx.font = "20px Arial";
+      ctx.fillText("Invalid placement!", previewTower.x, previewTower.y - 10);
+    }
   }
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
@@ -415,7 +420,7 @@ function initGame() {
   }
 
   isInitGame = true;
-  userGold = 1000; // 초기 골드 설정
+  userGold = 800; // 초기 골드 설정
   score = 0;
   monsterLevel = 1;
   monsterSpawnInterval = 2000;
@@ -461,6 +466,10 @@ if (!isInitGame) {
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
+  if (!isPlacingTower || !previewTower) {
+    return false;
+  }
+
   const towerWidth = previewTower ? previewTower.width : 0;
   const towerHeight = previewTower ? previewTower.height : 0;
 
@@ -469,6 +478,7 @@ function canPlaceTower(x, y) {
 
   for (const tower of towerControl.towers) {
     if (Math.abs(tower.x - x) < 1 && Math.abs(tower.y - y) < 1) {
+      tower.isInvalidPlacement = true;
       console.log("Cannot place tower: duplicate position.");
       return false;
     }
@@ -485,6 +495,7 @@ function canPlaceTower(x, y) {
 
     // 두 타워의 중심 간 거리가 타워 너비 이상이어야 설치 가능
     if (distance < 250) {
+      tower.isInvalidPlacement = true;
       console.log("Cannot place tower: overlaps with another tower.");
       return false;
     }
