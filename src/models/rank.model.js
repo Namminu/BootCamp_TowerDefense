@@ -12,12 +12,8 @@ users 테이블에 먼저 접근해서 id찾고,
 // DB - HighScores 테이블에 접근, 유저의 최고 기록 갱신 함수
 export const updateHighScore = async (userId, currentRound) => {
     // 테이블 안에서 highScore 찾는 과정
-    const user_Id = await prisma.users.findUnique({
-        where: { userId },
-        select: { id: true }
-    });
     const userHighScore = await prisma.highScores.findFirst({
-        where: { userId: user_Id.id },
+        where: { userId: userId },
         select: { highScore: true }
     });
 
@@ -25,11 +21,11 @@ export const updateHighScore = async (userId, currentRound) => {
     if (!userHighScore) {
         await prisma.highScores.create({
             data: {
-                userId: user_Id.id,
+                userId: userId,
                 highScore: currentRound
             }
         });
-        return { updated: false, currentHighScore: userHighScore };
+        return { updated: true, currentHighScore: userHighScore };
     }
 
     // 현재 라운드와 비교 후 갱신 여부 확인

@@ -36,7 +36,7 @@ const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
-let baseHp = 500; // 기지 체력
+let baseHp = 10; // 기지 체력
 
 // 타워 관련 변수
 let towerCost; // 타워 구입 비용
@@ -115,7 +115,7 @@ const gageBar = {
       0,
       this.y + this.height
     ); // gradient
-    
+
     my_gradient.addColorStop(0, "#F5EEE6");
     my_gradient.addColorStop(0.5, "#F3D7CA");
     my_gradient.addColorStop(1, "#E6A4B4");
@@ -166,9 +166,9 @@ function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로�
 
 function initMap() {// 배경 이미지 그리기
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-  for(let i = 0; i < 3; i++){
+  for (let i = 0; i < 3; i++) {
     paths[i] = drawPath();
-  } 
+  }
 }
 
 function drawPath() {  //경로에 따라 길을 그리는것.
@@ -198,7 +198,7 @@ function drawPath() {  //경로에 따라 길을 그리는것.
   }
 }
 
-function drawRotatedImage(image, x, y, width, height, angle) { 
+function drawRotatedImage(image, x, y, width, height, angle) {
   ctx.save();
   ctx.translate(x + width / 2, y + height / 2);
   ctx.rotate(angle);
@@ -310,7 +310,7 @@ async function gameLoop() {
         /* 게임 오버 */
         //alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
         // 게임 종료 시 서버로 gameOver 이벤트 전송
-        await sendEvent(3, { id: 'dkdlel', currentRound: testRound });
+        sendEvent(3, { currentRound: testRound });
         //location.reload();
       }
       monster.draw(ctx);
@@ -432,7 +432,7 @@ async function gameLoop() {
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
   base.draw(ctx, baseImage);
-  base.selfHeal(currentTime);
+  //base.selfHeal(currentTime);
 
   // 인벤토리 그리기
   towerControl.drawqueue(ctx, canvas, monsterLevel);
@@ -454,8 +454,6 @@ function initGame() {
     return; // 이미 초기화된 경우 방지
   }
 
-  userId = null;  // 여기서 플레이 중인 유저의 email 받아오기
-
   isInitGame = true;
   userGold = 800; // 초기 골드 설정
   score = 0;
@@ -468,12 +466,12 @@ function initGame() {
   placeBase(); // 기지 배치
   //setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
   // 서버에 몬스터 스폰 주기와 타이밍 동기화
-  sendEvent(13, { round: 0, timestamp: Date.now()});
+  sendEvent(13, { round: 0, timestamp: Date.now() });
   gameLoop(); // 게임 루프 시작
 } //이게 시작이네. 
 
 if (!isInitGame) {
-  sendEvent(2,{timestamp: Date.now()})
+  sendEvent(2, { timestamp: Date.now() })
   initGame();
 }
 

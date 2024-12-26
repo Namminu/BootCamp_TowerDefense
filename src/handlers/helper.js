@@ -23,10 +23,10 @@ export const handleConnection = (socket, uuid) => {
   socket.emit("connection", { uuid });
 };
 
-export const handlerEvent = (io, socket, data) => {
- 
-  const  { userId } = jwt.verify(data.token, process.env.JWT_KEY);
-  
+export const handlerEvent = async (io, socket, data) => {
+
+  const { userId } = jwt.verify(data.token, process.env.JWT_KEY);
+
   const handler = handlerMappings[data.handlerId];
   if (!handler) {
     console.error(`헨들러가 존재하지 않습니다. handlerId: ${data.handlerId}`);
@@ -34,7 +34,8 @@ export const handlerEvent = (io, socket, data) => {
     return;
   }
 
-  const response = handler(userId, data.payload, socket);
+  const response = await handler(userId, data.payload, socket);
+  console.log('response : ', response);
 
   if (response.broadcast) {
     io.emit("response", response);

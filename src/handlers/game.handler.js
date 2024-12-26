@@ -21,7 +21,7 @@ export const gameOver = async (uuid, payload, socket) => {
   // const rounds = getStage(uuid);
   // if (!rounds.length) return { status: 'fail', message: 'No Rounds Found for User' };
 
-  const userId = payload.id;
+  const userId = uuid;
   console.log(`userId : ${userId}`);
   const currentRound = payload.currentRound;
   console.log(`currentRound : ${currentRound}`);
@@ -32,11 +32,12 @@ export const gameOver = async (uuid, payload, socket) => {
   //최고 기록보다 현재 기록이 높다면 DB 갱신
   const result = await updateHighScore(userId, currentRound);
   if (!result) return { status: 'fail', message: 'update High Score Error' };
-  console.log(`result : ${result}`);
+  console.log(result);
 
-  return {
+  const data = {
     status: 'success',
     message: result.updated ? '최고 기록 갱신!' : '게임 오버',
-    score: result.currentHighScore
+    score: result.currentHighScore.highScore
   };
+  return data;
 }
