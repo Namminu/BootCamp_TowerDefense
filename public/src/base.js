@@ -12,7 +12,7 @@ export class Base {
   draw(ctx, baseImage) {
     ctx.drawImage(
       baseImage,
-      this.x - this.width/2,
+      this.x - this.width / 2,
       this.y - this.height / 2,
       this.width,
       this.height
@@ -22,7 +22,7 @@ export class Base {
     ctx.fillStyle = "white";
     ctx.fillText(
       `HP: ${this.hp}/${this.maxHp}`,
-      this.x - this.width/2,
+      this.x - this.width / 2,
       this.y - this.height / 2 - 10
     );
   }
@@ -32,5 +32,10 @@ export class Base {
     // 몬스터가 기지의 HP를 감소시키고, HP가 0 이하가 되면 게임 오버 처리를 해요!
     this.hp -= amount;
     return this.hp <= 0; // 기지의 HP가 0 이하이면 true, 아니면 false
+  }
+
+  selfHeal() {
+    console.log("Base Self Heal");
+    this.hp *= 1.02;
   }
 }

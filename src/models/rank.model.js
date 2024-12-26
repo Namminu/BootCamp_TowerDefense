@@ -1,4 +1,4 @@
-import { prisma } from "../utils/prisma";
+import { prisma } from "../utils/prisma/index.js";
 
 // DB - HighScores 테이블에 접근, 유저의 최고 기록 갱신 함수
 export const updateHighScore = async (userId, currentRound) => {
