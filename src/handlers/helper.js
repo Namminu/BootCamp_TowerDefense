@@ -1,6 +1,7 @@
 import { getGameAssets } from '../init/assets.js';
-// import { createStage, getStage, setStage } from '../models/stage.model.js';
+import { createRoundInfo, getRoundInfo } from '../models/roundInfo.model.js';
 import { getUser, removeUser } from '../models/user.model.js';
+import { createUserData, setUserRound } from '../models/userData.model.js';
 import handlerMappings from './handlerMapping.js';
 
 //유저 삭제함수 불러오는 함수.
@@ -14,9 +15,12 @@ export const handleConnection = (socket, uuid) => {
   console.log(`새 유저:${uuid}, 소켓아이디 ${socket.id}`);
   console.log('현재 접속중인 유저:', getUser());
 
-  createStage(uuid);
+  createUserData(uuid);
+  setUserRound(uuid, 1, Date.now());
+  const initRoundInfo = getRoundInfo(1);
+  if(!initRoundInfo) initRoundInfo = createRoundInfo(1);
 
-  socket.emit('connection', { uuid });
+  socket.emit('connection', { uuid, initRoundInfo });
 };
 
 export const handlerEvent = (io, socket, data) => {
