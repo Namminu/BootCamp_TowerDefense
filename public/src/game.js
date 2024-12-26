@@ -326,6 +326,9 @@ function gameLoop() {
       const upgradePrice = tower.upgradeTower(tower, userGold);
       userGold -= upgradePrice; // 업그레이드 비용 차감
       tower.upgradeBtnClicked = false;
+    } else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.5) {
+      console.log("Not enough gold to upgrade the tower.");
+      tower.upgradeBtnClicked = false;
     }
 
     if (tower.sellBtnClicked) {
@@ -649,68 +652,6 @@ canvas.addEventListener("click", (event) => {
     }
   });
 });
-
-// 정보창이 열려 있을 때, 업그레이드/판매 버튼 클릭 시 이벤트 처리
-// canvas.addEventListener("click", (event) => {
-//   if (!activeTowerInfo) return; // 정보창이 없으면 종료
-
-//   const rect = canvas.getBoundingClientRect();
-//   const mouseX = event.clientX - rect.left;
-//   const mouseY = event.clientY - rect.top;
-
-//   // 정보창의 위치
-//   const infoX = activeTowerInfo.x;
-//   const infoY = activeTowerInfo.y;
-
-//   // 업그레이드 버튼의 범위
-//   const upgradeButton = {
-//     x: infoX + 10,
-//     y: infoY + 100,
-//     width: 80,
-//     height: 20,
-//   };
-
-//   // 판매 버튼의 범위
-//   const sellButton = {
-//     x: infoX + 110,
-//     y: infoY + 100,
-//     width: 50,
-//     height: 20,
-//   };
-
-//   // 버튼 클릭 확인
-//   if (
-//     mouseX >= upgradeButton.x &&
-//     mouseX <= upgradeButton.x + upgradeButton.width &&
-//     mouseY >= upgradeButton.y &&
-//     mouseY <= upgradeButton.y + upgradeButton.height
-//   ) {
-//     console.log("Upgrade button clicked");
-//     const tower = towerControl.towers.find((tower) => tower.isClicked);
-//     if (tower) {
-//       tower.upgradeBtnClicked = true;
-//       // const upgradePrice = tower.upgradeTower(tower);
-//       // userGold -= upgradePrice; // 업그레이드 비용 차감
-//     }
-//     activeTowerInfo = null; // 정보창 닫기
-//   }
-
-//   if (
-//     mouseX >= sellButton.x &&
-//     mouseX <= sellButton.x + sellButton.width &&
-//     mouseY >= sellButton.y &&
-//     mouseY <= sellButton.y + sellButton.height
-//   ) {
-//     console.log("Sell button clicked");
-//     const tower = towerControl.towers.find((tower) => tower.isClicked);
-//     if (tower) {
-//       tower.sellBtnClicked = true;
-//       // const sellPrice = tower.sellTower(tower);
-//       // userGold += sellPrice; // 타워 판매 시 골드 추가
-//     }
-//     activeTowerInfo = null; // 정보창 닫기
-//   }
-// });
 
 // 인벤토리 클릭
 canvas.addEventListener("click", (event) => {

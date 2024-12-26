@@ -51,19 +51,26 @@ export class TowerControl {
     this.towerqueue.forEach((tower, index) => {
       ctx.drawImage(tower.image, currentX, queueY, imageWidth, imageHeight);
 
-      ctx.font = "16px Arial";
-      ctx.fillStyle = "white";
-
-      // 비용 텍스트
-      ctx.fillText(
-        `${tower.cost}G`,
-        currentX + imageWidth + textOffsetX, // 이미지 오른쪽
-        queueY + 40 // 이미지 높이에 맞게 조정
-      );
+      ctx.font = "bold 16px Arial";
+      ctx.fillStyle = "Black";
 
       // 이름 텍스트
       ctx.fillText(
         `${tower.name}`,
+        currentX + imageWidth + textOffsetX, // 이미지 오른쪽
+        queueY + 100 // 세 번째 줄 (간격 추가)
+      );
+
+      // 구매 비용 텍스트
+      ctx.fillText(
+        `구매: ${tower.cost}G`,
+        currentX + imageWidth + textOffsetX, // 이미지 오른쪽
+        queueY + 40 // 이미지 높이에 맞게 조정
+      );
+
+      // 업그레이드 비용 텍스트
+      ctx.fillText(
+        `업그레이드: ${tower.cost * 1.5}G`,
         currentX + imageWidth + textOffsetX, // 이미지 오른쪽
         queueY + 70 // 두 번째 줄 (간격 추가)
       );
