@@ -25,7 +25,6 @@ router.post('/sign-up', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const nickName = 'test001'; // 닉네임 임시 설정
-
     await prisma.users.create({
       data: {
         userId, 

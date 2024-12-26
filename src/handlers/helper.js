@@ -1,5 +1,6 @@
 import { getGameAssets } from "../init/assets.js";
 // import { createStage, getStage, setStage } from '../models/stage.model.js';
+
 import { getUser, removeUser } from "../models/user.model.js";
 import handlerMappings from "./handlerMapping.js";
 
@@ -22,11 +23,12 @@ export const handleConnection = (socket, uuid) => {
 export const handlerEvent = (io, socket, data) => {
   const handler = handlerMappings[data.handlerId];
   if (!handler) {
+    console.error(`헨들러가 존재하지 않습니다. handlerId: ${data.handlerId}`);
     socket.emit("response", { status: "fail", message: "헨들러가 없어용" });
     return;
   }
 
-  const response = handler(data.userId, data.payload);
+  const response = handler(socket, data.userId, data.payload);
 
   if (response.broadcast) {
     io.emit("response", response);

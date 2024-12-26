@@ -2,22 +2,39 @@
 // 현재 하드코딩 되어 있는 부분들 (이동 속도, 공격력, 체력 등) 변경
 
 export class Monster {
-  constructor(path, monsterImages, level) {
+  constructor(path, level, monsterConfig) {
     // 생성자 안에서 몬스터의 속성을 정의한다고 생각하시면 됩니다!
     if (!path || path.length <= 0) {
       throw new Error('몬스터가 이동할 경로가 필요합니다.');
     }
 
-    this.monsterNumber = Math.floor(Math.random() * monsterImages.length); // 몬스터 번호 (1 ~ 5. 몬스터를 추가해도 숫자가 자동으로 매겨집니다!)
+    this.monsterNumber = Math.floor(Math.random() * monsterConfig.length); // 몬스터 번호 (1 ~ 5. 몬스터를 추가해도 숫자가 자동으로 매겨집니다!)
+
+    // monster.json 데이터 가져오기
+    const monsterData = monsterConfig[this.monsterNumber];
+
+    this.id = monsterData.id;
+    this.name = monsterData.name;
+
     this.path = path; // 몬스터가 이동할 경로
     this.currentIndex = 0; // 몬스터가 이동 중인 경로의 인덱스
     this.x = path[0].x; // 몬스터의 x 좌표 (최초 위치는 경로의 첫 번째 지점)
     this.y = path[0].y; // 몬스터의 y 좌표 (최초 위치는 경로의 첫 번째 지점)
     this.width = 80; // 몬스터 이미지 가로 길이
     this.height = 80; // 몬스터 이미지 세로 길이
-    this.image = monsterImages[this.monsterNumber]; // 몬스터 이미지
     this.level = level; // 몬스터 레벨
-    this.init(level);
+
+    // 이미지 로드
+    this.image = new Image();
+    this.image.src = monsterData.image;
+
+    // monster.json 데이터 기반으로 초기화
+    this.maxHp = monsterData.hp * level;
+    this.hp = this.maxHp;
+    this.attackPower = monsterData.damage * level;
+    this.speed = monsterData.speed;
+    this.gold = monsterData.gold;
+    this.isDead = false; // 몬스터가 죽었는지 여부
 
     // 따로 정보를 보내줘야 한다.
     // class round
@@ -25,15 +42,14 @@ export class Monster {
     // const deadMonsterData  = { id: "monsterId", coordinate: {x,y} ,"상태이상 걸린 정보": { slow: "timestamp 형식" } ,"태어난 시간": "timestamp 형식"}
     // basehp
 
-    this.speed = 2; // 몬스터의 이동 속도
-    this.isDead = false; // 몬스터가 죽었는지 여부
+    // this.speed = 2; // 몬스터의 이동 속도
   }
   //생성 시간 추가해서 경로와 속도를 계산 살아있어야 할 시간보다 오래살아 있다면 ..버그를 쓴거겠지.
-  init(level) {
-    this.maxHp = 100 + 10 * level; // 몬스터의 현재 HP
-    this.hp = this.maxHp; // 몬스터의 현재 HP
-    this.attackPower = 200 + 1 * level; // 몬스터의 공격력 (기지에 가해지는 데미지)
-  }
+  // init(level) {
+  //   this.maxHp = 100 + 10 * level; // 몬스터의 현재 HP
+  //   this.hp = this.maxHp; // 몬스터의 현재 HP
+  //   this.attackPower = 200 + 1 * level; // 몬스터의 공격력 (기지에 가해지는 데미지)
+  // }
 
   move(base) {
     if (this.currentIndex < this.path.length - 1) {

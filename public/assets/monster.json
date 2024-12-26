@@ -1,13 +1,13 @@
 {
   "name": "monster",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "data": [
     {
       "id": 101,
       "name": "외눈박이 괴물",
       "damage": 40,
       "hp": 150,
-      "speed": 12,
+      "speed": 2,
       "gold": 100,
       "image": "images/monster1.png"
     },
@@ -16,7 +16,7 @@
       "name": "말라비틀어진 애벌레",
       "damage": 20,
       "hp": 80,
-      "speed": 6,
+      "speed": 1,
       "gold": 50,
       "image": "images/monster2.png"
     },
@@ -25,7 +25,7 @@
       "name": "고블린 자폭병",
       "damage": 120,
       "hp": 50,
-      "speed": 30,
+      "speed": 3,
       "gold": 150,
       "image": "images/monster3.png"
     },
@@ -34,7 +34,7 @@
       "name": "못생긴 아귀",
       "damage": 80,
       "hp": 300,
-      "speed": 8,
+      "speed": 1.5,
       "gold": 200,
       "image": "images/monster4.png"
     },
@@ -43,7 +43,7 @@
       "name": "초음파 박쥐",
       "damage": 30,
       "hp": 50,
-      "speed": 40,
+      "speed": 4,
       "gold": 75,
       "image": "images/monster5.png"
     }
