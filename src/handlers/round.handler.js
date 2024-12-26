@@ -1,5 +1,6 @@
+import { getGameAssets } from "../init/assets.js";
 import { getRoundInfo } from "../models/roundInfo.model.js";
-import { getUserData } from "../models/userData.model.js";
+import { getUserData, setUserRound } from "../models/userData.model.js";
 
 // sendEvent(11, payload : { currentRound, timestamp })
 export const moveRoundHandler = (userId, payload) => {
@@ -25,14 +26,14 @@ export const moveRoundHandler = (userId, payload) => {
     // 다음 라운드
     const nextRound = payload.currentRound + 1;
 
-    // 다음 라운드드 정보를 담은 객체 생성
+    // 다음 라운드 정보를 담은 객체 생성
     const nextRoundInfo = getRoundInfo(nextRound);
 
     // 유저의 현재 라운드 정보 업데이트
-    // setRound(); ### 선행작업 : round.model.js에 어떻게 저장할지
+    setUserRound(userId, nextRound, payload.timestamp );
 
-    // monster.json 에셋에서 다음 라운드에 해금되는 id인 몬스터들 저장 ### 선행작업 : monster_unlock.json 로드 먼저
-    const { monsters } = getGameAssets();
+    // monster.json 에셋에서 다음 라운드에 해금되는 id인 몬스터들 저장
+    const { monsters, unlock_monster } = getGameAssets();
     const unlockMonsters = monsters.data.find(mon => (mon.round = nextRound)); //[{ id:2 }];
 
     // 유저의 다음 라운드 정보 업데이트 + 다음 라운드 몬스터 해제
