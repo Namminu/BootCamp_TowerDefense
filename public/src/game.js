@@ -65,7 +65,7 @@ const towerImages = TOWER_CONFIG.map((tower) => {
   image.src = tower.image;
   return { image, id: tower.id };
 });
-towerImage.src = "./images/tower.png";
+//towerImage.src = "./images/tower1.png";
 
 const baseImage = new Image();
 baseImage.src = "./images/base.png";
@@ -187,7 +187,7 @@ function placeInitialTowers() {
     const { x, y } = getRandomPositionNearPath(200); //200만큼 떨어지게? 만드는듯.
     const towerControl = new TowerControl(ctx, towerImages);
     const tower = towerControl.addTower(x, y);
-    towerImage = tower.image;
+    //towerImage = tower.image;
     towerCost = tower.cost;
     towers.push(tower);
     towerControl.drawAndUpdateTowers();
@@ -211,15 +211,16 @@ function placeBase() {
   base.draw(ctx, baseImage);
 }
 
+// 클라에서 서버로 몬스터 생성 주기를 전송하는 것이 아닌 서버에서 계산을 한 후에 클라로 전송하게 하자
 function sendMonsterSpawnInterval() {
   const payload = {
-    interval: monsterSpawnInterval,
+    duration: monsterSpawnInterval,
     timestamp: Date.now(),
   };
   sendEvent(13, payload);
 }
 
-//여기서 생성하되 서버에 보내줘야 함
+//여기서 생성하되 서버에서 신호를 보내줘야 함
 export function spawnMonster() {
   console.log("몬스터가 생성되었습니다!");
   //몬스터를 monsters 에 넣는 함수.
