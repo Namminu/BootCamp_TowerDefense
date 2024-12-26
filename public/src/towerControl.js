@@ -1,6 +1,6 @@
 import { Tower } from "./tower.js";
 import towerData from "../assets/tower.json" with { type: "json" };
-import { loadTowerQueue, sendEvent } from "./socket.js";
+import { loadTowerQueue, sendEvent } from "./Socket.js";
 
 export class TowerControl {
   constructor(ctx, towerImages) {
@@ -13,11 +13,15 @@ export class TowerControl {
     this.towerqueue = [];
   }
 
+  sortTowers() {
+    this.towers.sort((a, b) => a.y - b.y);
+  }
+
   getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
   
-  async getTowerqueue() {
+  getTowerqueue(monsterLevel) {
 
     // const TowerQueueTyep = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
 
@@ -44,10 +48,15 @@ export class TowerControl {
       return this.towerqueue;
     }
     while (this.towerqueue.length < 5) {
-      const index = this.getRandomNumber(0, this.towerImages.length - 1);
+      const index = this.getRandomNumber(0, towerData.data.length - 1);
+      // let index = this.getRandomNumber(0, monsterLevel - 1);
+      // if (monsterLevel > towerData.data.length) {
+      //   index = this.getRandomNumber(0, towerData.data.length - 1);
+      // }
       this.towerqueue.push({
         image: this.towerImages[index],
         name: towerData.data[index].name,
+        type: towerData.data[index].type,
         cost: towerData.data[index].cost,
       });
     }
@@ -57,13 +66,13 @@ export class TowerControl {
     return this.towerqueue;
   }
 
-  drawqueue(ctx, canvas) {
+  drawqueue(ctx, canvas, monsterLevel) {
     // 인벤토리 관련 변수
     const towerPadding = 160; // 타워 간 간격
     const startX = 60; // 첫 번째 타워 시작 위치
     let currentX = startX;
 
-    this.getTowerqueue();
+    this.getTowerqueue(monsterLevel);
     // 인벤토리 영역 설정
     const queueHeight = 200; // 인벤토리 높이
     const queueY = canvas.height - queueHeight; // 인벤토리 위치
@@ -96,7 +105,7 @@ export class TowerControl {
 
       // 업그레이드 비용 텍스트
       ctx.fillText(
-        `업그레이드: ${tower.cost * 1.5}G`,
+        `업그레이드: ${tower.cost * 1.2}G`,
         currentX + imageWidth + textOffsetX, // 이미지 오른쪽
         queueY + 70 // 두 번째 줄 (간격 추가)
       );
@@ -115,6 +124,7 @@ export class TowerControl {
     const image = this.towerImages[index];
     const damage = towerData.data[index].damage;
     const range = towerData.data[index].range;
+    const cooldown = towerData.data[index].cooldown;
     const cost = towerData.data[index].cost;
     const type = towerData.data[index].type;
     const id = this.id;
@@ -124,6 +134,7 @@ export class TowerControl {
       y,
       damage,
       range,
+      cooldown,
       cost,
       image,
       type,
@@ -140,6 +151,7 @@ export class TowerControl {
     const image = this.towerImages[index];
     const damage = towerData.data[index].damage;
     const range = towerData.data[index].range;
+    const cooldown = towerData.data[index].cooldown;
     const cost = towerData.data[index].cost;
     const type = towerData.data[index].type;
     const id = this.id;
@@ -149,6 +161,7 @@ export class TowerControl {
       y,
       damage,
       range,
+      cooldown,
       cost,
       image,
       type,
