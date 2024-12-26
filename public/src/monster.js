@@ -20,7 +20,7 @@ export class Monster {
     this.level = level; // 몬스터 레벨
     this.init(level);
   }
-
+  //생성 시간 추가해서 경로와 속도를 계산 살아있어야 할 시간보다 오래살아 있다면 ..버그를 쓴거겠지.
   init(level) {
     this.maxHp = 100 + 10 * level; // 몬스터의 현재 HP
     this.hp = this.maxHp; // 몬스터의 현재 HP
