@@ -8,7 +8,7 @@ export const gameStart = (uuid, payload) => {
 
   clearStage(uuid);
 
-  setStage(uuid, stages.data[0].id, payload.timestamp); //첫번때 스테이지 저장
+  setStage(uuid, stages.data[0].id, payload.timestamp); //첫번째 스테이지 저장
 
   return { status: "success" };
 };

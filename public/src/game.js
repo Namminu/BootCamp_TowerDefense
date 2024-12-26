@@ -4,6 +4,8 @@ import { Tower } from './tower.js';
 import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
+import { sendEvent } from "./Socket.js";
+
 
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
@@ -55,9 +57,11 @@ let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
 
-// 게임 에셋 로드
 const TOWER_CONFIG = towerData.data;
 const MONSTER_CONFIG = monsterData.data;
+
+// 경로를 저장할 배열
+let paths = [];
 
 // 이미지 로딩 파트
 const backgroundImage = new Image();
@@ -68,6 +72,7 @@ const towerImages = TOWER_CONFIG.map((tower) => {
   image.src = tower.image;
   return { image, id: tower.id };
 });
+//towerImage.src = "./images/tower1.png";
 
 const baseImage = new Image();
 baseImage.src = './images/base.png';
@@ -120,16 +125,14 @@ const gageBar = {
 
 let monsterPath;
 
-function generateRandomMonsterPath() {
-  //몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
+function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
   const path = [];
   let currentX = 0;
   let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
 
   path.push({ x: currentX, y: currentY });
 
-  while (currentX < 1800) {
-    // 마지막 x가 1600이 될 때까지 진행
+  while (currentX < 1800) { // 마지막 x가 1600이 될 때까지 진행
     currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
     if (currentX > 1800) {
       currentX = 1800; // 마지막 x는 1600
@@ -156,14 +159,14 @@ function generateRandomMonsterPath() {
   return path;
 }
 
-function initMap() {
-  // 배경 이미지 그리기
+function initMap() {// 배경 이미지 그리기
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-  drawPath();
+  for(let i = 0; i < 3; i++){
+    paths[i] = drawPath();
+  } 
 }
 
-function drawPath() {
-  //경로에 따라 길을 그리는것.
+function drawPath() {  //경로에 따라 길을 그리는것.
   const segmentLength = 20; // 몬스터 경로 세그먼트 길이
   const imageWidth = 60; // 몬스터 경로 이미지 너비
   const imageHeight = 60; // 몬스터 경로 이미지 높이
@@ -190,7 +193,7 @@ function drawPath() {
   }
 }
 
-function drawRotatedImage(image, x, y, width, height, angle) {
+function drawRotatedImage(image, x, y, width, height, angle) { 
   ctx.save();
   ctx.translate(x + width / 2, y + height / 2);
   ctx.rotate(angle);
@@ -198,8 +201,7 @@ function drawRotatedImage(image, x, y, width, height, angle) {
   ctx.restore();
 }
 
-function getRandomPositionNearPath(maxDistance) {
-  // maxDistance 범위 내에서 랜덤한 위치를 반환하는 함수
+function getRandomPositionNearPath(maxDistance) {  // maxDistance 범위 내에서 랜덤한 위치를 반환하는 함수
   // 타워 배치를 위한 몬스터가 지나가는 경로 상에서 maxDistance 범위 내에서 랜덤한 위치를 반환하는 함수!
   // 초기 타워들이 좀 중앙에 생겼으면 해서 segmentIndex의 범위를 조정
   const segmentIndex = Math.floor(
@@ -262,8 +264,19 @@ function placeBase() {
   base.draw(ctx, baseImage);
 }
 
-function spawnMonster() {
-  //몬스터를 monsters 에 넣는 함수.
+
+// 스테이지를 서버로 전달
+function sendMonsterSpawnInterval() {
+  const payload = {
+    round: 0,
+    timestamp: Date.now(),
+  };
+  sendEvent(13, payload);
+}
+
+//실질적인 몬스터 소환 함수
+export function spawnMonster() {
+  console.log("몬스터가 생성되었습니다!");
   monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
@@ -421,15 +434,17 @@ function initGame() {
   userGold = 1000; // 초기 골드 설정
   score = 0;
   monsterLevel = 1;
-  monsterSpawnInterval = 2000;
+  //monsterSpawnInterval = 2000;
 
   monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
   initMap(); // 맵 초기화 (배경, 경로 그리기)
   // placeInitialTowers(); // 초기 타워 배치
   placeBase(); // 기지 배치
-  setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
+  //setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
+  // 서버에 몬스터 스폰 주기와 타이밍 동기화
+  sendMonsterSpawnInterval(); 
   gameLoop(); // 게임 루프 시작
-} //이게 시작이네.
+} //이게 시작이네. 
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
 Promise.all([
