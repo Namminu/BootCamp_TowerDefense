@@ -68,6 +68,6 @@ export const atteckTower = (userId,payload)=> {
 
 export const killTower = (userId,payload)=> {
 
-    //타워가 있는지 확인, 사거리가 되는지 확인, 전부 가져와서 공격 속도가 되는지 확인, 성공시 다음으로.
+    //타워가 있는지 확인, 사거리가 되는지 확인,체력이 공격을 맞아 알맞게 피가 까였는지, 전부 가져와서 공격 속도가 되는지 확인, 성공시 다음으로.
 
 }
