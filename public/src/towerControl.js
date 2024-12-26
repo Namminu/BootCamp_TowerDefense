@@ -1,5 +1,6 @@
 import { Tower } from "./tower.js";
 import towerData from "../assets/tower.json" with { type: "json" };
+import { loadTowerQueue, sendEvent } from "./socket.js";
 
 export class TowerControl {
   constructor(ctx, towerImages) {
@@ -19,12 +20,33 @@ export class TowerControl {
   getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
-
+  
   getTowerqueue(monsterLevel) {
+
+    // const TowerQueueTyep = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
+
+    // console.log(TowerQueueTyep)
+    // this.towerqueue = [];
+
+    // for (let i = 0; i < TowerQueueTyep.length; i++) {
+    //   const towerType = TowerQueueTyep[i].type;
+    //   const towerIndex = 1+towerData.data.findIndex(tower => tower.type === towerType); // towerData에서 타입이 일치하는 타워 찾기
+      
+    //   if (towerIndex !== -1) {
+    //     this.towerqueue.push({
+    //       image: this.towerImages[towerIndex],
+    //       name: towerData.data[towerIndex].name,
+    //       cost: towerData.data[towerIndex].cost,
+    //     });
+    //   }
+    // }
+
+    // return this.towerqueue;
+
+
     if (this.towerqueue.length === 5) {
       return this.towerqueue;
     }
-
     while (this.towerqueue.length < 5) {
       const index = this.getRandomNumber(0, towerData.data.length - 1);
       // let index = this.getRandomNumber(0, monsterLevel - 1);
@@ -38,6 +60,10 @@ export class TowerControl {
         cost: towerData.data[index].cost,
       });
     }
+
+    
+
+    return this.towerqueue;
   }
 
   drawqueue(ctx, canvas, monsterLevel) {
@@ -92,6 +118,8 @@ export class TowerControl {
   buyqueueTower(x, y, queueIndex) {
     const towerName = this.towerqueue[queueIndex].name;
     const index = towerData.data.findIndex((data) => data.name === towerName);
+
+    //sendEvent(5,{type:towerData.data[index].type, x, y,timestamp:Date.now(),index});
 
     const image = this.towerImages[index];
     const damage = towerData.data[index].damage;

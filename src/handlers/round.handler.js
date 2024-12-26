@@ -5,7 +5,7 @@ import { getStage, setStage } from "../models/stage.model.js"
  현재골드(시작골드), 몬스터 잡은수 등 점수 검증이 필요할 거 같은게 추가된다.*/
  
  // sendEvent(11, payload : { currentRound, timestamp })
- export const moveRoundHandler = (userId, payload) => {
+ export const moveRoundHandler = (userId, payload, socket) => {
     // 라운드 검증. 유저의 현재 라운드와 currentRound 비교
     if(payload.currentRound){
         const currentRound = 0;

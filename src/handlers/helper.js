@@ -1,8 +1,11 @@
-import { getGameAssets } from "../init/assets.js";
-// import { createStage, getStage, setStage } from '../models/stage.model.js';
+import { getGameAssets } from '../init/assets.js';
+import { getUser, removeUser } from '../models/user.model.js';
+import { createUserData } from '../models/userData.model.js';
+import handlerMappings from './handlerMapping.js';
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 
-import { getUser, removeUser } from "../models/user.model.js";
-import handlerMappings from "./handlerMapping.js";
+dotenv.config();
 
 //유저 삭제함수 불러오는 함수.
 export const handleDisconnect = (socket, uuid) => {
@@ -15,12 +18,15 @@ export const handleConnection = (socket, uuid) => {
   console.log(`새 유저:${uuid}, 소켓아이디 ${socket.id}`);
   console.log("현재 접속중인 유저:", getUser());
 
-  // createStage(uuid);
+  createUserData(uuid);
 
   socket.emit("connection", { uuid });
 };
 
 export const handlerEvent = (io, socket, data) => {
+ 
+  const  { userId } = jwt.verify(data.token, process.env.JWT_KEY);
+  
   const handler = handlerMappings[data.handlerId];
   if (!handler) {
     console.error(`헨들러가 존재하지 않습니다. handlerId: ${data.handlerId}`);
@@ -28,7 +34,7 @@ export const handlerEvent = (io, socket, data) => {
     return;
   }
 
-  const response = handler(socket, data.userId, data.payload);
+  const response = handler(userId, data.payload, socket);
 
   if (response.broadcast) {
     io.emit("response", response);

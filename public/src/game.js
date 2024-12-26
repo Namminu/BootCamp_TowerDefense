@@ -4,7 +4,7 @@ import { Tower } from './tower.js';
 import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
-import { sendEvent } from "./Socket.js";
+import { sendEvent } from "./socket.js";
 
 
 /* 
@@ -28,9 +28,9 @@ import { sendEvent } from "./Socket.js";
 
 */
 
-let serverSocket; // 서버 웹소켓 객체
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
@@ -271,13 +271,6 @@ function placeBase() {
 
 
 // 스테이지를 서버로 전달
-function sendMonsterSpawnInterval() {
-  const payload = {
-    round: 0,
-    timestamp: Date.now(),
-  };
-  sendEvent(13, payload);
-}
 
 //실질적인 몬스터 소환 함수
 export function spawnMonster() {
@@ -315,7 +308,6 @@ async function gameLoop() {
         /* 게임 오버 */
         alert('게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ');
         // 게임 종료 시 서버로 gameOver 이벤트 전송
-        await sendEvent(3, { userId, currentRound });
         location.reload();
       }
       monster.draw(ctx);
@@ -471,40 +463,27 @@ function initGame() {
   placeBase(); // 기지 배치
   //setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
   // 서버에 몬스터 스폰 주기와 타이밍 동기화
-  sendMonsterSpawnInterval(); 
+  sendEvent(13, { round: 0, timestamp: Date.now()});
   gameLoop(); // 게임 루프 시작
 } //이게 시작이네. 
+
+if (!isInitGame) {
+  sendEvent(2,{timestamp: Date.now()})
+  initGame();
+}
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
 Promise.all([
   new Promise((resolve) => (backgroundImage.onload = resolve)),
-  // new Promise((resolve) => (towerImage.onload = resolve)),
+  new Promise((resolve) => (towerImages.onload = resolve)),
   new Promise((resolve) => (baseImage.onload = resolve)),
   new Promise((resolve) => (pathImage.onload = resolve)),
   // ...monsterImages.map(
   //   (img) => new Promise((resolve) => (img.onload = resolve))
   // ),
 ]).then(() => {
-  /* 서버 접속 코드 (여기도 완성해주세요!) */
-  let somewhere;
 
-  serverSocket = io('http://localhost:8080', {
-    auth: {
-      token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
-    },
-  });
-
-  //서버의 이벤트들을 받는 코드들은 여기다가 쭉 작성해주시면 됩니다!
-  //e.g. serverSocket.on("...", () => {...});
-  //이 때, 상태 동기화 이벤트의 경우에 아래의 코드를 마지막에 넣어주세요! 최초의 상태 동기화 이후에 게임을 초기화해야 하기 때문입니다!
-  if (!isInitGame) {
-    initGame();
-  }
 });
-
-if (!isInitGame) {
-  initGame();
-}
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
