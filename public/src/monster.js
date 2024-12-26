@@ -15,10 +15,18 @@ export class Monster {
     this.y = path[0].y; // 몬스터의 y 좌표 (최초 위치는 경로의 첫 번째 지점)
     this.width = 80; // 몬스터 이미지 가로 길이
     this.height = 80; // 몬스터 이미지 세로 길이
-    this.speed = 2; // 몬스터의 이동 속도
     this.image = monsterImages[this.monsterNumber]; // 몬스터 이미지
     this.level = level; // 몬스터 레벨
     this.init(level);
+
+    // 따로 정보를 보내줘야 한다.
+    // class round
+    // Gold
+    // const deadMonsterData  = { id: "monsterId", coordinate: {x,y} ,"상태이상 걸린 정보": { slow: "timestamp 형식" } ,"태어난 시간": "timestamp 형식"}
+    // basehp
+
+    this.speed = 2; // 몬스터의 이동 속도
+    this.isDead = false; // 몬스터가 죽었는지 여부
   }
   //생성 시간 추가해서 경로와 속도를 계산 살아있어야 할 시간보다 오래살아 있다면 ..버그를 쓴거겠지.
   init(level) {
@@ -60,5 +68,9 @@ export class Monster {
       this.x,
       this.y - 5
     );
+  }
+
+  dead() {
+    this.isDead = true; // 몬스터를 죽음 상태로 표시
   }
 }
