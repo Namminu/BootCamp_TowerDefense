@@ -12,6 +12,10 @@ export class TowerControl {
     this.towerqueue = [];
   }
 
+  sortTowers() {
+    this.towers.sort((a, b) => a.y - b.y);
+  }
+
   getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }

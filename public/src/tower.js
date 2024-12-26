@@ -176,8 +176,8 @@ export class Tower {
       return 0; // 골드 부족
     }
 
-    tower.damage *= 1.5; // 공격력 1.2배 증가
-    tower.originalDamage *= 1.5; // 공격력 1.2배 증가
+    tower.damage *= 1.2; // 공격력 1.2배 증가
+    tower.originalDamage *= 1.2; // 공격력 1.2배 증가
     // tower.range *= 1.5; // 사정거리 1.2배 증가
     // tower.originalRange *= 1.5; // 사정거리 1.2배 증가
     tower.cooldown -= 10; // 쿨타임 0.1초 감소

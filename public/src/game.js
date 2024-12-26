@@ -308,6 +308,9 @@ async function gameLoop() {
     }
   }
 
+  // towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
+  towerControl.sortTowers();
+
   // 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
   towerControl.towers.forEach(async (tower) => {
     // 몬스터 관련 로직
@@ -455,7 +458,7 @@ function initGame() {
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
 Promise.all([
   new Promise((resolve) => (backgroundImage.onload = resolve)),
-  new Promise((resolve) => (towerImage.onload = resolve)),
+  // new Promise((resolve) => (towerImage.onload = resolve)),
   new Promise((resolve) => (baseImage.onload = resolve)),
   new Promise((resolve) => (pathImage.onload = resolve)),
   ...monsterImages.map(
