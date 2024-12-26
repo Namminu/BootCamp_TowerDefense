@@ -23,14 +23,14 @@ const default_time = 60;
 // 라운드 생성
 export const createRoundInfo = id => {
     const level = id;
-    round[id] = {
+    roundInfo[id] = {
         duration: default_duration - level / 10,
         count: default_count + Math.floor(level / 2),
         time: default_time,
     };
-    return round[id];
+    return roundInfo[id];
 };
 
 export const getRoundInfo = id => {
-    return round[id];
+    return roundInfo[id];
 };
