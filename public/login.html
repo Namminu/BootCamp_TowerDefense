@@ -1,11 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Changmin Kang" />
     <title>내일배움캠프 Node.js 트랙 타워 디펜스 게임</title>
-    <link rel="icon" type="image/x-icon" href="/tower_defense_client/images/favicon.ico" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/tower_defense_client/images/favicon.ico"
+    />
     <style>
       body {
         display: flex;
@@ -47,57 +51,57 @@
       <button id="back">뒤로가기</button>
     </div>
     <script>
-      const BASE_URL = "http://localhost:8080/api"; // 서버의 API URL
+      const BASE_URL = 'http://localhost:8080/api'; // 서버의 API URL
 
       // 로그인 버튼 클릭 이벤트
-      document.getElementById("login").addEventListener("click", async () => {
-        const userId = document.getElementById("userId").value.trim();
-        const password = document.getElementById("password").value.trim();
+      document.getElementById('login').addEventListener('click', async () => {
+        const userId = document.getElementById('userId').value.trim();
+        const password = document.getElementById('password').value.trim();
 
         if (!userId || !password) {
-          alert("아이디와 비밀번호를 모두 입력해주세요.");
+          alert('아이디와 비밀번호를 모두 입력해주세요.');
           return;
         }
 
         try {
           // 서버에 로그인 요청
           const response = await fetch(`${BASE_URL}/sign-in`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, password }),
-            credentials: "include", // 쿠키 전달 가능
+            credentials: 'include', // 쿠키 전달 가능
           });
 
           const result = await response.json();
 
           if (response.ok) {
             // 토큰을 헤더에서 추출 및 저장
-            const authHeader = response.headers.get("authorization");
+            const authHeader = response.headers.get('authorization');
             if (authHeader) {
-              const token = authHeader.split(" ")[1];
-              localStorage.setItem("authToken", token); // 로컬 스토리지에 토큰 저장
-              alert(result.message || "로그인 성공!");
-              window.location.href = "index.html"; // 메인 페이지로 이동
+              const token = authHeader.split(' ')[1];
+              localStorage.setItem('authToken', token); // 로컬 스토리지에 토큰 저장
+              alert(result.message || '로그인 성공!');
+              window.location.href = 'index.html'; // 메인 페이지로 이동
             } else {
-              alert("로그인에 성공했지만 토큰을 받을 수 없습니다.");
+              alert('로그인에 성공했지만 토큰을 받을 수 없습니다.');
             }
           } else {
-            alert(result.message || "로그인에 실패했습니다.");
+            alert(result.message || '로그인에 실패했습니다.');
           }
         } catch (error) {
-          alert("서버와 통신 중 오류가 발생했습니다.");
+          alert('서버와 통신 중 오류가 발생했습니다.');
           console.error(error);
         }
       });
 
       // 뒤로가기 버튼 클릭 이벤트
-      document.getElementById("back").addEventListener("click", () => {
-        window.location.href = "index.html"; // 뒤로가기 시 index.html로 이동
+      document.getElementById('back').addEventListener('click', () => {
+        window.location.href = 'index.html'; // 뒤로가기 시 index.html로 이동
       });
 
       // 뒤로가기 버튼 클릭 이벤트
-      document.getElementById("register").addEventListener("click", () => {
-        window.location.href = "register.html"; // 뒤로가기 시 index.html로 이동
+      document.getElementById('register').addEventListener('click', () => {
+        window.location.href = 'register.html'; // 뒤로가기 시 index.html로 이동
       });
     </script>
   </body>
