@@ -3,7 +3,7 @@
 // 몬스터 잡을때 올리면 되고.
 import { getGameAssets } from "../init/assets.js";
 import { getTower, getTowerQueue, removeTower, removeTowerQueue, setTower, setTowerQueue, upTower } from "../models/tower.model.js";
-import { getUserData } from "../models/userData.model.js";
+import { getUserData, setUserGold } from "../models/userData.model.js";
 
 //페이로드는 1. 인덱스. 2. 타입번호 3. 좌표 4.타임스템프.
 export const buyTower = (userId, payload, socket) => {
@@ -11,13 +11,13 @@ export const buyTower = (userId, payload, socket) => {
     const { tower } = getGameAssets();
     const currentUserData = getUserData(userId);
     let currentTowersQueue = getTowerQueue(userId);
-    const selectedTower = null;
-    console.log()
-
+    console.log("currentTowersQueue",currentTowersQueue);
+    const selectedTower = tower.data.find(tower => tower.type === payload.type);
+    console.log("selectedTower",selectedTower);
     const selectedTowerInQueue = currentTowersQueue[payload.index];
 
-    if (selectedTowerInQueue && selectedTowerInQueue.type === payload.type) {
-        selectedTower = tower.data.find(tower => tower.type === payload.type);
+    if (selectedTowerInQueue && selectedTowerInQueue.towerDataIndex === selectedTower.type) {
+        
         if (!selectedTower) {
             return { status: 'fail', message: "타워를 찾을 수 없음" };
         }
@@ -28,6 +28,7 @@ export const buyTower = (userId, payload, socket) => {
         
 
     }
+    
 
     const towerWidth = 220 / 1.5;
     const towerHeight = 270 / 1.5;
@@ -53,12 +54,12 @@ export const buyTower = (userId, payload, socket) => {
   }
 
   removeTowerQueue(userId, payload.index);
-  
 
   currentUserData.gold -= selectedTower.cost;
+  
   setUserGold(userId, currentUserData.gold);
-  setTowerQueue(userId, towers);
-  setTower(userId, payload.type, payload.x, payload.y, level = 1, payload.timestamp );
+  setTowerQueue(userId, tower);
+  setTower(userId, payload.type, payload.x, payload.y, 1, payload.timestamp );
 
 return { status: 'success', message: "타워 배치 성공적." };
 };
