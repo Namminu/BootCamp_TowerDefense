@@ -1,11 +1,20 @@
 import { addUser } from '../models/user.model.js';
 import { handleConnection, handleDisconnect, handlerEvent } from "./helper.js";
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 
+dotenv.config();
 
 //유저 입장시 , 아이디 만들고 넣어줌. 나갈때 아이디 삭제함.
 const registerHandler = (io) => {
     io.on('connection', (socket) => { //io.on을 하면 connection이벤트가 일어나기 전까지 대기.
-        const userUUID = 0; //여기서 토큰 받아서 유저아이디 뽑기.
+        
+        const { authorization } = socket.handshake.auth.token;
+        const [tokenType, token] = authorization.split(' ');
+        const uuid = jwt.verify(token, process.env.JWT_KEY);
+
+        console.log(uuid);
+
         addUser({ uuid: userUUID, socketId: socket.id });
 
         handleConnection(socket, userUUID);

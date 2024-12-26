@@ -25,7 +25,7 @@ import { TowerControl } from "./towerControl.js";
 
 */
 
-let serverSocket; // 서버 웹소켓 객체
+let socket; // 서버 웹소켓 객체
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -428,36 +428,46 @@ function initGame() {
   gameLoop(); // 게임 루프 시작
 } //이게 시작이네.
 
+if (!isInitGame) {
+  initGame();
+}
+
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
 Promise.all([
   new Promise((resolve) => (backgroundImage.onload = resolve)),
-  new Promise((resolve) => (towerImage.onload = resolve)),
+  new Promise((resolve) => (towerImages.onload = resolve)),
   new Promise((resolve) => (baseImage.onload = resolve)),
   new Promise((resolve) => (pathImage.onload = resolve)),
   ...monsterImages.map(
     (img) => new Promise((resolve) => (img.onload = resolve))
   ),
 ]).then(() => {
-  /* 서버 접속 코드 (여기도 완성해주세요!) */
   let somewhere = localStorage.getItem("authToken");
-  
-  serverSocket = io("http://localhost:8080", {
+
+  socket = io("http://localhost:8080", {
     auth: {
       token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
     },
   });
 
+  socket.on('response', (data) => {
+    console.log(data);
+  });
+  
+  socket.on('connection', (data) => {
+    console.log('connection: ', data);
+  
+    if(data.message){
+      console.log(data.message);
+    }
+  });
+
+  console.log("a");
   //서버의 이벤트들을 받는 코드들은 여기다가 쭉 작성해주시면 됩니다!
   //e.g. serverSocket.on("...", () => {...});
   //이 때, 상태 동기화 이벤트의 경우에 아래의 코드를 마지막에 넣어주세요! 최초의 상태 동기화 이후에 게임을 초기화해야 하기 때문입니다!
-  if (!isInitGame) {
-    initGame();
-  }
+ 
 });
-
-if (!isInitGame) {
-  initGame();
-}
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
