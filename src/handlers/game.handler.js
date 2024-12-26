@@ -20,9 +20,12 @@ export const gameOver = async (uuid, payload) => {
 
   const userId = payload.userId;
   const currentRound = payload.currentRound;
+  if (!userId || !currentRound)
+    return { status: 'fail', message: `${!userId ? 'userId' : 'currentRound'} missing error` };
 
   //최고 기록보다 현재 기록이 높다면 DB 갱신
   const result = await updateHighScore(userId, currentRound);
+  if (!result) return { status: 'fail', message: 'update High Score Error' };
 
   return {
     status: 'success',

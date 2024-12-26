@@ -7,16 +7,16 @@ import handlerMappings from "./handlerMapping.js";
 export const handleDisconnect = (socket, uuid) => {
   removeUser(socket.id); // 사용자 삭제
   console.log(`User disconnected: ${socket.id}`);
-  console.log("Current users:", getUser());
+  console.log('Current users:', getUser());
 };
 
 export const handleConnection = (socket, uuid) => {
   console.log(`새 유저:${uuid}, 소켓아이디 ${socket.id}`);
-  console.log("현재 접속중인 유저:", getUser());
+  console.log('현재 접속중인 유저:', getUser());
 
   createStage(uuid);
 
-  socket.emit("connection", { uuid });
+  socket.emit('connection', { uuid });
 };
 
 export const handlerEvent = (io, socket, data) => {
@@ -30,10 +30,9 @@ export const handlerEvent = (io, socket, data) => {
   const response = handler(socket, data.userId, data.payload);
 
   if (response.broadcast) {
-    console.log("Broadcasting response");
-    io.emit("response", "broadcast");
+    io.emit('response', response);
     return;
   }
 
-  socket.emit("response", response);
+  socket.emit('response', response);
 };

@@ -227,7 +227,8 @@ export function spawnMonster() {
   monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
 }
 
-function gameLoop() { //게임 반복.
+async function gameLoop() {
+  //게임 반복.
   // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
   drawPath(monsterPath); // 경로 다시 그리기
@@ -250,7 +251,8 @@ function gameLoop() { //게임 반복.
       const distance = Math.sqrt(
         Math.pow(tower.x - monster.x, 2) + Math.pow(tower.y - monster.y, 2)
       );
-      if (distance < tower.range) { //여기서 뭔갈 해야함.(몬스터 뭐 스택 올리는거나. 그런거.)
+      if (distance < tower.range) { //이거 타워가 여러명 때릴수 있기에. 여기서 타워 단일 공격인지, 범위 공격인지 정해야 한다.
+        //여기서 뭔갈 해야함.(몬스터 뭐 스택 올리는거나. 그런거.)
         tower.attack(monster);
         if(monster.hp <= 0){
           score += monsterLevel
@@ -267,6 +269,7 @@ function gameLoop() { //게임 반복.
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
   base.draw(ctx, baseImage);
+  base.selfHeal();
 
   for (let i = monsters.length - 1; i >= 0; i--) {
     const monster = monsters[i];
@@ -275,6 +278,8 @@ function gameLoop() { //게임 반복.
       if (isDestroyed) {
         /* 게임 오버 */
         alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
+        // 게임 종료 시 서버로 gameOver 이벤트 전송
+        await sendEvent(3, { userId, currentRound });
         location.reload();
       }
       monster.draw(ctx);
@@ -308,8 +313,9 @@ function initGame() {
   gameLoop(); // 게임 루프 시작
 } //이게 시작이네. 
 
+
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
-/* Promise.all([
+Promise.all([
   new Promise((resolve) => (backgroundImage.onload = resolve)),
   new Promise((resolve) => (towerImage.onload = resolve)),
   new Promise((resolve) => (baseImage.onload = resolve)),
@@ -320,21 +326,20 @@ function initGame() {
 ]).then(() => {
   /* 서버 접속 코드 (여기도 완성해주세요!) */
   let somewhere;
-  /* serverSocket = io("http://localhost:3000", {
+
+  serverSocket = io("http://localhost:8080", {
     auth: {
       token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
     },
-  }); */
+  });
 
-  /* 
-    서버의 이벤트들을 받는 코드들은 여기다가 쭉 작성해주시면 됩니다! 
-    e.g. serverSocket.on("...", () => {...});
-    이 때, 상태 동기화 이벤트의 경우에 아래의 코드를 마지막에 넣어주세요! 최초의 상태 동기화 이후에 게임을 초기화해야 하기 때문입니다! 
-    if (!isInitGame) {
-      initGame();
-    }
-  */
-// });
+  //서버의 이벤트들을 받는 코드들은 여기다가 쭉 작성해주시면 됩니다! 
+  //e.g. serverSocket.on("...", () => {...});
+  //이 때, 상태 동기화 이벤트의 경우에 아래의 코드를 마지막에 넣어주세요! 최초의 상태 동기화 이후에 게임을 초기화해야 하기 때문입니다! 
+  if (!isInitGame) {
+    initGame();
+  }
+});
 
 if (!isInitGame) {
   initGame();
