@@ -4,7 +4,7 @@ import { Tower } from './tower.js';
 import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
-import { sendEvent } from "./Socket.js";
+import { sendEvent } from "./socket.js";
 
 
 /* 
@@ -315,7 +315,6 @@ async function gameLoop() {
         /* 게임 오버 */
         alert('게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ');
         // 게임 종료 시 서버로 gameOver 이벤트 전송
-        await sendEvent(3, { userId, currentRound });
         location.reload();
       }
       monster.draw(ctx);
@@ -476,7 +475,7 @@ function initGame() {
 } //이게 시작이네. 
 
 if (!isInitGame) {
-  sendEvent(2,{timestamp: Date.now()})
+  //sendEvent(2,{timestamp: Date.now()})
   initGame();
 }
 

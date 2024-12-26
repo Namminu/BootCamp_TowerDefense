@@ -1,6 +1,6 @@
 import { Tower } from "./tower.js";
 import towerData from "../assets/tower.json" with { type: "json" };
-import { loadTowerQueue, sendEvent } from "./Socket.js";
+import { loadTowerQueue, sendEvent } from "./socket.js";
 
 export class TowerControl {
   constructor(ctx, towerImages) {

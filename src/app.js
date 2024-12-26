@@ -5,6 +5,7 @@ import initSocket from './init/socket.js';
 import userRouter from './routes/user.router.js';
 import path from 'path';
 import cors from 'cors';
+import { loadGameAssets } from './init/assets.js';
 
 const app = express();
 const server = createServer(app);
@@ -40,7 +41,7 @@ server.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
 
   try {
-    const assets = await loadGameAssets(); //여기서 에셋 가져옴.
+    const assets = await loadGameAssets(); //여기서 에셋 가져옴
   } catch (e) {
     console.error('Failed to load game assets:', e);
   }

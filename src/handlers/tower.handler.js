@@ -8,7 +8,7 @@ import { getUserData } from "../models/userData.model.js";
 //페이로드는 1. 인덱스. 2. 타입번호 3. 좌표 4.타임스템프.
 export const buyTower = (userId, payload) => {
 
-    const { towers } = getGameAssets();
+    const { tower } = getGameAssets();
     const currentUserData = getUserData(userId);
     let currentTowersQueue = getTowerQueue(userId);
     const selectedTower = null;
@@ -17,7 +17,7 @@ export const buyTower = (userId, payload) => {
     const selectedTowerInQueue = currentTowersQueue[payload.index];
 
     if (selectedTowerInQueue && selectedTowerInQueue.type === payload.type) {
-        selectedTower = towers.data.find(tower => tower.type === payload.type);
+        selectedTower = tower.data.find(tower => tower.type === payload.type);
         if (!selectedTower) {
             return { status: 'fail', message: "타워를 찾을 수 없음" };
         }
