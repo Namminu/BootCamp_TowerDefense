@@ -25,7 +25,7 @@ if (isTooClose) {
     return { status: 'fail', message: "타워가 너무 가까워서 배치할 수 없습니다." };
 }
 
-//유저 돈. --> 1. 지금빼기. 2. 타워를 산 돈을 누적해 두기.--> 판매할 수도 있기때문에.
+
 
 setTower(userId, payload.x, payload.y ,payload.range, payload.attackPower, payload.cost, payload.cooldown, payload.level);
 
@@ -57,3 +57,13 @@ export const upgradeTower = (userId, payload) => {
 
 
 };
+
+
+export const compareTower = (userId,payload)=> {
+
+
+    //1. 페이 로드에서 타워만 꺼내기. 
+
+
+
+}
