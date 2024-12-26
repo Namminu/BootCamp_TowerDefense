@@ -121,7 +121,7 @@ function generateRandomMonsterPath() {
   //몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
   const path = [];
   let currentX = 0;
-  let currentY = Math.floor(Math.random() * 21) + 500; // 500 ~ 520 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
+  let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
 
   path.push({ x: currentX, y: currentY });
 
@@ -280,16 +280,32 @@ function gameLoop() {
   ctx.fillStyle = "black";
   ctx.fillText(`현재 레벨: ${monsterLevel}`, 100, 200); // 최고 기록 표시
 
-  // 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
-  towerControl.towers.forEach(async (tower) => {
-    // 마우스가 타워 위에 있을 때만 사정거리 표시하기
-    if (tower.isMouseOver) {
-      tower.drawRangeCircle();
+  // 몬스터 그리기
+  for (let i = monsters.length - 1; i >= 0; i--) {
+    const monster = monsters[i];
+    if (monster.isDead) {
+      monsters.splice(i, 1); // 이미 죽은 몬스터 제거
+      continue;
     }
 
-    tower.draw();
-    tower.updateCooldown();
+    if (monster.hp > 0) {
+      const isDestroyed = monster.move(base);
+      if (isDestroyed) {
+        /* 게임 오버 */
+        alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
+        location.reload();
+      }
+      monster.draw(ctx);
+    } else {
+      /* 몬스터가 죽었을 때 */
+      monster.dead();
+      monsters.splice(i, 1);
+    }
+  }
 
+  // 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
+  towerControl.towers.forEach(async (tower) => {
+    // 몬스터 관련 로직
     monsters.forEach((monster) => {
       if (monster.isDead) return; // 이미 죽은 몬스터는 무시
 
@@ -317,12 +333,22 @@ function gameLoop() {
       }
     });
 
+    // 타워 그리기 & 마우스가 타워 위에 있을 때만 사정거리 표시하기
+    tower.draw();
+    tower.updateCooldown();
+    if (tower.isMouseOver) {
+      tower.drawRangeCircle();
+    }
+    // 타워를 클릭했을 때 자세히 보기 창을 띄우기
     if (tower.isClicked) {
-      // 타워 정보를 표시하는 함수 호출
       tower.showTowerInfo(tower);
     }
-
-    if (tower.upgradeBtnClicked && userGold >= tower.cost * 1.5) {
+    // 자세히 보기 창에서 업그레이드 버튼을 클릭했을 때
+    if (
+      tower.isClicked &&
+      tower.upgradeBtnClicked &&
+      userGold >= tower.cost * 1.5
+    ) {
       const upgradePrice = tower.upgradeTower(tower, userGold);
       userGold -= upgradePrice; // 업그레이드 비용 차감
       tower.upgradeBtnClicked = false;
@@ -330,14 +356,15 @@ function gameLoop() {
       console.log("Not enough gold to upgrade the tower.");
       tower.upgradeBtnClicked = false;
     }
-
-    if (tower.sellBtnClicked) {
+    // 자세히 보기 창에서 판매 버튼을 클릭했을 때
+    if (tower.isClicked && tower.sellBtnClicked) {
       const sellPrice = tower.sellTower(tower);
       userGold += sellPrice; // 타워 판매 시 골드 추가
       tower.sellBtnClicked = false;
     }
   });
 
+  // 피버 타임 시작
   if (!feverTriggered && killCount === maxRage) {
     towerControl.towers.forEach(async (tower) => {
       feverTriggered = true;
@@ -354,8 +381,8 @@ function gameLoop() {
     });
   }
 
+  // 미리보기 타워 그리기
   if (isPlacingTower && previewTower) {
-    // 미리보기 타워 렌더링 (타워 이미지와 동일하게)
     const isMouseOver = true;
     previewTower.draw();
     previewTower.drawRangeCircle();
@@ -363,28 +390,6 @@ function gameLoop() {
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
   base.draw(ctx, baseImage);
-
-  for (let i = monsters.length - 1; i >= 0; i--) {
-    const monster = monsters[i];
-    if (monster.isDead) {
-      monsters.splice(i, 1); // 이미 죽은 몬스터 제거
-      continue;
-    }
-
-    if (monster.hp > 0) {
-      const isDestroyed = monster.move(base);
-      if (isDestroyed) {
-        /* 게임 오버 */
-        alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
-        location.reload();
-      }
-      monster.draw(ctx);
-    } else {
-      /* 몬스터가 죽었을 때 */
-      monster.dead();
-      monsters.splice(i, 1);
-    }
-  }
 
   // 인벤토리 그리기
   towerControl.drawqueue(ctx, canvas);
@@ -477,7 +482,7 @@ function canPlaceTower(x, y) {
     console.log("Distance between towers:", distance);
 
     // 두 타워의 중심 간 거리가 타워 너비 이상이어야 설치 가능
-    if (distance < 150) {
+    if (distance < 250) {
       console.log("Cannot place tower: overlaps with another tower.");
       return false;
     }
