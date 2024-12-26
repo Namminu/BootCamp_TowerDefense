@@ -1,7 +1,7 @@
-import { getGameAssets } from '../init/assets.js';
-// import { createStage, getStage, setStage } from '../models/stage.model.js';
-import { getUser, removeUser } from '../models/user.model.js';
-import handlerMappings from './handlerMapping.js';
+import { getGameAssets } from "../init/assets.js";
+//import { createStage, getStage, setStage } from "../models/round.model.js";
+import { getUser, removeUser } from "../models/user.model.js";
+import handlerMappings from "./handlerMapping.js";
 
 //유저 삭제함수 불러오는 함수.
 export const handleDisconnect = (socket, uuid) => {
@@ -14,7 +14,7 @@ export const handleConnection = (socket, uuid) => {
   console.log(`새 유저:${uuid}, 소켓아이디 ${socket.id}`);
   console.log('현재 접속중인 유저:', getUser());
 
-  createStage(uuid);
+  //createStage(uuid);
 
   socket.emit('connection', { uuid });
 };
@@ -22,11 +22,12 @@ export const handleConnection = (socket, uuid) => {
 export const handlerEvent = (io, socket, data) => {
   const handler = handlerMappings[data.handlerId];
   if (!handler) {
-    socket.emit('response', { status: 'fail', message: '헨들러가 없어용' });
+    console.error(`헨들러가 존재하지 않습니다. handlerId: ${data.handlerId}`);
+    socket.emit("response", { status: "fail", message: "헨들러가 없어용" });
     return;
   }
 
-  const response = handler(data.userId, data.payload);
+  const response = handler(socket, data.userId, data.payload);
 
   if (response.broadcast) {
     io.emit('response', response);
