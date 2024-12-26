@@ -3,7 +3,7 @@
 // 몬스터 잡을때 올리면 되고.
 import { getTower, removeTower, setTower, upTower } from "../models/tower.model";
 
-export const createTower = (userId, payload) => {
+export const buyTower = (userId, payload) => {
 
 let currentTowers = getTower(userId);
 

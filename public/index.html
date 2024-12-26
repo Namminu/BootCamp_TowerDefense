@@ -45,7 +45,7 @@
       <button id="playButton">게임 플레이</button>
     </div>
     <canvas id="gameCanvas" width="1920" height="920"></canvas>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
     <script type="module">
       const BASE_URL = 'http://localhost:8080/api';
 
@@ -96,7 +96,9 @@
       document.getElementById('playButton').addEventListener('click', () => {
         document.querySelector('.button-container').style.display = 'none';
         document.getElementById('gameCanvas').style.display = 'block';
+        import ('./src/socket.js');
         import('./src/game.js');
+        
       });
       
       //fetchUserInfo();

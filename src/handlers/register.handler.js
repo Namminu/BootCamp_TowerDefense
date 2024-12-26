@@ -9,18 +9,15 @@ dotenv.config();
 const registerHandler = (io) => {
     io.on('connection', (socket) => { //io.on을 하면 connection이벤트가 일어나기 전까지 대기.
         
-        const { authorization } = socket.handshake.auth.token;
-        const [tokenType, token] = authorization.split(' ');
-        const uuid = jwt.verify(token, process.env.JWT_KEY);
+        const authorization = socket.handshake. query.token;
+        const  { userId } = jwt.verify(authorization, process.env.JWT_KEY);
 
-        console.log(uuid);
+        addUser({ uuid: userId, socketId: socket.id });
 
-        addUser({ uuid: userUUID, socketId: socket.id });
-
-        handleConnection(socket, userUUID);
+        handleConnection(socket, userId);
 
         socket.on('event', (data) => handlerEvent(io, socket, data));
-        socket.on('disconnect', () => handleDisconnect(socket, userUUID));
+        socket.on('disconnect', () => handleDisconnect(socket, userId));
     })// socket.on은 하나의 대상만.
 }
 

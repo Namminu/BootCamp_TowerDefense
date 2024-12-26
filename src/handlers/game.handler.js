@@ -1,15 +1,10 @@
-// import { clearStage, getStage, setStage } from "../models/stage.model.js";
-// import { getHightScore, setHightScore } from "../models/user.model.js";
 
 import { updateHighScore } from "../models/rank.model.js";
+import { createTower, getTower } from "../models/tower.model.js";
 
 export const gameStart = (uuid, payload) => {
-  const { stages } = getGameAssets();
-
-  clearStage(uuid);
-
-  setStage(uuid, stages.data[0].id, payload.timestamp); //첫번때 스테이지 저장
-
+  createTower(uuid);
+  console.log('시작!');
   return { status: "success" };
 };
 
