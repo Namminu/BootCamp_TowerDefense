@@ -1,7 +1,10 @@
-# 타워 디펜스 - 귀여운 고양이는 세상을 구한다
+# 타워 디펜스 - 귀여운 고양이가 세상을 구한다
 ## 게임 화면 - 와이어 프레임
+![image](https://github.com/user-attachments/assets/c4616cd6-8b79-4a91-a89f-27b1dcc6aca0)
 
 ## 게임 화면 - 구현된 모습(12-26 UPDATE)
+![image](https://github.com/user-attachments/assets/9c1fa121-377c-4949-9aab-138c3b478138)
+![image](https://github.com/user-attachments/assets/836f2ca0-1afc-4c7c-9124-06ec5407f0d0)
 
 ## 개발 체크 리스트
 - [x] 피버 타임 구현 ✅ 2024-12-25 => 데미지 1.5배, 사정거리 1.2배
