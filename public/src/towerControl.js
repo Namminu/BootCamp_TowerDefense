@@ -16,13 +16,16 @@ export class TowerControl {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
-  getTowerqueue() {
+  getTowerqueue(monsterLevel) {
     if (this.towerqueue.length === 5) {
       return this.towerqueue;
     }
 
     while (this.towerqueue.length < 5) {
-      const index = this.getRandomNumber(0, this.towerImages.length - 1);
+      let index = this.getRandomNumber(0, monsterLevel - 1);
+      if (monsterLevel > towerData.data.length) {
+        index = this.getRandomNumber(0, towerData.data.length - 1);
+      }
       this.towerqueue.push({
         image: this.towerImages[index],
         name: towerData.data[index].name,
@@ -31,13 +34,13 @@ export class TowerControl {
     }
   }
 
-  drawqueue(ctx, canvas) {
+  drawqueue(ctx, canvas, monsterLevel) {
     // 인벤토리 관련 변수
     const towerPadding = 160; // 타워 간 간격
     const startX = 60; // 첫 번째 타워 시작 위치
     let currentX = startX;
 
-    this.getTowerqueue();
+    this.getTowerqueue(monsterLevel);
     // 인벤토리 영역 설정
     const queueHeight = 200; // 인벤토리 높이
     const queueY = canvas.height - queueHeight; // 인벤토리 위치

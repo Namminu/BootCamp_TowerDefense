@@ -400,7 +400,7 @@ async function gameLoop() {
   base.selfHeal();
 
   // 인벤토리 그리기
-  towerControl.drawqueue(ctx, canvas);
+  towerControl.drawqueue(ctx, canvas, monsterLevel);
 
   // 피버 게이지바 그리기
   gageBar.drawBG();
@@ -663,7 +663,7 @@ canvas.addEventListener("click", (event) => {
       mouseY <= tower.y + tower.height;
 
     if (isClicked) {
-      activeTowerInfo = { x: tower.x - tower.width - 10, y: tower.y }; // 정보창 위치
+      activeTowerInfo = { x: tower.x + tower.width + 10, y: tower.y }; // 정보창 위치
       tower.isClicked = true; // 현재 타워 클릭 상태
       console.log("Tower clicked:", tower);
     } else {

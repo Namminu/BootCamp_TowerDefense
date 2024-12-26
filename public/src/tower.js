@@ -37,14 +37,14 @@ export class Tower {
     let beamColor;
     switch (this.type) {
       case 1:
-        beamColor = "blue"; // 원거리일 때 파란색
+        beamColor = "white";
         break;
       case 2:
-        beamColor = "red"; // 근거리일 때 빨간색
+        beamColor = "blue";
         break;
       case 3:
       default:
-        beamColor = "gray"; // 기본은 회색
+        beamColor = "red";
         break;
     }
 
@@ -119,7 +119,7 @@ export class Tower {
   }
 
   showTowerInfo() {
-    const infoX = this.x - this.width - 10; // 타워 왼쪽에 표시
+    const infoX = this.x + this.width + 10; // 타워 왼쪽에 표시
     const infoY = this.y;
 
     this.ctx.fillStyle = "rgb(0, 0, 0)";
@@ -127,7 +127,12 @@ export class Tower {
 
     this.ctx.fillStyle = "white";
     this.ctx.font = "14px Arial";
-    this.ctx.fillText(`ID: ${this.id}`, infoX + 10, infoY + 20);
+    this.ctx.fillText(`타워 ID: ${this.id}`, infoX + 10, infoY + 20);
+    this.ctx.fillText(
+      `Level: ${Math.floor(this.level)}`,
+      infoX + 10,
+      infoY + 80
+    );
     this.ctx.fillText(
       `Damage: ${Math.floor(this.damage)}`,
       infoX + 10,
@@ -137,11 +142,6 @@ export class Tower {
       `Range: ${Math.floor(this.range)}`,
       infoX + 10,
       infoY + 60
-    );
-    this.ctx.fillText(
-      `Level: ${Math.floor(this.level)}`,
-      infoX + 10,
-      infoY + 80
     );
 
     // 업그레이드 버튼
@@ -166,8 +166,8 @@ export class Tower {
 
     tower.damage *= 1.5; // 공격력 1.2배 증가
     tower.originalDamage *= 1.5; // 공격력 1.2배 증가
-    tower.range *= 1.5; // 사정거리 1.2배 증가
-    tower.originalRange *= 1.5; // 사정거리 1.2배 증가
+    // tower.range *= 1.5; // 사정거리 1.2배 증가
+    // tower.originalRange *= 1.5; // 사정거리 1.2배 증가
     tower.cooldown -= 20; // 쿨타임 0.2초 감소
     tower.originalCooldown -= 20; // 쿨타임 0.2초 감소
     tower.level += 1; // 타워 레벨 증가
