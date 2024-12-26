@@ -14,7 +14,8 @@ router.post("/sign-up", async (req, res) => {
     const { userId, password } = req.body;
     // 비밀번호를 암호화(bcrypt 사용)하여 저장.
     const hashedPassword = await bcrypt.hash(password, 10);
-    const nickName = "test";
+    // 유저 닉네임 설정 <- 고정 되는 위치 수정해야함
+    const nickName = "test1";
 
     await prisma.users.create({
       data: {
