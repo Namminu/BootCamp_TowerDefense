@@ -16,15 +16,8 @@ export class TowerControl {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
   
-
-  
-      
-  
-
-
-  async getTowerqueue() {
-    const TowerQueueTyep = await loadTowerQueue(); 
-    console.log(TowerQueueTyep);
+  getTowerqueue() {
+    
     if (this.towerqueue.length === 5) {
       return this.towerqueue;
     }
@@ -36,6 +29,8 @@ export class TowerControl {
         cost: towerData.data[index].cost,
       });
     }
+
+    return this.towerqueue;
   }
 
   drawqueue(ctx, canvas) {

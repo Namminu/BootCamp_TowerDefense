@@ -56,7 +56,6 @@ export const getTowerQueue = (uuid) => {
 
 //타워 인벤토리 추가. //여기서 5개 이하면 뭐 추가되게 로직을 짜기.
 export const setTowerQueue = (uuid, towers) => { //towers는 에셋.
-  console.log(towers);
   const randomNumber = Math.floor(Math.random() * (towers.data.length - 0 + 1) + 0);
 
   while (towersqueue[uuid].length < 5) {
