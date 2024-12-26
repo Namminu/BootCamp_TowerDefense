@@ -1,3 +1,5 @@
+import { towerControl } from "./game.js";
+
 export class Tower {
   constructor(ctx, x, y, damage, range, cost, image, type, id, level = 1) {
     // 코스트랑 타입은 에셋에서 다운받아서 넣어준다.
@@ -22,6 +24,8 @@ export class Tower {
     this.feverMode = false;
     this.isMouseOver = false;
     this.isClicked = false;
+    this.upgradeBtnClicked = false;
+    this.sellBtnClicked = false;
   }
 
   draw() {
@@ -117,7 +121,7 @@ export class Tower {
     const infoY = tower.y;
 
     this.ctx.fillStyle = "rgb(0, 0, 0)";
-    this.ctx.fillRect(infoX, infoY, 150, 100); // 정보창 배경
+    this.ctx.fillRect(infoX, infoY, 180, 150); // 정보창 배경
 
     this.ctx.fillStyle = "white";
     this.ctx.font = "14px Arial";
@@ -125,5 +129,48 @@ export class Tower {
     this.ctx.fillText(`Damage: ${tower.damage}`, infoX + 10, infoY + 40);
     this.ctx.fillText(`Range: ${tower.range}`, infoX + 10, infoY + 60);
     this.ctx.fillText(`Level: ${tower.level}`, infoX + 10, infoY + 80);
+
+    // 업그레이드 버튼
+    this.ctx.fillStyle = "rgb(255, 255, 255)";
+    this.ctx.fillRect(infoX + 10, infoY + 100, 80, 20);
+    this.ctx.fillStyle = "black";
+    this.ctx.fillText("UPGRADE", infoX + 15, infoY + 115);
+
+    // 판매 버튼
+    this.ctx.fillStyle = "rgb(255, 255, 255)";
+    this.ctx.fillRect(infoX + 110, infoY + 100, 50, 20);
+    this.ctx.fillStyle = "black";
+    this.ctx.fillText("SELL", infoX + 115, infoY + 115);
+  }
+
+  upgradeTower(tower, userGold) {
+    const upgradeCost = tower.cost * 1.5; // 업그레이드 비용은 타워 가격의 150%
+
+    if (userGold < upgradeCost) {
+      return 0; // 골드 부족
+    }
+
+    tower.damage *= 2; // 공격력 2배 증가
+    tower.range *= 1.5; // 사정거리 1.5배 증가
+    tower.level += 1; // 타워 레벨 증가
+
+    // 업그레이드에 사용된 포탑 2개 제거
+    for (let i = 0; i < 2; i++) {
+      towerControl.towerqueue.splice(
+        towerControl.towerqueue.findIndex((t) => t.type === tower.type),
+        1
+      );
+    }
+
+    return upgradeCost;
+  }
+
+  sellTower(tower) {
+    const sellPrice = tower.cost * 0.7; // 타워 가격의 70% 환불
+
+    // 타워를 판매하면 타워 배열에서 제거
+    towerControl.towers = towerControl.towers.filter((t) => t.id !== tower.id);
+
+    return sellPrice;
   }
 }

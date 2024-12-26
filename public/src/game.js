@@ -80,7 +80,7 @@ for (let i = 1; i <= NUM_OF_MONSTERS; i++) {
   monsterImages.push(img);
 }
 
-const towerControl = new TowerControl(ctx, towerImages);
+export const towerControl = new TowerControl(ctx, towerImages);
 
 // 피버 타임 게이지바 너비 계수
 const gageBarWidthCoeff = 10;
@@ -221,23 +221,23 @@ function getRandomPositionNearPath(maxDistance) {
   };
 }
 
-function placeInitialTowers() {
-  //타워를 초기에 배치하는 함수
-  /* 
-    타워를 초기에 배치하는 함수입니다.
-    무언가 빠진 코드가 있는 것 같지 않나요?  
-  */
-  for (let i = 0; i < numOfInitialTowers; i++) {
-    const { x, y } = getRandomPositionNearPath(50); //200만큼 떨어지게? 만드는듯.
-    const tower = towerControl.addTower(x, y);
-    towerImage = tower.image;
-    towerCost = tower.cost;
-    towerControl.drawAndUpdateTowers();
-  }
+// function placeInitialTowers() {
+//   //타워를 초기에 배치하는 함수
+//   /*
+//     타워를 초기에 배치하는 함수입니다.
+//     무언가 빠진 코드가 있는 것 같지 않나요?
+//   */
+//   for (let i = 0; i < numOfInitialTowers; i++) {
+//     const { x, y } = getRandomPositionNearPath(50); //200만큼 떨어지게? 만드는듯.
+//     const tower = towerControl.addTower(x, y);
+//     towerImage = tower.image;
+//     towerCost = tower.cost;
+//     towerControl.drawAndUpdateTowers();
+//   }
 
-  towerImage = null;
-  towerCost = null;
-}
+//   towerImage = null;
+//   towerCost = null;
+// }
 
 function placeNewTower() {
   //타워 배치를 알리는 함수. 타워 배치는 밑에서 한다.
@@ -290,11 +290,6 @@ function gameLoop() {
     tower.draw();
     tower.updateCooldown();
 
-    if (tower.isClicked) {
-      // 타워 정보를 표시하는 함수 호출
-      tower.showTowerInfo(tower);
-    }
-
     monsters.forEach((monster) => {
       if (monster.isDead) return; // 이미 죽은 몬스터는 무시
 
@@ -321,6 +316,23 @@ function gameLoop() {
         }
       }
     });
+
+    if (tower.isClicked) {
+      // 타워 정보를 표시하는 함수 호출
+      tower.showTowerInfo(tower);
+    }
+
+    if (tower.upgradeBtnClicked && userGold >= tower.cost * 1.5) {
+      const upgradePrice = tower.upgradeTower(tower, userGold);
+      userGold -= upgradePrice; // 업그레이드 비용 차감
+      tower.upgradeBtnClicked = false;
+    }
+
+    if (tower.sellBtnClicked) {
+      const sellPrice = tower.sellTower(tower);
+      userGold += sellPrice; // 타워 판매 시 골드 추가
+      tower.sellBtnClicked = false;
+    }
   });
 
   if (!feverTriggered && killCount === maxRage) {
@@ -392,14 +404,14 @@ function initGame() {
   }
 
   isInitGame = true;
-  userGold = 100; // 초기 골드 설정
+  userGold = 1000; // 초기 골드 설정
   score = 0;
   monsterLevel = 1;
   monsterSpawnInterval = 2000;
 
   monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
   initMap(); // 맵 초기화 (배경, 경로 그리기)
-  placeInitialTowers(); // 초기 타워 배치
+  // placeInitialTowers(); // 초기 타워 배치
   placeBase(); // 기지 배치
   setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
   gameLoop(); // 게임 루프 시작
@@ -437,6 +449,7 @@ if (!isInitGame) {
   initGame();
 }
 
+// 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
   const towerWidth = previewTower ? previewTower.width : 0;
   const towerHeight = previewTower ? previewTower.height : 0;
@@ -467,7 +480,7 @@ function canPlaceTower(x, y) {
     }
   }
 
-  // 맵 경계 확인
+  // 경계 확인
   const withinBounds =
     x >= 0 &&
     y >= 0 &&
@@ -482,6 +495,7 @@ function canPlaceTower(x, y) {
   return true;
 }
 
+// 타워 미리보기 상태일 때 마우스 이동 이벤트 처리
 canvas.addEventListener("mousemove", (event) => {
   //타워의 미리보기 위치
   if (isPlacingTower && previewTower) {
@@ -495,6 +509,7 @@ canvas.addEventListener("mousemove", (event) => {
   }
 });
 
+// 타워 미리보기 상태일 때 마우스 클릭 이벤트 처리
 canvas.addEventListener("click", (event) => {
   if (isPlacingTower && previewTower) {
     const rect = canvas.getBoundingClientRect();
@@ -524,7 +539,7 @@ canvas.addEventListener("click", (event) => {
   }
 });
 
-// 우클릭으로 타워 배치 취소
+// 타워 미리보기 상태일 때 우클릭으로 타워 배치 취소
 canvas.addEventListener("contextmenu", (event) => {
   if (isPlacingTower && previewTower) {
     event.preventDefault(); // 우클릭 기본 메뉴 방지
@@ -538,6 +553,7 @@ canvas.addEventListener("contextmenu", (event) => {
   }
 });
 
+// 타워 이미지 위로 마우스를 올렸을 때 이벤트 처리
 canvas.addEventListener("mousemove", (event) => {
   const rect = canvas.getBoundingClientRect();
   const mouseX = event.clientX - rect.left;
@@ -558,20 +574,55 @@ canvas.addEventListener("mousemove", (event) => {
   });
 });
 
+// 타워 정보창 관련 변수
 let activeTowerInfo = null;
-
+// 타워 이미지를 클릭했을 때 정보창 열기 & 이미지 바깥을 누르면 닫기
 canvas.addEventListener("click", (event) => {
   const rect = canvas.getBoundingClientRect();
   const mouseX = event.clientX - rect.left;
   const mouseY = event.clientY - rect.top;
 
   if (activeTowerInfo) {
+    const infoX = activeTowerInfo.x;
+    const infoY = activeTowerInfo.y;
     // 클릭이 정보창 외부인지 확인
     const isOutsideInfo =
-      mouseX < activeTowerInfo.x ||
-      mouseX > activeTowerInfo.x + 150 ||
-      mouseY < activeTowerInfo.y ||
-      mouseY > activeTowerInfo.y + 100;
+      mouseX < infoX ||
+      mouseX > infoX + 180 ||
+      mouseY < infoY ||
+      mouseY > infoY + 150;
+
+    // 업그레이드 버튼
+    if (
+      mouseX >= infoX + 10 &&
+      mouseX <= infoX + 90 &&
+      mouseY >= infoY + 100 &&
+      mouseY <= infoY + 120
+    ) {
+      console.log("Upgrade button clicked");
+      const tower = towerControl.towers.find((tower) => tower.isClicked);
+      if (tower) {
+        tower.upgradeBtnClicked = true;
+      }
+      activeTowerInfo = null; // 정보창 닫기
+      return; // 다른 처리를 막기 위해 종료
+    }
+
+    // 판매 버튼
+    if (
+      mouseX >= infoX + 110 &&
+      mouseX <= infoX + 160 &&
+      mouseY >= infoY + 100 &&
+      mouseY <= infoY + 120
+    ) {
+      console.log("Sell button clicked");
+      const tower = towerControl.towers.find((tower) => tower.isClicked);
+      if (tower) {
+        tower.sellBtnClicked = true;
+      }
+      activeTowerInfo = null; // 정보창 닫기
+      return; // 다른 처리를 막기 위해 종료
+    }
 
     if (isOutsideInfo) {
       towerControl.towers.forEach((tower) => {
@@ -590,12 +641,76 @@ canvas.addEventListener("click", (event) => {
       mouseY <= tower.y + tower.height;
 
     if (isClicked) {
-      activeTowerInfo = { x: tower.x - tower.width - 10, y: tower.y }; // 정보창 위치 저장
-      tower.isClicked = true; // 타워 클릭 상태 활성화
-      tower.showTowerInfo(tower);
+      activeTowerInfo = { x: tower.x - tower.width - 10, y: tower.y }; // 정보창 위치
+      tower.isClicked = true; // 현재 타워 클릭 상태
+      console.log("Tower clicked:", tower);
+    } else {
+      tower.isClicked = false; // 다른 타워 클릭 상태 초기화
     }
   });
 });
+
+// 정보창이 열려 있을 때, 업그레이드/판매 버튼 클릭 시 이벤트 처리
+// canvas.addEventListener("click", (event) => {
+//   if (!activeTowerInfo) return; // 정보창이 없으면 종료
+
+//   const rect = canvas.getBoundingClientRect();
+//   const mouseX = event.clientX - rect.left;
+//   const mouseY = event.clientY - rect.top;
+
+//   // 정보창의 위치
+//   const infoX = activeTowerInfo.x;
+//   const infoY = activeTowerInfo.y;
+
+//   // 업그레이드 버튼의 범위
+//   const upgradeButton = {
+//     x: infoX + 10,
+//     y: infoY + 100,
+//     width: 80,
+//     height: 20,
+//   };
+
+//   // 판매 버튼의 범위
+//   const sellButton = {
+//     x: infoX + 110,
+//     y: infoY + 100,
+//     width: 50,
+//     height: 20,
+//   };
+
+//   // 버튼 클릭 확인
+//   if (
+//     mouseX >= upgradeButton.x &&
+//     mouseX <= upgradeButton.x + upgradeButton.width &&
+//     mouseY >= upgradeButton.y &&
+//     mouseY <= upgradeButton.y + upgradeButton.height
+//   ) {
+//     console.log("Upgrade button clicked");
+//     const tower = towerControl.towers.find((tower) => tower.isClicked);
+//     if (tower) {
+//       tower.upgradeBtnClicked = true;
+//       // const upgradePrice = tower.upgradeTower(tower);
+//       // userGold -= upgradePrice; // 업그레이드 비용 차감
+//     }
+//     activeTowerInfo = null; // 정보창 닫기
+//   }
+
+//   if (
+//     mouseX >= sellButton.x &&
+//     mouseX <= sellButton.x + sellButton.width &&
+//     mouseY >= sellButton.y &&
+//     mouseY <= sellButton.y + sellButton.height
+//   ) {
+//     console.log("Sell button clicked");
+//     const tower = towerControl.towers.find((tower) => tower.isClicked);
+//     if (tower) {
+//       tower.sellBtnClicked = true;
+//       // const sellPrice = tower.sellTower(tower);
+//       // userGold += sellPrice; // 타워 판매 시 골드 추가
+//     }
+//     activeTowerInfo = null; // 정보창 닫기
+//   }
+// });
 
 // 인벤토리 클릭
 canvas.addEventListener("click", (event) => {
