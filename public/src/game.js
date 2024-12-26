@@ -352,7 +352,8 @@ async function gameLoop() {
     if (
       tower.isClicked &&
       tower.upgradeBtnClicked &&
-      userGold >= tower.cost * 1.2
+      userGold >= tower.cost * 1.2 &&
+      towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2
     ) {
       const upgradePrice = tower.upgradeTower(tower, userGold);
       userGold -= upgradePrice; // 업그레이드 비용 차감
@@ -367,7 +368,7 @@ async function gameLoop() {
 
     if (printMessage) {
       ctx.fillStyle = "pink";
-      ctx.font = "20px Arial";
+      ctx.font = "bold 20px Arial";
       ctx.fillText("돈이 모자라요!", tower.x, tower.y);
 
       setTimeout(() => {

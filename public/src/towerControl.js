@@ -30,6 +30,7 @@ export class TowerControl {
       this.towerqueue.push({
         image: this.towerImages[index],
         name: towerData.data[index].name,
+        type: towerData.data[index].type,
         cost: towerData.data[index].cost,
       });
     }
