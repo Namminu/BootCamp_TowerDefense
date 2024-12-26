@@ -1,5 +1,5 @@
 import { gameOver, gameStart } from "./game.handler.js";
-import { monsterCreate } from "./ex.monster.hanlder.js";
+import { monsterCreate } from "./monster.handler.js";
 // import { moveStageHandler } from "./stage.handler.js";
 
 const handlerMappings = {
