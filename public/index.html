@@ -1,11 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Changmin Kang" />
     <title>내일배움캠프 Node.js 트랙 타워 디펜스 게임</title>
-    <link rel="icon" type="image/x-icon" href="/tower_defense_client/images/favicon.ico" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/tower_defense_client/images/favicon.ico"
+    />
     <style>
       body {
         display: flex;
@@ -43,60 +47,58 @@
     <canvas id="gameCanvas" width="1920" height="1080"></canvas>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script type="module">
-      const BASE_URL = "http://localhost:8080/api";
+      const BASE_URL = 'http://localhost:8080/api';
 
-    // 토큰 확인 및 유저 정보 가져오기 함수
-       async function fetchUserInfo() {
-        const token = localStorage.getItem("authToken");
+      // 토큰 확인 및 유저 정보 가져오기 함수
+      async function fetchUserInfo() {
+        const token = localStorage.getItem('authToken');
 
         if (!token) {
-          alert("로그인이 필요합니다.");
-          window.location.href = "login.html"; // 로그인 페이지로 리다이렉트
+          alert('로그인이 필요합니다.');
+          window.location.href = 'login.html'; // 로그인 페이지로 리다이렉트
           return;
         }
 
         try {
           const response = await fetch(`${BASE_URL}/users`, {
-            method: "GET",
+            method: 'GET',
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
           });
 
           if (response.ok) {
             const result = await response.json();
           } else {
-            alert("인증에 실패했습니다. 다시 로그인하세요.");
-            localStorage.removeItem("authToken");
-            window.location.href = "login.html"; // 로그인 페이지로 리다이렉트
+            alert('인증에 실패했습니다. 다시 로그인하세요.');
+            localStorage.removeItem('authToken');
+            window.location.href = 'login.html'; // 로그인 페이지로 리다이렉트
           }
         } catch (error) {
-          console.error("유저 정보를 가져오는 중 오류 발생:", error);
-          alert("오류가 발생했습니다. 다시 로그인하세요.");
-          localStorage.removeItem("authToken");
-          window.location.href = "login.html"; // 로그인 페이지로 리다이렉트
+          console.error('유저 정보를 가져오는 중 오류 발생:', error);
+          alert('오류가 발생했습니다. 다시 로그인하세요.');
+          localStorage.removeItem('authToken');
+          window.location.href = 'login.html'; // 로그인 페이지로 리다이렉트
         }
       }
 
-
       document
-        .getElementById("registerButton")
-        .addEventListener("click", () => {
-          window.location.href = "register.html";
+        .getElementById('registerButton')
+        .addEventListener('click', () => {
+          window.location.href = 'register.html';
         });
 
-      document.getElementById("loginButton").addEventListener("click", () => {
-        window.location.href = "login.html";
+      document.getElementById('loginButton').addEventListener('click', () => {
+        window.location.href = 'login.html';
       });
 
-      document.getElementById("playButton").addEventListener("click", () => {
-        document.querySelector(".button-container").style.display = "none";
-        document.getElementById("gameCanvas").style.display = "block";
-        import("./src/game.js");
+      document.getElementById('playButton').addEventListener('click', () => {
+        document.querySelector('.button-container').style.display = 'none';
+        document.getElementById('gameCanvas').style.display = 'block';
+        import('./src/game.js');
       });
-
-
+      
       //fetchUserInfo();
     </script>
   </body>
