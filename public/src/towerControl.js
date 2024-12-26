@@ -15,12 +15,19 @@ export class TowerControl {
   getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
+  
 
-  getTowerqueue() {
+  
+      
+  
+
+
+  async getTowerqueue() {
+    const TowerQueueTyep = await loadTowerQueue(); 
+    console.log(TowerQueueTyep);
     if (this.towerqueue.length === 5) {
       return this.towerqueue;
     }
-
     while (this.towerqueue.length < 5) {
       const index = this.getRandomNumber(0, this.towerImages.length - 1);
       this.towerqueue.push({

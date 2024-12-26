@@ -20,6 +20,19 @@ console.log(somewhere);
     }
   });
 
+
+  const loadTowerQueue = () => {
+    return new Promise((resolve, reject) => {
+      socket.emit('requestTowerQueue');
+      socket.on('TowerQueueData', (TowerQueueTyep) => {
+        resolve(TowerQueueTyep);
+      });
+      socket.on('error', (error) => {
+        reject(error);
+      });
+    });
+  };
+
   const sendEvent = (handlerId, payload) => {
     socket.emit('event', {
       token: somewhere,
@@ -28,4 +41,4 @@ console.log(somewhere);
     });
   };
 
-  export { sendEvent };
+  export { sendEvent, loadTowerQueue };

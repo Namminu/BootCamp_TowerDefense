@@ -7,8 +7,8 @@ export const buyTower = (userId, payload) => {
 
 let currentTowers = getTower(userId);
 
-const width = 78; // 타워 너비
-const height = 150; // 타워 높이
+const width = 220 / 1.5; // 타워 너비
+const height = 270 / 1.5; // 타워 높이
 
 const newTowerX = payload.x;
 const newTowerY = payload.y;
@@ -27,7 +27,7 @@ if (isTooClose) {
 
 
 
-setTower(userId, payload.x, payload.y, payload.level);
+setTower(userId, payload.id, payload.type, payload.x, payload.y, payload.level);
 
 return { status: 'success', message: "타워 배치 성공적." };
 };

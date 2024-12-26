@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 
 // path.dirname() 함수는 파일 경로에서 디렉토리 경로만 추출 (파일 이름을 제외한 디렉토리의 전체 경로)
 const __dirname = path.dirname(__filename);
-const basePath = path.join(__dirname, '../../public/assets');
+const basePath = path.join(__dirname, '../../assets');
 let gameAssets = {}; // 전역함수로 선언
 
 const readFileAsync = (filename) => {

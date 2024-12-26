@@ -6,6 +6,7 @@ import userRouter from "./routes/user.router.js";
 import path from "path";
 import cors from "cors";
 import { fileURLToPath } from "url";
+import { loadGameAssets } from "./init/assets.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const __filename = fileURLToPath(import.meta.url);
@@ -42,6 +43,12 @@ initSocket(server); //웹소켓 서버 연결.
 
 server.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
+
+  try {
+    const assets = await loadGameAssets(); //여기서 에셋 가져옴.
+  } catch (e) {
+    console.error('Failed to load game assets:', e);
+  }
 });
 
 //npx nodemon src/app.js 실행 키임 ㅇㅇ

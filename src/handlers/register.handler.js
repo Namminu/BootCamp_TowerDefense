@@ -14,6 +14,11 @@ const registerHandler = (io) => {
 
         addUser({ uuid: userId, socketId: socket.id });
 
+        socket.on('requestTowerQueue', () => { const TowerQueueTyep = getTowerQueue();
+        socket.emit('TowerQueueData', TowerQueueTyep);
+        });
+
+
         handleConnection(socket, userId);
 
         socket.on('event', (data) => handlerEvent(io, socket, data));
