@@ -3,6 +3,7 @@ import { Monster } from "./monster.js";
 import { Tower } from "./tower.js";
 import towerData from "../assets/tower.json" with { type: "json" };
 import { TowerControl } from "./towerControl.js";
+import { sendEvent } from "./socket.js"
 
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
@@ -53,6 +54,8 @@ let feverTriggered = false; // 피버 모드 실행 여부를 확인하는 플�
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
+
+let userId = null; // 현재 플레이 중인 유저 이메일
 
 // 게임 에셋 로드
 const TOWER_CONFIG = towerData.data;
@@ -265,6 +268,7 @@ function spawnMonster() {
 }
 
 async function gameLoop() {
+  const currentTime = performance.now();
   //게임 반복.
   // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
@@ -291,11 +295,12 @@ async function gameLoop() {
     if (monster.hp > 0) {
       const isDestroyed = monster.move(base);
       if (isDestroyed) {
+        const testRound = 1;
         /* 게임 오버 */
-        alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
+        //alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
         // 게임 종료 시 서버로 gameOver 이벤트 전송
-        await sendEvent(3, { userId, currentRound });
-        location.reload();
+        await sendEvent(3, { id: 'dkdlel', currentRound: testRound });
+        //location.reload();
       }
       monster.draw(ctx);
     } else {
@@ -392,7 +397,7 @@ async function gameLoop() {
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
   base.draw(ctx, baseImage);
-  base.selfHeal();
+  base.selfHeal(currentTime);
 
   // 인벤토리 그리기
   towerControl.drawqueue(ctx, canvas);
@@ -413,6 +418,8 @@ function initGame() {
   if (isInitGame) {
     return; // 이미 초기화된 경우 방지
   }
+
+  userId = null;  // 여기서 플레이 중인 유저의 email 받아오기
 
   isInitGame = true;
   userGold = 1000; // 초기 골드 설정
@@ -478,7 +485,7 @@ function canPlaceTower(x, y) {
 
     const distance = Math.sqrt(
       Math.pow(towerCenterX - newTowerCenterX, 2) +
-        Math.pow(towerCenterY - newTowerCenterY, 2)
+      Math.pow(towerCenterY - newTowerCenterY, 2)
     ).toFixed(2); // 소수점 둘째 자리까지 반올림
 
     console.log("Distance between towers:", distance);

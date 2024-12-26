@@ -14,7 +14,7 @@ export const handleConnection = (socket, uuid) => {
   console.log(`새 유저:${uuid}, 소켓아이디 ${socket.id}`);
   console.log('현재 접속중인 유저:', getUser());
 
-  createStage(uuid);
+  //createStage(uuid);
 
   socket.emit('connection', { uuid });
 };
@@ -27,6 +27,7 @@ export const handlerEvent = (io, socket, data) => {
   }
 
   const response = handler(data.userId, data.payload);
+  response.handlerId = data.handlerId;
 
   if (response.broadcast) {
     io.emit('response', response);

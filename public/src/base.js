@@ -7,6 +7,7 @@ export class Base {
     this.height = 225; // 기지 이미지 세로 길이
     this.hp = maxHp; // 기지의 현재 HP
     this.maxHp = maxHp; // 기지의 최대 HP
+    this.lastHealTime = 0; // 기지 자동 회복 주기 설정
   }
 
   draw(ctx, baseImage) {
@@ -34,8 +35,13 @@ export class Base {
     return this.hp <= 0; // 기지의 HP가 0 이하이면 true, 아니면 false
   }
 
-  selfHeal() {
-    console.log("Base Self Heal");
-    this.hp *= 1.02;
+  selfHeal(currentTime) {
+    // 1초마다 로직 실행
+    if (currentTime - this.lastHealTime < 1000) return;
+    this.lastHealTime = currentTime; // 현재 시간을 저장
+
+    if (this.hp >= this.maxHp) return;
+    this.hp = Math.floor(this.hp + (this.maxHp * 0.02));
+    if (this.hp >= this.maxHp) this.hp = this.maxHp;
   }
 }

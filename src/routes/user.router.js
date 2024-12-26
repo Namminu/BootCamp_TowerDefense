@@ -11,7 +11,7 @@ const router = express.Router();
 // ** 회원가입 API **
 router.post('/sign-up', async (req, res) => {
   try {
-    const { userId, password} = req.body;
+    const { userId, password, nickName } = req.body;
 
     const existingUser = await prisma.users.findUnique({
       where: { nickName },
@@ -24,13 +24,13 @@ router.post('/sign-up', async (req, res) => {
 
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const nickName = 'test001'; // 닉네임 임시 설정
+    //const nickName = 'test001'; // 닉네임 임시 설정
 
     await prisma.users.create({
       data: {
-        userId, 
+        userId,
         password: hashedPassword,
-        nickName, 
+        nickName,
       },
     });
 
