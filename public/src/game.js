@@ -57,6 +57,9 @@ let isInitGame = false;
 
 const TOWER_CONFIG = towerData.data;
 
+// 경로를 저장할 배열
+let paths = [];
+
 // 이미지 로딩 파트
 const backgroundImage = new Image();
 backgroundImage.src = "./images/bg.webp";
@@ -153,8 +156,10 @@ function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로�
 }
 
 function initMap() {// 배경 이미지 그리기
-  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); 
-  drawPath();
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+  for(let i = 0; i < 3; i++){
+    paths[i] = drawPath();
+  } 
 }
 
 function drawPath() {  //경로에 따라 길을 그리는것.
@@ -255,19 +260,18 @@ function placeBase() {
   base.draw(ctx, baseImage);
 }
 
-// 클라에서 서버로 몬스터 생성 주기를 전송하는 것이 아닌 서버에서 계산을 한 후에 클라로 전송하게 하자
+// 스테이지를 서버로 전달
 function sendMonsterSpawnInterval() {
   const payload = {
-    duration: monsterSpawnInterval,
+    round: 0,
     timestamp: Date.now(),
   };
   sendEvent(13, payload);
 }
 
-//여기서 생성하되 서버에서 신호를 보내줘야 함
+//실질적인 몬스터 소환 함수
 export function spawnMonster() {
   console.log("몬스터가 생성되었습니다!");
-  //몬스터를 monsters 에 넣는 함수.
   monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
 }
 
@@ -425,7 +429,7 @@ function initGame() {
   userGold = 1000; // 초기 골드 설정
   score = 0;
   monsterLevel = 1;
-  monsterSpawnInterval = 2000;
+  //monsterSpawnInterval = 2000;
 
   monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
   initMap(); // 맵 초기화 (배경, 경로 그리기)

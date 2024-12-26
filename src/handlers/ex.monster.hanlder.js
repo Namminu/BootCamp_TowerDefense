@@ -1,30 +1,34 @@
-let spawnTimer = null;
-let spawnInterval = null;
+import { createRoundInfo, getRoundInfo } from "../models/roundInfo.model.js";
 
 //먼저 stage에 접근을 해서 stage마다의 생성 주기에 접근?
 export const monsterCreate = (socket, userId, payload) => {
   console.log("getMonsterCreateHandler", payload);
 
-  const { duration, timestamp } = payload;
+  const { round } = payload;
+  createRoundInfo(round);
+  const roundInfo = getRoundInfo(round);
+  console.log("roundInfo: ", roundInfo);
+
+  if(!roundInfo) {
+    console.log(`라운드 정보가 없습니다. round : ${round}`);
+    return { status: 'fail', message: 'Round Info Not Found' };
+  }
+
+  const { duration, count, time } = roundInfo;
   const now = Date.now();
-  const timeSinceLastSpawn = now - timestamp;
-
-   // 기존 타이머가 있을 경우 제거
-   if (spawnTimer) clearTimeout(spawnTimer);
-   if (spawnInterval) clearInterval(spawnInterval);
-
-  // 다음 몬스터 생성까지 남은 시간 계산
-  const nextSpawnIn = Math.max(0, duration - timeSinceLastSpawn);
-
-  //확인을 위한 setTimeout과 setInterval 사용중 확인이 끝나면 함수 변경예정
-  setTimeout(() => {
-    socket.emit("spawnMonster", { message: "몬스터 생성하세요!" });
-  }, nextSpawnIn);
+  //const timestamp = payload.timestamp || now;
+  //const timeSinceLastSpawn = now - timestamp;
 
   // 이후 주기적으로 몬스터 생성 이벤트 전송
+  //const spawnInterval = 
   setInterval(() => {
-    socket.emit("spawnMonster", { message: "몬스터 생성하세요!" });
+    socket.emit("spawnMonster", { message: "몬스터 생성하세요!", round, count });
   }, duration);
 
-  return { status: 'success', message: `monster Create`};
+  // setTimeout(() => {
+  //   clearInterval(spawnInterval);
+  //   socket.emit("endRound", { message: "라운드 종료되었습니다.", round});
+  // }, time);
+
+  return { status: 'success', message: `Monster Spawning started for round ${round}`};
 };

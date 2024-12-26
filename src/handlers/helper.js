@@ -1,5 +1,5 @@
 import { getGameAssets } from "../init/assets.js";
-import { createStage, getStage, setStage } from "../models/round.model.js";
+//import { createStage, getStage, setStage } from "../models/round.model.js";
 import { getUser, removeUser } from "../models/user.model.js";
 import handlerMappings from "./handlerMapping.js";
 
@@ -14,7 +14,7 @@ export const handleConnection = (socket, uuid) => {
   console.log(`새 유저:${uuid}, 소켓아이디 ${socket.id}`);
   console.log('현재 접속중인 유저:', getUser());
 
-  createStage(uuid);
+  //createStage(uuid);
 
   socket.emit('connection', { uuid });
 };
