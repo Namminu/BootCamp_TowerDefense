@@ -271,13 +271,6 @@ function placeBase() {
 
 
 // 스테이지를 서버로 전달
-function sendMonsterSpawnInterval() {
-  const payload = {
-    round: 0,
-    timestamp: Date.now(),
-  };
-  sendEvent(13, payload);
-}
 
 //실질적인 몬스터 소환 함수
 export function spawnMonster() {
@@ -470,12 +463,12 @@ function initGame() {
   placeBase(); // 기지 배치
   //setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
   // 서버에 몬스터 스폰 주기와 타이밍 동기화
-  sendMonsterSpawnInterval(); 
+  sendEvent(13, { round: 0, timestamp: Date.now()});
   gameLoop(); // 게임 루프 시작
 } //이게 시작이네. 
 
 if (!isInitGame) {
-  //sendEvent(2,{timestamp: Date.now()})
+  sendEvent(2,{timestamp: Date.now()})
   initGame();
 }
 

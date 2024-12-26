@@ -6,12 +6,12 @@ import { createUserData, setUserRound } from "../models/userData.model.js";
 
 export const gameStart = (uuid, payload) => {
 
-  const { towers } = getGameAssets();
+  const { tower } = getGameAssets();
   
   createUserData(uuid);
   createTower(uuid);
   createTowerQueue(uuid);
-  setTowerQueue(uuid ,towers);
+  setTowerQueue(uuid ,tower);
   setUserRound(uuid, 1, Date.now(), 1000);
   return { status: "success" };
 };
