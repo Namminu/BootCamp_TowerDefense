@@ -165,6 +165,8 @@ function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로�
 
   return path;
 
+}
+
 
 function initMap() {
 	// 배경 이미지 그리기
