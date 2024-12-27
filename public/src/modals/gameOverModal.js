@@ -1,3 +1,5 @@
+import { initGame } from "../game.js";
+
 // 게임 오버 모달창 html 파일 로드
 export async function initModal() {
     try {
@@ -15,13 +17,13 @@ export async function initModal() {
 }
 
 // 게임 오버 모달창 설정
-export function showModal(message, userName, highScore, currentRound) {
+export function showModal(message, userName, highScore, currentRound, time) {
     const modal = document.getElementById('gameOverModal');
 
     document.getElementById('message').textContent = `${message}`;
     document.getElementById('userName').textContent = `이름 : ${userName}`;
-    document.getElementById('highScore').textContent = `최고 라운드 : ${highScore}`;
-    document.getElementById('currentRound').textContent = `현재 라운드 : ${currentRound}`;
+    document.getElementById('highScore').textContent = `최고 기록 : ${highScore}Round ${time}sec`;
+    document.getElementById('currentRound').textContent = `현재 기록 : ${currentRound}Round ${time}sec`;
 
     modal.style.display = 'flex';
     modal.classList.add('show');
@@ -29,8 +31,7 @@ export function showModal(message, userName, highScore, currentRound) {
     document.getElementById('restartButton').addEventListener('click', () => {
         console.log('재시작 버튼 클릭');
         closeModal();
-        isInitGame = false;
-        initGame();
+        initGame(true); // 게임 재시작
     });
 
     document.getElementById('mainButton').addEventListener('click', () => {

@@ -11,7 +11,7 @@ router.get('/rank', authmiddlewares, async (req, res) => {
 			select: {
 				userId: true,
 				highScore: true,
-				released: true
+				elapsed: true
 			}
 		});
 		if (!rankers) return res.status(404).json({ message: "Rank Data Not Found" });
@@ -20,10 +20,16 @@ router.get('/rank', authmiddlewares, async (req, res) => {
 		const transformRankers = rankers.map(rank => ({
 			UserId: rankers.userId,
 			Round: rank.highScore,
-			Time: rankers.released
+			Time: rankers.elapsed
 		}));
 
-		return res.status(200).json({ message: '전체 랭킹 조회 성공', data: transformRankers });
+		// 데이터 가공 후 정렬 : Round 우선, 같은 경우 Time 비교
+		const sortedRankers = transformRankers.sort((a, b) => {
+			if (b.Round !== a.Round) return b.Round - a.Round;
+			return b.Time - a.Time;
+		});
+
+		return res.status(200).json({ message: '전체 랭킹 조회 성공', data: sortedRankers });
 	} catch (err) {
 		console.error(err); // 에러를 콘솔에 출력
 		return res

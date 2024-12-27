@@ -227,8 +227,8 @@ export function spawnMonster() {
 }
 
 async function gameLoop() {
-	const currentTime = performance.now();
-	//게임 반복.
+	const currentTime = Date.now();
+	// 게임 반복.
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
 	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
 	drawPath(monsterPath); // 경로 다시 그리기
@@ -251,27 +251,26 @@ async function gameLoop() {
 			continue;
 		}
 
-    if (monster.hp > 0) {
-      const isDestroyed = monster.move(base);
-      if (isDestroyed) {
-        const testRound = 1;
-        /* 게임 오버 */
-        // 게임 종료 시 서버로 gameOver 이벤트 전송
-        const response = await sendEvent(3, { currentRound: testRound /*currentRound*/ });
-        //const { message, userName, highScore } = response;
-        //showModal(message, userName, highScore/*, currentRound*/);
+		if (monster.hp > 0) {
+			const isDestroyed = monster.move(base);
+			if (isDestroyed) {
+				const testRound = 1;
+				/* 게임 오버 */
+				// 게임 종료 시 서버로 gameOver 이벤트 전송
+				const response = await sendEvent(3, { currentRound: testRound, timestamp: currentTime });
+				const { message, userName, highScore, time } = response;
+				console.log('message : ', message, 'userName : ', userName, 'highScore : ', highScore, 'time : ', time);
+				showModal(message, userName, highScore, 1, time);
 
-        /* 테스트용 */
-        showModal("테스트 기록!", "테스트입니다", 1500, 1200);
-        //gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
-      }
-      monster.draw(ctx);
-    } else {
-      /* 몬스터가 죽었을 때 */
-      monster.dead();
-      monsters.splice(i, 1);
-    }
-  }
+				//gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
+			}
+			monster.draw(ctx);
+		} else {
+			/* 몬스터가 죽었을 때 */
+			monster.dead();
+			monsters.splice(i, 1);
+		}
+	}
 
 	// towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
 	towerControl.sortTowers();
@@ -412,10 +411,9 @@ async function gameLoop() {
 	requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-async function initGame() {
-  if (isInitGame) {
-    return; // 이미 초기화된 경우 방지
-  }
+export async function initGame(getReset = false) {
+	if (isInitGame && !getReset) return; // 이미 초기화된 경우 방지
+	if (getReset) isInitGame = false;
 
 	isInitGame = true;
 	userGold = 800; // 초기 골드 설정
@@ -424,8 +422,7 @@ async function initGame() {
 	//monsterSpawnInterval = 2000;
 
 	monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
-	
-	await initModal();  // 게임오버 모달창 초기 로드
+
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
 	// placeInitialTowers(); // 초기 타워 배치
 	placeBase(); // 기지 배치
@@ -433,6 +430,8 @@ async function initGame() {
 	// 서버에 몬스터 스폰 주기와 타이밍 동기화
 	queueEvent(13, { round: 0, timestamp: Date.now() });
 	gameLoop(); // 게임 루프 시작
+
+	await initModal();  // 게임오버 모달창 초기 로드
 } //이게 시작이네.
 
 if (!isInitGame) {
@@ -449,7 +448,7 @@ Promise.all([
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),
-]).then(() => {});
+]).then(() => { });
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
