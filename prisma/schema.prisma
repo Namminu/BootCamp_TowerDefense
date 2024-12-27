@@ -21,7 +21,7 @@ model Users {
 model HighScores {
   id        Int      @id @default(autoincrement()) @map("id")
   userId    Int      @unique @map("userId")
-  highScore Int      @map("highScore")
+  highScore Int      @default(0) @map("highScore")
   createdAt DateTime @default(now()) @map("createdAt")
   users     Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
