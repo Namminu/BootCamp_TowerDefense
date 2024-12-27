@@ -3,9 +3,8 @@ import { Monster } from './monster.js';
 import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
-import { sendEvent } from './Socket.js';
+import { sendEvent } from './socket.js';
 
-let serverSocket; // 서버 웹소켓 객체
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -13,7 +12,7 @@ const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
-let baseHp = 500; // 기지 체력
+let baseHp = 10; // 기지 체력
 
 // 타워 관련 변수
 let towerCost; // 타워 구입 비용
@@ -93,6 +92,21 @@ const gageBar = {
 
 let monsterPath;
 
+const eventQueue = []; // 이벤트 큐 센드 이벤트
+
+export function queueEvent(handlerId, payload) {
+	eventQueue.push({ handlerId, payload });
+}
+
+function processQueue() {
+	if (eventQueue.length > 0) {
+		const event = eventQueue.shift(); // 큐에서 첫 번째 이벤트 제거
+		sendEvent(event.handlerId, event.payload); // 서버로 이벤트 전송
+	}
+}
+
+setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
+
 function generateRandomMonsterPath() {
 	//몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
 	const path = [];
@@ -110,12 +124,11 @@ function generateRandomMonsterPath() {
 
 		currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
 		// y 좌표에 대한 clamp 처리
-		// 길이 중간에 만들어지게 조정
-		if (currentY < 300) {
-			currentY = 300;
+		if (currentY < 100) {
+			currentY = 100;
 		}
-		if (currentY > 600) {
-			currentY = 600;
+		if (currentY > 900) {
+			currentY = 900;
 		}
 
 		path.push({ x: currentX, y: currentY });
@@ -182,13 +195,6 @@ function placeBase() {
 }
 
 // 스테이지를 서버로 전달
-function sendMonsterSpawnInterval() {
-	const payload = {
-		round: 0,
-		timestamp: Date.now(),
-	};
-	sendEvent(13, payload);
-}
 
 //실질적인 몬스터 소환 함수
 export function spawnMonster() {
@@ -197,6 +203,7 @@ export function spawnMonster() {
 }
 
 async function gameLoop() {
+	const currentTime = performance.now();
 	//게임 반복.
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
 	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
@@ -223,11 +230,12 @@ async function gameLoop() {
 		if (monster.hp > 0) {
 			const isDestroyed = monster.move(base);
 			if (isDestroyed) {
+				const testRound = 1;
 				/* 게임 오버 */
-				alert('게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ');
+				//alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
 				// 게임 종료 시 서버로 gameOver 이벤트 전송
-				// await sendEvent(3, { userId, currentRound });
-				location.reload();
+				queueEvent(3, { currentRound: testRound });
+				//location.reload();
 			}
 			monster.draw(ctx);
 		} else {
@@ -333,11 +341,8 @@ async function gameLoop() {
 			killCount = 0; // killCount 초기화
 			ableToMoveRound = true;
 
-			// 피버 모드가 끝난 후 플래그 초기화
-			setTimeout(() => {
-				feverTriggered = false;
-				base.selfHeal();
-			}, 5000); // feverTime 메서드 실행 시간과 일치하도록 설정
+			feverTriggered = false;
+			base.selfHeal();
 		});
 	}
 
@@ -364,7 +369,7 @@ async function gameLoop() {
 
 	// 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
 	base.draw(ctx, baseImage);
-	// base.selfHeal(); // 지워도 됨(테스트용)
+	//base.selfHeal(currentTime);
 
 	// 인벤토리 그리기
 	towerControl.drawqueue(ctx, canvas, monsterLevel);
@@ -392,43 +397,29 @@ function initGame() {
 
 	monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
+	// placeInitialTowers(); // 초기 타워 배치
 	placeBase(); // 기지 배치
 	//setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
 	// 서버에 몬스터 스폰 주기와 타이밍 동기화
-	sendMonsterSpawnInterval();
+	queueEvent(13, { round: 0, timestamp: Date.now() });
 	gameLoop(); // 게임 루프 시작
 } //이게 시작이네.
+
+if (!isInitGame) {
+	// queueEvent(2, { timestamp: Date.now() });
+	initGame();
+}
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
 Promise.all([
 	new Promise((resolve) => (backgroundImage.onload = resolve)),
-	// new Promise((resolve) => (towerImage.onload = resolve)),
+	new Promise((resolve) => (towerImages.onload = resolve)),
 	new Promise((resolve) => (baseImage.onload = resolve)),
 	new Promise((resolve) => (pathImage.onload = resolve)),
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),
-]).then(() => {
-	/* 서버 접속 코드 (여기도 완성해주세요!) */
-	let somewhere;
-
-	serverSocket = io('http://localhost:8080', {
-		auth: {
-			token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
-		},
-	});
-
-	//서버의 이벤트들을 받는 코드들은 여기다가 쭉 작성해주시면 됩니다!
-	//e.g. serverSocket.on("...", () => {...});
-	//이 때, 상태 동기화 이벤트의 경우에 아래의 코드를 마지막에 넣어주세요! 최초의 상태 동기화 이후에 게임을 초기화해야 하기 때문입니다!
-	if (!isInitGame) {
-		initGame();
-	}
-});
-
-if (!isInitGame) {
-	initGame();
-}
+]).then(() => {});
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
@@ -454,8 +445,7 @@ function canPlaceTower(x, y) {
 		const towerCenterY = tower.y + tower.height / 2;
 
 		const distance = Math.sqrt(
-			Math.pow(towerCenterX - newTowerCenterX, 2) +
-				Math.pow(towerCenterY - newTowerCenterY, 2),
+			Math.pow(towerCenterX - newTowerCenterX, 2) + Math.pow(towerCenterY - newTowerCenterY, 2),
 		).toFixed(2); // 소수점 둘째 자리까지 반올림
 
 		console.log('Distance between towers:', distance);
@@ -507,7 +497,14 @@ canvas.addEventListener('click', (event) => {
 			previewTower.x = mouseX - previewTower.width / 2;
 			previewTower.y = mouseY - previewTower.height / 2;
 			towerControl.towers.push(previewTower);
-
+			//타워 구매 - sendEvent
+			queueEvent(5, {
+				type: previewTower.type,
+				x: previewTower.x,
+				y: previewTower.y,
+				timestamp: Date.now(),
+				index: towerIndex,
+			});
 			console.log('Tower placed at:', previewTower.x, previewTower.y);
 			console.log('All towers:', towerControl.towers);
 
