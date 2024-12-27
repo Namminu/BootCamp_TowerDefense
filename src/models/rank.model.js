@@ -9,7 +9,10 @@ export const updateHighScore = async (userId, currentRound) => {
     // 테이블 안에서 highScore 찾는 과정
     const userHighScore = await prisma.highScores.findFirst({
         where: { userId: userId },
-        select: { highScore: true }
+        select: {
+            highScore: true,
+            released: true
+        }
     });
 
     // HighScores 테이블에 정보가 없을 경우 데이터 새로 생성 
