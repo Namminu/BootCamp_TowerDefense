@@ -150,9 +150,9 @@ setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한�
 // 	return path;
 // }
 
-function setMonsterPathFromGeneratedPath(startPoint, endPoint) {
+function setMonsterPathFromGeneratedPath() {
   // generatePath 결과를 기반으로 몬스터 경로 설정
-  const generatedPath = generatePath(startPoint, endPoint);
+  const generatedPath = path;
   if (!generatedPath || generatedPath.length === 0) {
       console.error('Path generation failed or empty.');
       return [];
@@ -429,7 +429,7 @@ function initGame() {
 	//monsterSpawnInterval = 2000;
 
 	//monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
-  monsterPath = setMonsterPathFromGeneratedPath(startPoint, endPoint);
+  monsterPath = setMonsterPathFromGeneratedPath();
 
   if(monsterPath.length === 0){
     console.error('monsterPath is not defined');
