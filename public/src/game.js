@@ -341,11 +341,8 @@ async function gameLoop() {
 			killCount = 0; // killCount 초기화
 			ableToMoveRound = true;
 
-			// 피버 모드가 끝난 후 플래그 초기화
-			setTimeout(() => {
-				feverTriggered = false;
-				base.selfHeal();
-			}, 5000); // feverTime 메서드 실행 시간과 일치하도록 설정
+			feverTriggered = false;
+			base.selfHeal();
 		});
 	}
 
