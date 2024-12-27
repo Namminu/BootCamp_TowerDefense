@@ -121,6 +121,24 @@ const gageBar = {
 
 let monsterPath;
 
+//길이 한개만 생성이 되네
+function generateMultiplePaths(numberOfPaths) {
+  paths = [];
+  for(let i = 0; i < numberOfPaths; i++){
+    // 개별 경로 생성
+    const path = generateRandomMonsterPath(); 
+    paths.push(path);
+  }
+}
+
+// 여러 경로를 그리는 함수
+function drawAllPaths() {
+  paths.forEach((path) => {
+    // 저장된 경로를 하나씩 그리기
+    drawPath(path); 
+  });
+}
+
 function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
   const path = [];
   let currentX = 0;
@@ -150,16 +168,15 @@ function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로�
   path[path.length - 1].y = path[0].y;
 
   // 경로 정렬 (x 기준으로 오름차순 정렬)
-  path.sort((a, b) => a.x - b.x);
+  //path.sort((a, b) => a.x - b.x);
 
   return path;
 }
 
 function initMap() {// 배경 이미지 그리기
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-  for(let i = 0; i < 3; i++){
-    paths[i] = drawPath();
-  } 
+  generateMultiplePaths(3);
+  drawAllPaths();
 }
 
 function drawPath() {  //경로에 따라 길을 그리는것.
