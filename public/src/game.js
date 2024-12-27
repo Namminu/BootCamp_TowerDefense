@@ -3,33 +3,10 @@ import { Monster } from './monster.js';
 import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
-import { sendEvent } from "./socket.js";
+import { sendEvent } from './socket.js';
 
-
-/* 
-  어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
-*/
-
-/*
-
-추가하고 싶은거?
-2. 경로를 3개정도로 추가해 여러 방향에서 오도록 하기.
-3. 스테이지 구분,
-4. 포탑 업그레이드. , 포탑판매. --> 이거 하려면 중복되면 안됨. 그니까. 겹치면 안됨.
-5. 보스 몬스터 등장. -> 그냥 스폰 몬스터 이미지만 바꾸고 능력치 바꾸면 될듯? 아님 레벨 올리던가. 특별한 능력 추가해도 되고.
-6. 게임 종료시 그 스테이지 반환?
-
-서버에서 할일
-1. 점수 관리. - 점수 계산.
-2. 스테이지 관리.
-3. 몬스터 잡은 수 관리. --> 게임 껏다 키면 (즉 스테이지 관리시 힘드니까. "스테이지 넘어갈때" 만 주는걸로.)
-4. 
-
-*/
-
-
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
@@ -115,55 +92,55 @@ const gageBar = {
 
 let monsterPath;
 
-const eventQueue = []; // 이벤트 큐 센드 이벤트 
+const eventQueue = []; // 이벤트 큐 센드 이벤트
 
 export function queueEvent(handlerId, payload) {
-  eventQueue.push({ handlerId, payload });
+	eventQueue.push({ handlerId, payload });
 }
 
-
 function processQueue() {
-  if (eventQueue.length > 0) {
-    const event = eventQueue.shift(); // 큐에서 첫 번째 이벤트 제거
-    sendEvent(event.handlerId, event.payload); // 서버로 이벤트 전송
-  }
+	if (eventQueue.length > 0) {
+		const event = eventQueue.shift(); // 큐에서 첫 번째 이벤트 제거
+		sendEvent(event.handlerId, event.payload); // 서버로 이벤트 전송
+	}
 }
 
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
+function generateRandomMonsterPath() {
+	//몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
+	const path = [];
+	let currentX = 0;
+	let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
 
-function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
-  const path = [];
-  let currentX = 0;
-  let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
+	path.push({ x: currentX, y: currentY });
 
-  path.push({ x: currentX, y: currentY });
+	while (currentX < 1800) {
+		// 마지막 x가 1600이 될 때까지 진행
+		currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
+		if (currentX > 1800) {
+			currentX = 1800; // 마지막 x는 1600
+		}
 
-  while (currentX < 1800) { // 마지막 x가 1600이 될 때까지 진행
-    currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
-    if (currentX > 1800) {
-      currentX = 1800; // 마지막 x는 1600
-    }
+		currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
+		// y 좌표에 대한 clamp 처리
+		if (currentY < 100) {
+			currentY = 100;
+		}
+		if (currentY > 900) {
+			currentY = 900;
+		}
 
-    currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
-    // y 좌표에 대한 clamp 처리
-    if (currentY < 100) {
-      currentY = 100;
-    }
-    if (currentY > 900) {
-      currentY = 900;
-    }
+		path.push({ x: currentX, y: currentY });
+	}
 
-    path.push({ x: currentX, y: currentY });
-  }
+	// 마지막 경로의 y를 시작 y와 동일하게 설정
+	path[path.length - 1].y = path[0].y;
 
-  // 마지막 경로의 y를 시작 y와 동일하게 설정
-  path[path.length - 1].y = path[0].y;
+	// 경로 정렬 (x 기준으로 오름차순 정렬)
+	path.sort((a, b) => a.x - b.x);
 
-  // 경로 정렬 (x 기준으로 오름차순 정렬)
-  path.sort((a, b) => a.x - b.x);
-
-  return path;
+	return path;
 }
 
 function initMap() {
@@ -226,11 +203,11 @@ export function spawnMonster() {
 }
 
 async function gameLoop() {
-  const currentTime = performance.now();
-  //게임 반복.
-  // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
-  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
-  drawPath(monsterPath); // 경로 다시 그리기
+	const currentTime = performance.now();
+	//게임 반복.
+	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
+	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
+	drawPath(monsterPath); // 경로 다시 그리기
 
 	ctx.font = '25px Times New Roman';
 	ctx.fillStyle = 'skyblue';
@@ -250,23 +227,23 @@ async function gameLoop() {
 			continue;
 		}
 
-    if (monster.hp > 0) {
-      const isDestroyed = monster.move(base);
-      if (isDestroyed) {
-        const testRound = 1;
-        /* 게임 오버 */
-        //alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
-        // 게임 종료 시 서버로 gameOver 이벤트 전송
-        queueEvent(3, { currentRound: testRound });
-        //location.reload();
-      }
-      monster.draw(ctx);
-    } else {
-      /* 몬스터가 죽었을 때 */
-      monster.dead();
-      monsters.splice(i, 1);
-    }
-  }
+		if (monster.hp > 0) {
+			const isDestroyed = monster.move(base);
+			if (isDestroyed) {
+				const testRound = 1;
+				/* 게임 오버 */
+				//alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
+				// 게임 종료 시 서버로 gameOver 이벤트 전송
+				queueEvent(3, { currentRound: testRound });
+				//location.reload();
+			}
+			monster.draw(ctx);
+		} else {
+			/* 몬스터가 죽었을 때 */
+			monster.dead();
+			monsters.splice(i, 1);
+		}
+	}
 
 	// towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
 	towerControl.sortTowers();
@@ -393,9 +370,9 @@ async function gameLoop() {
 		}
 	}
 
-  // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
-  base.draw(ctx, baseImage);
-  //base.selfHeal(currentTime);
+	// 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
+	base.draw(ctx, baseImage);
+	//base.selfHeal(currentTime);
 
 	// 인벤토리 그리기
 	towerControl.drawqueue(ctx, canvas, monsterLevel);
@@ -421,33 +398,31 @@ function initGame() {
 	monsterLevel = 1;
 	//monsterSpawnInterval = 2000;
 
-  monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
-  initMap(); // 맵 초기화 (배경, 경로 그리기)
-  // placeInitialTowers(); // 초기 타워 배치
-  placeBase(); // 기지 배치
-  //setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
-  // 서버에 몬스터 스폰 주기와 타이밍 동기화
-  queueEvent(13, { round: 0, timestamp: Date.now() });
-  gameLoop(); // 게임 루프 시작
-} //이게 시작이네. 
+	monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
+	initMap(); // 맵 초기화 (배경, 경로 그리기)
+	// placeInitialTowers(); // 초기 타워 배치
+	placeBase(); // 기지 배치
+	//setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
+	// 서버에 몬스터 스폰 주기와 타이밍 동기화
+	queueEvent(13, { round: 0, timestamp: Date.now() });
+	gameLoop(); // 게임 루프 시작
+} //이게 시작이네.
 
 if (!isInitGame) {
-  queueEvent(2, { timestamp: Date.now() })
-  initGame();
+	queueEvent(2, { timestamp: Date.now() });
+	initGame();
 }
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
 Promise.all([
-  new Promise((resolve) => (backgroundImage.onload = resolve)),
-  new Promise((resolve) => (towerImages.onload = resolve)),
-  new Promise((resolve) => (baseImage.onload = resolve)),
-  new Promise((resolve) => (pathImage.onload = resolve)),
-  // ...monsterImages.map(
-  //   (img) => new Promise((resolve) => (img.onload = resolve))
-  // ),
-]).then(() => {
-
-});
+	new Promise((resolve) => (backgroundImage.onload = resolve)),
+	new Promise((resolve) => (towerImages.onload = resolve)),
+	new Promise((resolve) => (baseImage.onload = resolve)),
+	new Promise((resolve) => (pathImage.onload = resolve)),
+	// ...monsterImages.map(
+	//   (img) => new Promise((resolve) => (img.onload = resolve))
+	// ),
+]).then(() => {});
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
@@ -473,8 +448,7 @@ function canPlaceTower(x, y) {
 		const towerCenterY = tower.y + tower.height / 2;
 
 		const distance = Math.sqrt(
-			Math.pow(towerCenterX - newTowerCenterX, 2) +
-				Math.pow(towerCenterY - newTowerCenterY, 2),
+			Math.pow(towerCenterX - newTowerCenterX, 2) + Math.pow(towerCenterY - newTowerCenterY, 2),
 		).toFixed(2); // 소수점 둘째 자리까지 반올림
 
 		console.log('Distance between towers:', distance);
@@ -521,15 +495,21 @@ canvas.addEventListener('click', (event) => {
 		const mouseX = event.clientX - rect.left;
 		const mouseY = event.clientY - rect.top;
 
-    if (canPlaceTower(mouseX, mouseY)) {
-      // 타워 설치
-      previewTower.x = mouseX - previewTower.width / 2;
-      previewTower.y = mouseY - previewTower.height / 2;
-      towerControl.towers.push(previewTower);
-      //타워 구매 - sendEvent
-      queueEvent(5,{type:previewTower.type, x:previewTower.x, y:previewTower.y ,timestamp:Date.now(),index:towerIndex}); 
-      console.log('Tower placed at:', previewTower.x, previewTower.y);
-      console.log('All towers:', towerControl.towers);
+		if (canPlaceTower(mouseX, mouseY)) {
+			// 타워 설치
+			previewTower.x = mouseX - previewTower.width / 2;
+			previewTower.y = mouseY - previewTower.height / 2;
+			towerControl.towers.push(previewTower);
+			//타워 구매 - sendEvent
+			queueEvent(5, {
+				type: previewTower.type,
+				x: previewTower.x,
+				y: previewTower.y,
+				timestamp: Date.now(),
+				index: towerIndex,
+			});
+			console.log('Tower placed at:', previewTower.x, previewTower.y);
+			console.log('All towers:', towerControl.towers);
 
 			// 설치 후 초기화
 			isPlacingTower = false;
