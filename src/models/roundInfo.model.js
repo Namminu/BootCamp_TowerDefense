@@ -1,7 +1,7 @@
 const roundInfo = {};
 
 // 기본 몬스터 소환 주기
-const default_duration = 2000;
+const default_duration = 3000;
 
 // 기본 몬스터 소환 수
 const default_count = 5;

@@ -63,7 +63,7 @@ export const towerControl = new TowerControl(ctx, towerImages);
 
 // 피버 타임 게이지바 너비 계수
 const gageBarWidthCoeff = 10;
-const maxRage = 5;
+const maxRage = 20;
 let gageBarWidth = maxRage * gageBarWidthCoeff;
 
 const gageBar = {
@@ -110,11 +110,12 @@ function generateRandomMonsterPath() {
 
 		currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
 		// y 좌표에 대한 clamp 처리
-		if (currentY < 100) {
-			currentY = 100;
+		// 길이 중간에 만들어지게 조정
+		if (currentY < 300) {
+			currentY = 300;
 		}
-		if (currentY > 900) {
-			currentY = 900;
+		if (currentY > 600) {
+			currentY = 600;
 		}
 
 		path.push({ x: currentX, y: currentY });
@@ -240,7 +241,7 @@ async function gameLoop() {
 	towerControl.sortTowers();
 
 	// 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
-	towerControl.towers.forEach(async (tower) => {
+	towerControl.towers.forEach((tower) => {
 		// 몬스터 관련 로직
 		monsters.forEach((monster) => {
 			if (monster.isDead) return; // 이미 죽은 몬스터는 무시
@@ -256,7 +257,7 @@ async function gameLoop() {
 					score += monsterLevel;
 					userGold += 10 * monsterLevel;
 
-					if (!tower.feverMode) {
+					if (!tower.feverMode && !feverTriggered) {
 						killCount += 1;
 						console.log(`killCount: ${killCount}`); // 몬스터 처치 수 출력
 					}
@@ -275,6 +276,10 @@ async function gameLoop() {
 		}
 		tower.draw();
 		tower.updateCooldown();
+	});
+
+	// 타워 자세히 보기창 그리기
+	towerControl.towers.forEach(async (tower) => {
 		// 타워를 클릭했을 때 자세히 보기 창을 띄우기
 		if (tower.isClicked) {
 			tower.showTowerInfo();
@@ -304,7 +309,7 @@ async function gameLoop() {
 
 			setTimeout(() => {
 				printMessage = false;
-			}, 3000);
+			}, 1500);
 		}
 
 		// 자세히 보기 창에서 판매 버튼을 클릭했을 때
@@ -339,9 +344,9 @@ async function gameLoop() {
 	if (feverTriggered) {
 		// 피버 타임 알림 문구 띄우기
 		towerControl.towers.forEach((tower) => {
-			ctx.fillStyle = '#BE3144';
+			ctx.fillStyle = '#FF3F00';
 			ctx.font = 'bold 20px Arial';
-			ctx.fillText('고양이 파워!', tower.x - 2, tower.y + tower.height);
+			ctx.fillText('고양이 파워!', tower.x + 5, tower.y + tower.height);
 		});
 	}
 
@@ -359,6 +364,7 @@ async function gameLoop() {
 
 	// 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
 	base.draw(ctx, baseImage);
+	// base.selfHeal(); // 지워도 됨(테스트용)
 
 	// 인벤토리 그리기
 	towerControl.drawqueue(ctx, canvas, monsterLevel);
@@ -557,7 +563,7 @@ canvas.addEventListener('mousemove', (event) => {
 
 // 타워 정보창 관련 변수
 let activeTowerInfo = null;
-// 타워 이미지를 클릭했을 때 정보창 열기 & 이미지 바��을 누르면 닫기
+// 타워 이미지를 클릭했을 때 정보창 열기 & 바깥을 누르면 닫기
 canvas.addEventListener('click', (event) => {
 	const rect = canvas.getBoundingClientRect();
 	const mouseX = event.clientX - rect.left;
@@ -568,7 +574,7 @@ canvas.addEventListener('click', (event) => {
 		const infoY = activeTowerInfo.y;
 		// 클릭이 정보창 외부인지 확인
 		const isOutsideInfo =
-			mouseX < infoX || mouseX > infoX + 180 || mouseY < infoY || mouseY > infoY + 150;
+			mouseX < infoX || mouseX > infoX + 170 || mouseY < infoY || mouseY > infoY + 130;
 
 		// 업그레이드 버튼
 		if (
