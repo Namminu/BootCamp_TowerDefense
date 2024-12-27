@@ -106,8 +106,7 @@ export class Tower {
 
 		this.damage = 1.5 * this.originalDamage;
 		this.range = 1.2 * this.originalRange;
-
-		
+	
 
 		return new Promise((resolve) => {
 			setTimeout(() => {
