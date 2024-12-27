@@ -1,5 +1,6 @@
 const towers = {};
 const towersqueue = {};
+const attackSheets = {};
 
 //타워 만들기.
 export const createTower = (uuid) => {
@@ -7,7 +8,7 @@ export const createTower = (uuid) => {
 }
 
 
-//유저 스테이지 보기.
+//유저 보기.
 export const getTower = (uuid) => {
     return towers[uuid];
 }
@@ -62,7 +63,7 @@ export const setTowerQueue = (uuid, towers) => { //towers는 에셋.
   
 }
 
-//타워를 타워를 지정하면, 그 타워가 사라짐.
+//타워인벤토리의 타워 지정하면, 그 타워가 사라짐.
 export const removeTowerQueue = (uuid, index) => {
 if (index !== -1) {//-1이면 없는거니까 뭐..
   towersqueue[uuid].splice(index, 1)[0];
@@ -72,6 +73,19 @@ return false;
 };
 
 
+//때린 기록 빈 객체 생성
+export const createTowerAttackSheet = (uuid) => {
+  attackSheets[uuid] = [];
+}
+
+
+//때린 기록 주기
+export const getowerAttackSheet = (uuid) => {
+  return attackSheets[uuid];
+}
+
+
+
 // 타워를 돌려서 타워 너비 안에 있는지 확인. 이건 클라랑 상의해 보기.
 export const canPlaceTower = (uuid, x,y) => {
   
@@ -79,7 +93,7 @@ export const canPlaceTower = (uuid, x,y) => {
 }
 
 
-  // 타워를 돌려서 타워의  공격 범위 안에 있는지 확인. 이건 클라랑 상의해 보기.
+// 타워를 돌려서 타워의  공격 범위 안에 있는지 확인. 이건 클라랑 상의해 보기.
 export const canRangeTower = (uuid, x,y ,towerid) => {
 
 

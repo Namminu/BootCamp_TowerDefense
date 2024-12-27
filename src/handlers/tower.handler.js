@@ -5,7 +5,8 @@ import { getGameAssets } from "../init/assets.js";
 import { getTower, getTowerQueue, removeTower, removeTowerQueue, setTower, setTowerQueue, upTower } from "../models/tower.model.js";
 import { getUserData, setUserGold } from "../models/userData.model.js";
 
-
+/*타워를 구입할때, 인벤토리에 타워가 있는지, 설치하는 위치는 다른타워와 겹치지 않는지, 돈은있는지 등을
+  확인하고 그 뒤 서버에 타워 정보를 저장해 둡니다.*/
 export const buyTower = (userId, payload, socket) => {
 
     const { tower } = getGameAssets();
@@ -64,7 +65,7 @@ export const buyTower = (userId, payload, socket) => {
 return { status: 'success', message: "타워 배치 성공적." };
 };
 
-
+/*타워 판매시, 그 타워를 보유하고 있는지 확인하고 판매합니다. */
 export const sellingTower = (userId, payload, socket) => {
 
     const { tower } = getGameAssets();
@@ -96,7 +97,9 @@ export const sellingTower = (userId, payload, socket) => {
     return { status: 'success', message: '판매 완료.' };
 };
 
-export const upgradeTower = (userId, payload) => {
+/*타워 업그레이드시, 인벤토리에 타워가 있는지, 
+그 타워를 보유하고 있는지, 레벨을 맞는지, 돈은 있는지 확인하고 업그레이드합니다. */
+export const upgradeTower = (userId, payload, socket) => {
     
     const { tower } = getGameAssets();
     const currentUserData = getUserData(userId);
@@ -148,17 +151,13 @@ export const upgradeTower = (userId, payload) => {
 
 };
 
-
-export const atteckTower = (userId,payload, socket)=> {
-
-    // 위치 동기화가 된다면. 여기서 타워 공격을 관리하고, 서버에 보내주는 형식으로 해도 괜찮을듯. 검증은 필요 없으니까.
-    //타워가 있는지 확인, 사거리가 되는지 확인. 된다면성공 보네주고, 성공이면 저장하게.
-    //이건 때리면 즉시.
+    // 데이터는 {attecker, hitEntity, x, y, timestemp}
+export const atteckTower = (userId, payload, socket)=> {
+    
 }
 
 
 export const killTower = (userId,payload, socket)=> {
-
     //타워가 있는지 확인, 사거리가 되는지 확인,체력이 공격을 맞아 알맞게 피가 까였는지, 전부 가져와서 공격 속도가 되는지 확인, 성공시 다음으로.
     //애는 리스트를 받고, 그 리스트에 있는 타워를 한번에 가져온뒤(뭐 있음 그 목록안에 있는거만 가져오는. 아냐 타워 개수가 수천개 되는게 아니잖아. 그냥 해도 될듯.). 사거리, 공격 속도 확인.
 }
