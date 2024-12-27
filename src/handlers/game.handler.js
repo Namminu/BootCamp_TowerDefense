@@ -22,9 +22,7 @@ export const gameOver = async (uuid, payload, socket) => {
   // if (!rounds.length) return { status: 'fail', message: 'No Rounds Found for User' };
 
   const userId = uuid;
-  console.log(`userId : ${userId}`);
   const currentRound = payload.currentRound;
-  console.log(`currentRound : ${currentRound}`);
 
   if (!userId || !currentRound)
     return { status: 'fail', message: `${!userId ? 'userId' : 'currentRound'} missing error` };
@@ -37,7 +35,8 @@ export const gameOver = async (uuid, payload, socket) => {
   const data = {
     status: 'success',
     message: result.updated ? '최고 기록 갱신!' : '게임 오버',
-    score: result.currentHighScore.highScore
+    userName: result.userName,
+    highScore: result.currentHighScore.highScore
   };
   return data;
 }

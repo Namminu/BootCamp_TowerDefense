@@ -5,7 +5,7 @@ import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
 import { sendEvent } from "./socket.js";
-
+import { initModal, showModal } from './modals/gameOverModal.js';
 
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
@@ -308,10 +308,14 @@ async function gameLoop() {
       if (isDestroyed) {
         const testRound = 1;
         /* 게임 오버 */
-        //alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
         // 게임 종료 시 서버로 gameOver 이벤트 전송
-        sendEvent(3, { currentRound: testRound });
-        //location.reload();
+        const response = await sendEvent(3, { currentRound: testRound /*currentRound*/ });
+        //const { message, userName, highScore } = response;
+        //showModal(message, userName, highScore/*, currentRound*/);
+
+        /* 테스트용 */
+        showModal("테스트 기록!", "테스트입니다", 1500, 1200);
+        //gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
       }
       monster.draw(ctx);
     } else {
@@ -449,7 +453,7 @@ async function gameLoop() {
   requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-function initGame() {
+async function initGame() {
   if (isInitGame) {
     return; // 이미 초기화된 경우 방지
   }
@@ -460,6 +464,7 @@ function initGame() {
   monsterLevel = 1;
   //monsterSpawnInterval = 2000;
 
+  await initModal();  // 게임오버 모달창 초기 로드
   monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
   initMap(); // 맵 초기화 (배경, 경로 그리기)
   // placeInitialTowers(); // 초기 타워 배치

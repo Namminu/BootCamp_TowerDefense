@@ -1,16 +1,11 @@
 import { prisma } from "../utils/prisma/index.js";
 
-/*
-그럼 문제는 userid 로 users 테이블에서 id 특정을 어떻게 하냐인데
-
-users 테이블에 먼저 접근해서 id찾고,
-그 id로 highscores 테이블에 userId:id 조회하고
-데이터가 있는지 봐서 없으면 create -> 최고기록
-데이터 있으면 highscore 가져와서 비교
-*/
-
 // DB - HighScores 테이블에 접근, 유저의 최고 기록 갱신 함수
 export const updateHighScore = async (userId, currentRound) => {
+    // 유저 이름 탐색
+    let userName = await prisma.users.findUnique({ where: { id: userId } });
+    userName = userName.nickName || 'NULL Name';
+
     // 테이블 안에서 highScore 찾는 과정
     const userHighScore = await prisma.highScores.findFirst({
         where: { userId: userId },
@@ -25,7 +20,7 @@ export const updateHighScore = async (userId, currentRound) => {
                 highScore: currentRound
             }
         });
-        return { updated: true, currentHighScore: userHighScore };
+        return { updated: true, userName, currentHighScore: userHighScore };
     }
 
     // 현재 라운드와 비교 후 갱신 여부 확인
@@ -36,9 +31,9 @@ export const updateHighScore = async (userId, currentRound) => {
             data: { highScore: userHighScore }
         });
         // 최고기록 갱신 시 return
-        return { updated: true, currentHighScore: currentRound };
+        return { updated: true, userName, currentHighScore: currentRound };
     }
 
     // 최고기록 갱신 아닐 시 return
-    return { updated: false, currentHighScore: userHighScore };
+    return { updated: false, userName, currentHighScore: userHighScore };
 };
