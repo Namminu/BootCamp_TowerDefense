@@ -1,23 +1,35 @@
-import { prisma } from "../utils/prisma/index.js";
+import { prisma } from '../utils/prisma/index.js';
 
 // DB - HighScores 테이블에 접근, 유저의 최고 기록 갱신 함수
 export const updateHighScore = async (userId, currentRound) => {
-    const usersHighScore = await prisma.highScores.findFirst({
-        where: { userId: userId },
-        select: { highScore: true }
-    });
+	// 테이블 안에서 highScore 찾는 과정
+	const userHighScore = await prisma.highScores.findFirst({
+		where: { userId: userId },
+		select: { highScore: true },
+	});
 
-    // 현재 라운드와 비교 후 값 도출
-    if (usersHighScore < currentRound) {
-        // DB에 최고기록 업데이트
-        await prisma.highScores.update({
-            where: { userId: userId },
-            data: { highScore: usersHighScore }
-        });
-        // 최고기록 갱신 시 return
-        return { updated: true, currentHighScore: currentRound };
-    }
+	// HighScores 테이블에 정보가 없을 경우 데이터 새로 생성
+	if (!userHighScore) {
+		await prisma.highScores.create({
+			data: {
+				userId: userId,
+				highScore: currentRound,
+			},
+		});
+		return { updated: true, currentHighScore: userHighScore };
+	}
 
-    // 최고기록 갱신 아닐 시 return
-    return { updated: false, currentHighScore: usersHighScore };
+	// 현재 라운드와 비교 후 갱신 여부 확인
+	if (userHighScore < currentRound) {
+		// DB에 최고기록 업데이트
+		await prisma.highScores.update({
+			where: { userId: userId },
+			data: { highScore: userHighScore },
+		});
+		// 최고기록 갱신 시 return
+		return { updated: true, currentHighScore: currentRound };
+	}
+
+	// 최고기록 갱신 아닐 시 return
+	return { updated: false, currentHighScore: userHighScore };
 };

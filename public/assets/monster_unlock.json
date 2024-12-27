@@ -1,12 +1,12 @@
 {
-    "name": "monster_unlock",
-    "version": "1.0.0",
-    "data": [
-      { "id":  100, "round_id": 1, "monster_id": [101] },
-      { "id":  101, "round_id": 2, "monster_id": [101, 102] },
-      { "id":  201, "round_id": 3, "monster_id": [101, 102, 103] },
-      { "id":  301, "round_id": 4, "monster_id": [101, 102, 103, 104] },
-      { "id":  401, "round_id": 5, "monster_id": [101, 102, 103, 104, 105] },
-      { "id":  501, "round_id": 6, "monster_id": [101, 102, 103, 104, 105] }
-    ]
-  }
+	"name": "monster_unlock",
+	"version": "1.0.0",
+	"data": [
+		{ "id": 100, "round_id": 1, "monster_id": [101] },
+		{ "id": 101, "round_id": 2, "monster_id": [101, 102] },
+		{ "id": 201, "round_id": 3, "monster_id": [101, 102, 103] },
+		{ "id": 301, "round_id": 4, "monster_id": [101, 102, 103, 104] },
+		{ "id": 401, "round_id": 5, "monster_id": [101, 102, 103, 104, 105] },
+		{ "id": 501, "round_id": 6, "monster_id": [101, 102, 103, 104, 105] }
+	]
+}
