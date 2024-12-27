@@ -1,4 +1,5 @@
-import { towerControl } from './game.js';
+import { towerControl } from "./game.js";
+import { sendEvent } from "./socket.js";
 
 export class Tower {
 	constructor(ctx, x, y, damage, range, cooldown, cost, image, type, id, level = 1) {
@@ -104,10 +105,8 @@ export class Tower {
 	async feverTime() {
 		this.feverMode = true;
 
-		this.damage = 1.5 * this.originalDamage;
-		this.range = 1.2 * this.originalRange;
-
-		
+    this.damage = 1.5 * this.originalDamage;
+    this.range = 1.2 * this.originalRange;
 
 		return new Promise((resolve) => {
 			setTimeout(() => {
@@ -164,19 +163,20 @@ export class Tower {
 		tower.originalCooldown -= 10; // 쿨타임 0.1초 감소
 		tower.level += 1; // 타워 레벨 증가
 
-		// 업그레이드에 사용된 포탑 2개 제거
-		for (let i = 0; i < 2; i++) {
-			towerControl.towerqueue.splice(
-				towerControl.towerqueue.findIndex((t) => t.type === tower.type),
-				1,
-			);
-		}
+    // 업그레이드에 사용된 포탑 2개 제거
+    for (let i = 0; i < 2; i++) {
+      towerControl.towerqueue.splice(
+        towerControl.towerqueue.findIndex((t) => t.type === tower.type),
+        1
+      );
+    }
 
-		return upgradeCost;
-	}
+    return upgradeCost;
+  }
 
-	sellTower(tower) {
-		const sellPrice = tower.cost * 0.7; // 타워 가격의 70% 환불
+  sellTower(tower) {
+    sendEvent(6,{ x:this.x, y:this.y, type:this.type})
+    const sellPrice = tower.cost * 0.7; // 타워 가격의 70% 환불
 
 		// 타워를 판매하면 타워 배열에서 제거
 		towerControl.towers = towerControl.towers.filter((t) => t.id !== tower.id);

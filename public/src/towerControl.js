@@ -1,5 +1,6 @@
-import { Tower } from './tower.js';
-import towerData from '../assets/tower.json' with { type: 'json' };
+import { Tower } from "./tower.js";
+import towerData from "../assets/tower.json" with { type: "json" };
+import { loadTowerQueue, sendEvent } from "./socket.js";
 
 export class TowerControl {
 	constructor(ctx, towerImages) {
@@ -16,29 +17,51 @@ export class TowerControl {
 		this.towers.sort((a, b) => a.y - b.y);
 	}
 
-	getRandomNumber(min, max) {
-		return Math.floor(Math.random() * (max - min + 1) + min);
-	}
+  getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+  
+  async getTowerqueue(monsterLevel) {
 
-	getTowerqueue(monsterLevel) {
-		if (this.towerqueue.length === 5) {
-			return this.towerqueue;
-		}
+    const TowerQueueTyep = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
+    this.towerqueue = [];
 
-		while (this.towerqueue.length < 5) {
-			const index = this.getRandomNumber(0, towerData.data.length - 1);
-			// let index = this.getRandomNumber(0, monsterLevel - 1);
-			// if (monsterLevel > towerData.data.length) {
-			//   index = this.getRandomNumber(0, towerData.data.length - 1);
-			// }
-			this.towerqueue.push({
-				image: this.towerImages[index],
-				name: towerData.data[index].name,
-				type: towerData.data[index].type,
-				cost: towerData.data[index].cost,
-			});
-		}
-	}
+    for (let i = 0; i < TowerQueueTyep.length; i++) {
+      const towerType = TowerQueueTyep[i].towerDataIndex;
+      const towerIndex = 1+towerData.data.findIndex(tower => tower.type === towerType); // 이새끼 뭐냐;; 이거 빼니까 작동을 안함.
+      if (towerIndex !== -1) {
+        this.towerqueue.push({
+          image: this.towerImages[towerIndex],
+          name: towerData.data[towerIndex].name,
+          cost: towerData.data[towerIndex].cost,
+        });
+      }
+    }
+
+    return this.towerqueue;
+
+
+    // if (this.towerqueue.length === 5) {
+    //   return this.towerqueue;
+    // }
+    // while (this.towerqueue.length < 5) {
+    //   const index = this.getRandomNumber(0, towerData.data.length - 1);
+    //   // let index = this.getRandomNumber(0, monsterLevel - 1);
+    //   // if (monsterLevel > towerData.data.length) {
+    //   //   index = this.getRandomNumber(0, towerData.data.length - 1);
+    //   // }
+    //   this.towerqueue.push({
+    //     image: this.towerImages[index],
+    //     name: towerData.data[index].name,
+    //     type: towerData.data[index].type,
+    //     cost: towerData.data[index].cost,
+    //   });
+    // }
+
+    
+
+    return this.towerqueue;
+  }
 
 	drawqueue(ctx, canvas, monsterLevel) {
 		// 인벤토리 관련 변수
