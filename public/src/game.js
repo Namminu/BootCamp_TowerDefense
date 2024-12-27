@@ -114,40 +114,53 @@ function processQueue() {
 
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
-function generateRandomMonsterPath() {
-	//몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
-	const path = [];
-	let currentX = 0;
-	let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
+// function generateRandomMonsterPath() {
+// 	//몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
+// 	const path = [];
+// 	let currentX = 0;
+// 	let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
 
-	path.push({ x: currentX, y: currentY });
+// 	path.push({ x: currentX, y: currentY });
 
-	while (currentX < 1800) {
-		// 마지막 x가 1600이 될 때까지 진행
-		currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
-		if (currentX > 1800) {
-			currentX = 1800; // 마지막 x는 1600
-		}
+// 	while (currentX < 1800) {
+// 		// 마지막 x가 1600이 될 때까지 진행
+// 		currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
+// 		if (currentX > 1800) {
+// 			currentX = 1800; // 마지막 x는 1600
+// 		}
 
-		currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
-		// y 좌표에 대한 clamp 처리
-		if (currentY < 100) {
-			currentY = 100;
-		}
-		if (currentY > 900) {
-			currentY = 900;
-		}
+// 		currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
+// 		// y 좌표에 대한 clamp 처리
+// 		if (currentY < 100) {
+// 			currentY = 100;
+// 		}
+// 		if (currentY > 900) {
+// 			currentY = 900;
+// 		}
 
-		path.push({ x: currentX, y: currentY });
+// 		path.push({ x: currentX, y: currentY });
+// 	}
+
+// 	// 마지막 경로의 y를 시작 y와 동일하게 설정
+// 	path[path.length - 1].y = path[0].y;
+
+// 	// 경로 정렬 (x 기준으로 오름차순 정렬)
+// 	path.sort((a, b) => a.x - b.x);
+
+// 	return path;
+function setMonsterPathFromGeneratedPath() {
+	// generatePath 결과를 기반으로 몬스터 경로 설정
+	const generatedPath = path;
+	if (!generatedPath || generatedPath.length === 0) {
+		console.error('Path generation failed or empty.');
+		return [];
 	}
 
-	// 마지막 경로의 y를 시작 y와 동일하게 설정
-	path[path.length - 1].y = path[0].y;
-
-	// 경로 정렬 (x 기준으로 오름차순 정렬)
-	path.sort((a, b) => a.x - b.x);
-
-	return path;
+	// 캔버스 좌표로 변환
+	return generatedPath.map((point) => ({
+		x: point.x * cellSize.WIDTH,
+		y: point.y * cellSize.HEIGHT,
+	}));
 }
 
 function initMap() {
@@ -196,9 +209,13 @@ function drawRotatedImage(image, x, y, width, height, angle) {
 
 function placeBase() {
 	//플레이어 베이스를 만드는 함수.
-	const lastPoint = monsterPath[monsterPath.length - 1];
-	base = new Base(lastPoint.x, lastPoint.y, baseHp);
-	base.draw(ctx, baseImage);
+	const lastPoint = path[path.length - 1];
+	if (lastPoint) {
+		base = new Base(lastPoint.x * cellSize.WIDTH, lastPoint.y * cellSize.HEIGHT, baseHp);
+		base.draw(ctx, baseImage);
+	} else {
+		console.log('path is not defined');
+	}
 }
 
 // 스테이지를 서버로 전달
@@ -401,13 +418,22 @@ function initGame() {
 		return; // 이미 초기화된 경우 방지
 	}
 
+	console.log('monsterPath: ', path);
+
 	isInitGame = true;
 	userGold = 800; // 초기 골드 설정
 	score = 0;
 	monsterLevel = 1;
 	//monsterSpawnInterval = 2000;
 
-	monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
+	//monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
+	monsterPath = setMonsterPathFromGeneratedPath();
+
+	if (monsterPath.length === 0) {
+		console.error('monsterPath is not defined');
+		return;
+	}
+
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
 	// placeInitialTowers(); // 초기 타워 배치
 	placeBase(); // 기지 배치
@@ -433,6 +459,7 @@ Promise.all([
 	// ),
 ]).then(() => {});
 
+// 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
 	if (!isPlacingTower || !previewTower) {
 		return false;
