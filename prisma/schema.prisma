@@ -23,7 +23,7 @@ model HighScores {
   id        Int      @id @default(autoincrement()) @map("id")
   userId    Int      @unique @map("userId")
   highScore Int      @map("highScore")
-  released  Int      @map("released")
+  elapsed   Int      @map("elapsed")
   createdAt DateTime @default(now()) @map("createdAt")
 
   users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
