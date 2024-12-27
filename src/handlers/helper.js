@@ -26,7 +26,7 @@ export const handleConnection = (socket, uuid) => {
   gameStart(uuid, socket);
 
   // 1라운드 정보
-  const initRoundInfo = getRoundInfo(1);
+  let initRoundInfo = getRoundInfo(1);
   if(!initRoundInfo) initRoundInfo = createRoundInfo(1);
 
   // 1라운드 해금 정보
