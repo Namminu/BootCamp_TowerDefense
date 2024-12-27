@@ -1,5 +1,4 @@
-import { towerControl } from "./game.js";
-import { sendEvent } from "./socket.js";
+import { queueEvent, towerControl } from "./game.js";
 
 export class Tower {
   constructor(
@@ -197,7 +196,7 @@ export class Tower {
   }
 
   sellTower(tower) {
-    sendEvent(6,{ x:this.x, y:this.y, type:this.type})
+    queueEvent(6,{ x:this.x, y:this.y, type:this.type});
     const sellPrice = tower.cost * 0.7; // 타워 가격의 70% 환불
 
     // 타워를 판매하면 타워 배열에서 제거

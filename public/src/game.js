@@ -130,6 +130,23 @@ const gageBar = {
 
 let monsterPath;
 
+const eventQueue = []; // 이벤트 큐 센드 이벤트 
+
+export function queueEvent(handlerId, payload) {
+  eventQueue.push({ handlerId, payload });
+}
+
+
+function processQueue() {
+  if (eventQueue.length > 0) {
+    const event = eventQueue.shift(); // 큐에서 첫 번째 이벤트 제거
+    sendEvent(event.handlerId, event.payload); // 서버로 이벤트 전송
+  }
+}
+
+setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
+
+
 function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
   const path = [];
   let currentX = 0;
@@ -310,7 +327,7 @@ async function gameLoop() {
         /* 게임 오버 */
         //alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
         // 게임 종료 시 서버로 gameOver 이벤트 전송
-        sendEvent(3, { currentRound: testRound });
+        queueEvent(3, { currentRound: testRound });
         //location.reload();
       }
       monster.draw(ctx);
@@ -466,12 +483,12 @@ function initGame() {
   placeBase(); // 기지 배치
   //setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
   // 서버에 몬스터 스폰 주기와 타이밍 동기화
-  sendEvent(13, { round: 0, timestamp: Date.now() });
+  queueEvent(13, { round: 0, timestamp: Date.now() });
   gameLoop(); // 게임 루프 시작
 } //이게 시작이네. 
 
 if (!isInitGame) {
-  sendEvent(2, { timestamp: Date.now() })
+  queueEvent(2, { timestamp: Date.now() })
   initGame();
 }
 
@@ -569,7 +586,7 @@ canvas.addEventListener('click', (event) => {
       previewTower.y = mouseY - previewTower.height / 2;
       towerControl.towers.push(previewTower);
       //타워 구매 - sendEvent
-      sendEvent(5,{type:previewTower.type, x:previewTower.x, y:previewTower.y ,timestamp:Date.now(),index:towerIndex}); 
+      queueEvent(5,{type:previewTower.type, x:previewTower.x, y:previewTower.y ,timestamp:Date.now(),index:towerIndex}); 
       console.log('Tower placed at:', previewTower.x, previewTower.y);
       console.log('All towers:', towerControl.towers);
 
