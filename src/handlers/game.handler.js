@@ -2,7 +2,7 @@
 import { getGameAssets } from "../init/assets.js";
 import { updateHighScore } from "../models/rank.model.js";
 import { createTower, createTowerQueue, getTower, getTowerQueue, setTowerQueue } from "../models/tower.model.js";
-import { createUserData, setUserRound } from "../models/userData.model.js";
+import { createUserData, setUserGold, setUserRound } from "../models/userData.model.js";
 
 export const gameStart = (uuid, socket) => {
 
@@ -10,6 +10,7 @@ export const gameStart = (uuid, socket) => {
 
   // 게임 시작시 유저 정보 초기값 세팅
   setUserRound(uuid, 1, Date.now());
+  setUserGold(uuid, 1000);
   createUserData(uuid);
   createTower(uuid);
   createTowerQueue(uuid);
