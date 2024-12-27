@@ -1,7 +1,7 @@
 import { getGameAssets } from '../init/assets.js';
 import { createRoundInfo, getRoundInfo } from '../models/roundInfo.model.js';
 import { getUser, removeUser } from '../models/user.model.js';
-import { createUserData, setUserRound } from '../models/userData.model.js';
+import { createUserData, getUserData, setUserRound } from '../models/userData.model.js';
 import handlerMappings from './handlerMapping.js';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
@@ -34,7 +34,10 @@ export const handleConnection = (socket, uuid) => {
 	const unlockMonsterIds = monster_unlock.data.find((e) => e.round_id === 1).monster_id;
 	let unlockMonsters = monster.data.filter((e) => unlockMonsterIds.includes(e.id));
 
-	socket.emit('connection', { uuid, initRoundInfo, unlockMonsters });
+	// userData.model.js의 userData 불러오기
+	const userData = getUserData(uuid);
+
+	socket.emit('connection', { uuid, initRoundInfo, unlockMonsters, userData });
 };
 
 export const handlerEvent = async (io, socket, data) => {

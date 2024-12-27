@@ -14,7 +14,7 @@ export const moveRoundHandler = (userId, payload, socket) => {
 
 	// 진행행시간 검증. 해당 라운드의 진행시간과 실제 진행시간의 오차 계산
 	if (payload.timestamp) {
-		const roundStartTime = getUserData.timestamp; // 현재 라운드 시작 시간
+		const roundStartTime = getUserData(userId).timestamp; // 현재 라운드 시작 시간
 		const roundClearTime = payload.timestamp; // 현재 라운드 종료 시간
 		const elapsedTime = (roundClearTime - roundStartTime) / 1000;
 		const roundTime = getRoundInfo(payload.currentRound).time;
