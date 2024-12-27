@@ -5,6 +5,7 @@ import { createUserData, setUserRound } from '../models/userData.model.js';
 import handlerMappings from './handlerMapping.js';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import { gameStart } from './game.handler.js';
 
 dotenv.config();
 
@@ -20,11 +21,20 @@ export const handleConnection = (socket, uuid) => {
   console.log("현재 접속중인 유저:", getUser());
 
   createUserData(uuid);
-  setUserRound(uuid, 1, Date.now());
+
+  // 연결되면 바로 게임이 시작되므로 여기서 gameStart 호출 (클라에서 호출X)
+  gameStart(uuid, socket);
+
+  // 1라운드 정보
   const initRoundInfo = getRoundInfo(1);
   if(!initRoundInfo) initRoundInfo = createRoundInfo(1);
 
-  socket.emit('connection', { uuid, initRoundInfo });
+  // 1라운드 해금 정보
+  const { monster_unlock, monster } = getGameAssets();
+  const unlockMonsterIds = monster_unlock.data.find(e=>e.round_id===1).monster_id;
+  const unlockMonsters = monster.data.filter(e=>unlockMonsterIds.includes(e.id));
+
+  socket.emit('connection', { uuid, initRoundInfo, unlockMonsters });
 };
 
 export const handlerEvent = async (io, socket, data) => {

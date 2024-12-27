@@ -4,15 +4,17 @@ import { updateHighScore } from "../models/rank.model.js";
 import { createTower, createTowerQueue, getTower, getTowerQueue, setTowerQueue } from "../models/tower.model.js";
 import { createUserData, setUserRound } from "../models/userData.model.js";
 
-export const gameStart = (uuid, payload, socket) => {
+export const gameStart = (uuid, socket) => {
 
   const { tower } = getGameAssets();
 
+  // 게임 시작시 유저 정보 초기값 세팅
+  setUserRound(uuid, 1, Date.now());
   createUserData(uuid);
   createTower(uuid);
   createTowerQueue(uuid);
   setTowerQueue(uuid, tower);
-  setUserRound(uuid, 1, Date.now(), 1000);
+
   return { status: "success" };
 };
 

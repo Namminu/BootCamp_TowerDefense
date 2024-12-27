@@ -4,7 +4,6 @@ import { getUserData, setUserRound } from "../models/userData.model.js";
 
 // sendEvent(11, payload : { currentRound, timestamp })
 export const moveRoundHandler = (userId, payload) => {
-    const { monster, unlock_monster } = getGameAssets();
     
     // 라운드 검증. 유저의 현재 라운드와 currentRound 비교
     if (payload.currentRound) {
@@ -28,16 +27,18 @@ export const moveRoundHandler = (userId, payload) => {
     // 다음 라운드
     const nextRound = payload.currentRound + 1;
 
+    // 유저의 현재 라운드 정보 업데이트
+    setUserRound(userId, nextRound, payload.timestamp );
+
     // 다음 라운드 정보를 담은 객체 생성
     // 서버에 저장된 다음 라운드 정보가 있다면 바로 저장, 없다면 생성 후 저장
     const nextRoundInfo = getRoundInfo(nextRound);
     if(!nextRoundInfo) nextRoundInfo = createRoundInfo(nextRound);
 
-    // 유저의 현재 라운드 정보 업데이트
-    setUserRound(userId, nextRound, payload.timestamp );
-
-    const unlockMonsters = null;
-    //unlockMonsters = unlock_monster.data.find(mon => (mon.round = nextRound));
+    // 다음 라운드 해금 정보 
+    const { monster, monster_unlock } = getGameAssets();
+    const unlockMonsterIds = monster_unlock.data.find(e=>e.round_id===1).monster_id;
+    const unlockMonsters = monster.data.filter(e=>unlockMonsterIds.includes(e.id));
 
     return {
         handlerId: 11,
