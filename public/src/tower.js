@@ -1,4 +1,4 @@
-import { queueEvent, towerControl } from "./game.js";
+import { queueEvent, towerControl } from './game.js';
 
 export class Tower {
 	constructor(ctx, x, y, damage, range, cooldown, cost, image, type, id, level = 1) {
@@ -7,8 +7,8 @@ export class Tower {
 		this.ctx = ctx; // 캔버스 컨텍스트
 		this.x = x; // 타워 이미지 x 좌표
 		this.y = y; // 타워 이미지 y 좌표
-		this.width = 220 / 1.5; // 타워 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
-		this.height = 270 / 1.5; // 타워 이미지 세로 길이
+		this.width = 220 / 2; // 타워 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
+		this.height = 270 / 2; // 타워 이미지 세로 길이
 		this.damage = damage; // 타워 공격력
 		this.range = range; // 타워 사거리
 		this.cooldown = cooldown; // 타워 공격 쿨타임
@@ -104,8 +104,8 @@ export class Tower {
 	async feverTime() {
 		this.feverMode = true;
 
-    this.damage = 1.5 * this.originalDamage;
-    this.range = 1.2 * this.originalRange;
+		this.damage = 1.5 * this.originalDamage;
+		this.range = 1.2 * this.originalRange;
 
 		return new Promise((resolve) => {
 			setTimeout(() => {
@@ -162,20 +162,20 @@ export class Tower {
 		tower.originalCooldown -= 10; // 쿨타임 0.1초 감소
 		tower.level += 1; // 타워 레벨 증가
 
-    // 업그레이드에 사용된 포탑 2개 제거
-    for (let i = 0; i < 2; i++) {
-      towerControl.towerqueue.splice(
-        towerControl.towerqueue.findIndex((t) => t.type === tower.type),
-        1
-      );
-    }
+		// 업그레이드에 사용된 포탑 2개 제거
+		for (let i = 0; i < 2; i++) {
+			towerControl.towerqueue.splice(
+				towerControl.towerqueue.findIndex((t) => t.type === tower.type),
+				1,
+			);
+		}
 
-    return upgradeCost;
-  }
+		return upgradeCost;
+	}
 
-  sellTower(tower) {
-    queueEvent(6,{ x:this.x, y:this.y, type:this.type});
-    const sellPrice = tower.cost * 0.7; // 타워 가격의 70% 환불
+	sellTower(tower) {
+		queueEvent(6, { x: this.x, y: this.y, type: this.type });
+		const sellPrice = tower.cost * 0.7; // 타워 가격의 70% 환불
 
 		// 타워를 판매하면 타워 배열에서 제거
 		towerControl.towers = towerControl.towers.filter((t) => t.id !== tower.id);

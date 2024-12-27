@@ -4,9 +4,16 @@ import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
 import { sendEvent } from './socket.js';
+import { drawGrid } from './grid.js';
+import { drawGridAndPath, generatePath } from './path.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const cellSize = { WIDTH: 220 / 2, HEIGHT: 270 / 2 };
+
+const startPoint = { x: 0, y: 0 };
+const endPoint = { x: 16, y: 4 };
+const path = generatePath(startPoint, endPoint);
 
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
@@ -206,8 +213,13 @@ async function gameLoop() {
 	const currentTime = performance.now();
 	//게임 반복.
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
-	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
-	drawPath(monsterPath); // 경로 다시 그리기
+	// ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
+	// drawPath(monsterPath); // 경로 다시 그리기
+
+	drawGridAndPath(ctx, cellSize, path);
+
+	// // 그리드 생성 및 호출
+	drawGrid(ctx, cellSize);
 
 	ctx.font = '25px Times New Roman';
 	ctx.fillStyle = 'skyblue';
@@ -427,39 +439,14 @@ function canPlaceTower(x, y) {
 		return false;
 	}
 
-	const towerWidth = previewTower ? previewTower.width : 0;
-	const towerHeight = previewTower ? previewTower.height : 0;
+	const cell = { x, y };
+	previewTower.isInvalidPlacement = path.includes(cell);
 
-	const newTowerCenterX = x + towerWidth / 2;
-	const newTowerCenterY = y + towerHeight / 2;
-
-	for (const tower of towerControl.towers) {
-		if (Math.abs(tower.x - x) < 1 && Math.abs(tower.y - y) < 1) {
-			tower.isInvalidPlacement = true;
-			console.log('Cannot place tower: duplicate position.');
-
-			return false;
-		}
-
-		const towerCenterX = tower.x + tower.width / 2;
-		const towerCenterY = tower.y + tower.height / 2;
-
-		const distance = Math.sqrt(
-			Math.pow(towerCenterX - newTowerCenterX, 2) + Math.pow(towerCenterY - newTowerCenterY, 2),
-		).toFixed(2); // 소수점 둘째 자리까지 반올림
-
-		console.log('Distance between towers:', distance);
-
-		// 두 타워의 중심 간 거리가 타워 너비 이상이어야 설치 가능
-		if (distance < 250) {
-			tower.isInvalidPlacement = true;
-			console.log('Cannot place tower: overlaps with another tower.');
-
-			return false;
-		}
-	}
+	if (previewTower.isInvalidPlacement) return false;
 
 	// 경계 확인
+	const towerWidth = previewTower.width;
+	const towerHeight = previewTower.height;
 	const withinBounds =
 		x >= 0 && y >= 0 && x + towerWidth <= canvas.width && y + towerHeight <= canvas.height;
 
@@ -492,10 +479,17 @@ canvas.addEventListener('click', (event) => {
 		const mouseX = event.clientX - rect.left;
 		const mouseY = event.clientY - rect.top;
 
-		if (canPlaceTower(mouseX, mouseY)) {
-			// 타워 설치
-			previewTower.x = mouseX - previewTower.width / 2;
-			previewTower.y = mouseY - previewTower.height / 2;
+		// 클릭된 셀의 행과 열 계산
+		const cellX = Math.floor(mouseX / cellSize.WIDTH);
+		const cellY = Math.floor(mouseY / cellSize.HEIGHT);
+		console.log(`클릭된 셀: (${cellX}, ${cellY})`);
+
+		// 타워 설치가 가능할 때
+		if (canPlaceTower(cellX, cellY)) {
+			// previewTower.x = mouseX - previewTower.width / 2;
+			// previewTower.y = mouseY - previewTower.height / 2;
+			previewTower.x = cellSize.WIDTH * cellX;
+			previewTower.y = cellSize.HEIGHT * cellY;
 			towerControl.towers.push(previewTower);
 			//타워 구매 - sendEvent
 			queueEvent(5, {

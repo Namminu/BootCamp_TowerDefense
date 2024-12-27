@@ -1,5 +1,5 @@
-function generatePath(start, end) {
-	const path = [];
+export function generatePath(start, end, minlength = 40) {
+	let path = [];
 	const visited = new Set(); // 방문한 좌표를 저장하는 Set
 	let currentX = start.x;
 	let currentY = start.y;
@@ -17,8 +17,7 @@ function generatePath(start, end) {
 	];
 
 	// 경로 생성
-	while (currentX !== end.x || currentY !== end.y) {
-		// 가능한 이동 방향 필터링
+	while (path.length < minlength) {
 		const possibleMoves = directions
 			.map((dir) => ({
 				dir,
@@ -36,11 +35,10 @@ function generatePath(start, end) {
 			);
 
 		if (possibleMoves.length === 0) {
-			// 이동 가능한 방향이 없으면 경로 생성 중단
-			break;
+			// 더 이상 이동할 수 없는 경우 경로를 재생성
+			return generatePath(start, end, minlength);
 		}
 
-		// 무작위로 가능한 이동 방향 중 선택
 		const nextMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
 
 		// 중간 좌표 추가
@@ -57,26 +55,61 @@ function generatePath(start, end) {
 	return path;
 }
 
-function drawPathInConsole(start, end, path) {
-	const gridWidth = Math.max(start.x, end.x) + 1; // 그리드의 너비
-	const gridHeight = Math.max(start.y, end.y) + 1; // 그리드의 높이
-	const grid = Array.from({ length: gridHeight }, () => Array(gridWidth).fill('■')); // '■'으로 채운 2D 배열 생성
+export function drawGridAndPath(ctx, cellSize, path) {
+	const canvasWidth = ctx.canvas.width;
+	const canvasHeight = ctx.canvas.height;
 
-	// 경로를 그리드에 표시
+	// 배경색으로 채우기
+	ctx.fillStyle = '#FFFDF0';
+	ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+	// 그리드 선 그리기
+	ctx.strokeStyle = 'black'; // 그리드 선 색상
+	ctx.lineWidth = 2;
+
+	for (let y = 0; y <= canvasHeight; y += cellSize.HEIGHT) {
+		ctx.beginPath();
+		ctx.moveTo(0, y);
+		ctx.lineTo(canvasWidth, y);
+		ctx.stroke();
+	}
+
+	for (let x = 0; x <= canvasWidth; x += cellSize.WIDTH) {
+		ctx.beginPath();
+		ctx.moveTo(x, 0);
+		ctx.lineTo(x, canvasHeight);
+		ctx.stroke();
+	}
+
+	// path를 노란색으로 칠하기
+	ctx.fillStyle = '#FAC67A';
 	path.forEach((point) => {
-		grid[point.y][point.x] = '□'; // 경로를 '□'으로 표시
-	});
-
-	// 그리드를 콘솔에 출력
-	grid.forEach((row) => {
-		console.log(row.join(' ')); // 각 행을 출력
+		const cellX = point.x * cellSize.WIDTH;
+		const cellY = point.y * cellSize.HEIGHT;
+		ctx.fillRect(cellX, cellY, cellSize.WIDTH, cellSize.HEIGHT);
 	});
 }
 
-// 사용 예시
-const startPoint = { x: 0, y: 0 };
-const endPoint = { x: 10, y: 5 };
+// function drawPathInConsole(start, end, path) {
+// 	const gridWidth = Math.max(start.x, end.x) + 1; // 그리드의 너비
+// 	const gridHeight = Math.max(start.y, end.y) + 1; // 그리드의 높이
+// 	const grid = Array.from({ length: gridHeight }, () => Array(gridWidth).fill('■')); // '■'으로 채운 2D 배열 생성
 
-const generatedPath = generatePath(startPoint, endPoint);
-console.log('Generated Path:', generatedPath);
-drawPathInConsole(startPoint, endPoint, generatedPath);
+// 	// 경로를 그리드에 표시
+// 	path.forEach((point) => {
+// 		grid[point.y][point.x] = '□'; // 경로를 '□'으로 표시
+// 	});
+
+// 	// 그리드를 콘솔에 출력
+// 	grid.forEach((row) => {
+// 		console.log(row.join(' ')); // 각 행을 출력
+// 	});
+// }
+
+// 사용 예시
+// const startPoint = { x: 0, y: 0 };
+// const endPoint = { x: 13, y: 4 };
+
+// const generatedPath = generatePath(startPoint, endPoint);
+// console.log('Generated Path:', generatedPath);
+// drawPathInConsole(startPoint, endPoint, generatedPath);
