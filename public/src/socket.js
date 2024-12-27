@@ -8,6 +8,11 @@ const socket = io('http://localhost:8080', {
 	},
 });
 
+// 전역 상태 관리
+let gameData = {
+	userData: null,
+};
+
 socket.on('response', (data) => {
 	console.log('response : ', data);
 });
@@ -18,7 +23,15 @@ socket.on('connection', (data) => {
 	if (data.message) {
 		console.log(data.message);
 	}
+
+	// 클라이언트에서 userData.model.js의 userData를 사용하기 위한 로직
+	if (data.userData) {
+		gameData.userData = data.userData;
+	}
 });
+
+// gameData 사용을 위한 getter 함수들
+export const getUserData = () => gameData.userData;
 
 const loadTowerQueue = () => {
 	return new Promise((resolve, reject) => {
