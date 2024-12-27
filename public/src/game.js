@@ -2,13 +2,12 @@ import { Base } from './base.js';
 import { Monster } from './monster.js';
 import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
+import monsterUnlockData from '../assets/monster_unlock.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
-import { sendEvent } from './socket.js';
+import { getUserData, sendEvent } from './socket.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-
-const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
@@ -36,8 +35,10 @@ let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
 
+// 상수 정의
 const TOWER_CONFIG = towerData.data;
 const MONSTER_CONFIG = monsterData.data;
+const MONSTER_UNLOCK_CONFIG = monsterUnlockData.data;
 
 // 경로를 저장할 배열
 let paths = [];
@@ -199,7 +200,29 @@ function placeBase() {
 //실질적인 몬스터 소환 함수
 export function spawnMonster() {
 	console.log('몬스터가 생성되었습니다!');
-	monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
+	const userData = getUserData();
+
+	if (!userData) {
+		console.error('유저 데이터를 찾을 수 없습니다.');
+		return;
+	}
+
+	// 현재 라운드 체크 및 몬스터 출현 가능 여부 체크
+	const currentRound = userData.round;
+	const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
+
+	if (!roundUnlock) {
+		console.error('현재 라운드에 출현 가능한 몬스터가 없습니다.');
+		return;
+	}
+
+	// 현재 라운드에 출현 가능한 몬스터 필터링
+	const availableMonsters = MONSTER_CONFIG.filter((monster) =>
+		roundUnlock.monster_id.includes(monster.id),
+	);
+
+	monsters.push(new Monster(monsterPath, currentRound, availableMonsters));
+	// monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
 async function gameLoop() {
