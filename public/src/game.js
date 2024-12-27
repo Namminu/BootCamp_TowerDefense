@@ -4,7 +4,7 @@ import { Tower } from './tower.js';
 import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
-import { sendEvent } from "./Socket.js";
+import { sendEvent } from "./socket.js";
 
 
 /* 
@@ -28,15 +28,15 @@ import { sendEvent } from "./Socket.js";
 
 */
 
-let serverSocket; // 서버 웹소켓 객체
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
-let baseHp = 500; // 기지 체력
+let baseHp = 10; // 기지 체력
 
 // 타워 관련 변수
 let towerCost; // 타워 구입 비용
@@ -45,6 +45,9 @@ let towerIndex; // 타워 인덱스
 let numOfInitialTowers = 3; // 초기 타워 개수
 let isPlacingTower = false; // 현재 타워를 배치 중인지 확인하는 플래그
 let previewTower = null; // 미리보기를 위한 타워 객체
+
+// 메시지 출력 플래그
+let printMessage = false;
 
 const monsters = [];
 let ableToMoveRound = false; // 라운드 이동 가능 여부
@@ -112,9 +115,11 @@ const gageBar = {
       0,
       this.y + this.height
     ); // gradient
-    my_gradient.addColorStop(0, '#FF8C00');
-    my_gradient.addColorStop(0.5, '#FFA500');
-    my_gradient.addColorStop(1, '#FFD700');
+
+    my_gradient.addColorStop(0, "#F5EEE6");
+    my_gradient.addColorStop(0.5, "#F3D7CA");
+    my_gradient.addColorStop(1, "#E6A4B4");
+
     ctx.fillStyle = my_gradient;
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 3;
@@ -161,9 +166,9 @@ function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로�
 
 function initMap() {// 배경 이미지 그리기
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-  for(let i = 0; i < 3; i++){
+  for (let i = 0; i < 3; i++) {
     paths[i] = drawPath();
-  } 
+  }
 }
 
 function drawPath() {  //경로에 따라 길을 그리는것.
@@ -193,7 +198,7 @@ function drawPath() {  //경로에 따라 길을 그리는것.
   }
 }
 
-function drawRotatedImage(image, x, y, width, height, angle) { 
+function drawRotatedImage(image, x, y, width, height, angle) {
   ctx.save();
   ctx.translate(x + width / 2, y + height / 2);
   ctx.rotate(angle);
@@ -266,13 +271,6 @@ function placeBase() {
 
 
 // 스테이지를 서버로 전달
-function sendMonsterSpawnInterval() {
-  const payload = {
-    round: 0,
-    timestamp: Date.now(),
-  };
-  sendEvent(13, payload);
-}
 
 //실질적인 몬스터 소환 함수
 export function spawnMonster() {
@@ -281,6 +279,7 @@ export function spawnMonster() {
 }
 
 async function gameLoop() {
+  const currentTime = performance.now();
   //게임 반복.
   // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
@@ -307,11 +306,12 @@ async function gameLoop() {
     if (monster.hp > 0) {
       const isDestroyed = monster.move(base);
       if (isDestroyed) {
+        const testRound = 1;
         /* 게임 오버 */
-        alert('게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ');
+        //alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
         // 게임 종료 시 서버로 gameOver 이벤트 전송
-        await sendEvent(3, { userId, currentRound });
-        location.reload();
+        sendEvent(3, { currentRound: testRound });
+        //location.reload();
       }
       monster.draw(ctx);
     } else {
@@ -320,6 +320,9 @@ async function gameLoop() {
       monsters.splice(i, 1);
     }
   }
+
+  // towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
+  towerControl.sortTowers();
 
   // 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
   towerControl.towers.forEach(async (tower) => {
@@ -336,7 +339,7 @@ async function gameLoop() {
         if (monster.hp <= 0) {
           monster.dead();
           score += monsterLevel;
-          userGold += 10;
+          userGold += 10 * monsterLevel;
 
           if (!tower.feverMode) {
             killCount += 1;
@@ -352,33 +355,49 @@ async function gameLoop() {
     });
 
     // 타워 그리기 & 마우스가 타워 위에 있을 때만 사정거리 표시하기
-    tower.draw();
-    tower.updateCooldown();
     if (tower.isMouseOver) {
       tower.drawRangeCircle();
     }
+    tower.draw();
+    tower.updateCooldown();
     // 타워를 클릭했을 때 자세히 보기 창을 띄우기
     if (tower.isClicked) {
-      tower.showTowerInfo(tower);
+      tower.showTowerInfo();
     }
     // 자세히 보기 창에서 업그레이드 버튼을 클릭했을 때
     if (
       tower.isClicked &&
       tower.upgradeBtnClicked &&
-      userGold >= tower.cost * 1.5
+      userGold >= tower.cost * 1.2 &&
+      towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2
     ) {
       const upgradePrice = tower.upgradeTower(tower, userGold);
       userGold -= upgradePrice; // 업그레이드 비용 차감
       tower.upgradeBtnClicked = false;
-    } else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.5) {
-      console.log('Not enough gold to upgrade the tower.');
+      tower.isClicked = false;
+    } else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
+      console.log("Not enough gold to upgrade the tower.");
+      printMessage = true;
       tower.upgradeBtnClicked = false;
+      tower.isClicked = false;
     }
+
+    if (printMessage) {
+      ctx.fillStyle = "pink";
+      ctx.font = "bold 20px Arial";
+      ctx.fillText("돈이 모자라요!", tower.x, tower.y);
+
+      setTimeout(() => {
+        printMessage = false;
+      }, 3000);
+    }
+
     // 자세히 보기 창에서 판매 버튼을 클릭했을 때
     if (tower.isClicked && tower.sellBtnClicked) {
       const sellPrice = tower.sellTower(tower);
       userGold += sellPrice; // 타워 판매 시 골드 추가
       tower.sellBtnClicked = false;
+      tower.isClicked = false;
     }
   });
 
@@ -401,17 +420,22 @@ async function gameLoop() {
 
   // 미리보기 타워 그리기
   if (isPlacingTower && previewTower) {
-    const isMouseOver = true;
     previewTower.draw();
     previewTower.drawRangeCircle();
+
+    if (previewTower.isInvalidPlacement) {
+      ctx.fillStyle = "red";
+      ctx.font = "20px Arial";
+      ctx.fillText("너무 가까워요!", previewTower.x, previewTower.y - 10);
+    }
   }
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
   base.draw(ctx, baseImage);
-  base.selfHeal();
+  //base.selfHeal(currentTime);
 
   // 인벤토리 그리기
-  towerControl.drawqueue(ctx, canvas);
+  towerControl.drawqueue(ctx, canvas, monsterLevel);
 
   // 피버 게이지바 그리기
   gageBar.drawBG();
@@ -431,7 +455,7 @@ function initGame() {
   }
 
   isInitGame = true;
-  userGold = 1000; // 초기 골드 설정
+  userGold = 800; // 초기 골드 설정
   score = 0;
   monsterLevel = 1;
   //monsterSpawnInterval = 2000;
@@ -442,43 +466,34 @@ function initGame() {
   placeBase(); // 기지 배치
   //setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
   // 서버에 몬스터 스폰 주기와 타이밍 동기화
-  sendMonsterSpawnInterval(); 
+  sendEvent(13, { round: 0, timestamp: Date.now() });
   gameLoop(); // 게임 루프 시작
 } //이게 시작이네. 
+
+if (!isInitGame) {
+  sendEvent(2, { timestamp: Date.now() })
+  initGame();
+}
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
 Promise.all([
   new Promise((resolve) => (backgroundImage.onload = resolve)),
-  new Promise((resolve) => (towerImage.onload = resolve)),
+  new Promise((resolve) => (towerImages.onload = resolve)),
   new Promise((resolve) => (baseImage.onload = resolve)),
   new Promise((resolve) => (pathImage.onload = resolve)),
   // ...monsterImages.map(
   //   (img) => new Promise((resolve) => (img.onload = resolve))
   // ),
 ]).then(() => {
-  /* 서버 접속 코드 (여기도 완성해주세요!) */
-  let somewhere;
 
-  serverSocket = io('http://localhost:8080', {
-    auth: {
-      token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
-    },
-  });
-
-  //서버의 이벤트들을 받는 코드들은 여기다가 쭉 작성해주시면 됩니다!
-  //e.g. serverSocket.on("...", () => {...});
-  //이 때, 상태 동기화 이벤트의 경우에 아래의 코드를 마지막에 넣어주세요! 최초의 상태 동기화 이후에 게임을 초기화해야 하기 때문입니다!
-  if (!isInitGame) {
-    initGame();
-  }
 });
-
-if (!isInitGame) {
-  initGame();
-}
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
+  if (!isPlacingTower || !previewTower) {
+    return false;
+  }
+
   const towerWidth = previewTower ? previewTower.width : 0;
   const towerHeight = previewTower ? previewTower.height : 0;
 
@@ -487,7 +502,9 @@ function canPlaceTower(x, y) {
 
   for (const tower of towerControl.towers) {
     if (Math.abs(tower.x - x) < 1 && Math.abs(tower.y - y) < 1) {
-      console.log('Cannot place tower: duplicate position.');
+      tower.isInvalidPlacement = true;
+      console.log("Cannot place tower: duplicate position.");
+
       return false;
     }
 
@@ -496,14 +513,16 @@ function canPlaceTower(x, y) {
 
     const distance = Math.sqrt(
       Math.pow(towerCenterX - newTowerCenterX, 2) +
-        Math.pow(towerCenterY - newTowerCenterY, 2)
+      Math.pow(towerCenterY - newTowerCenterY, 2)
     ).toFixed(2); // 소수점 둘째 자리까지 반올림
 
     console.log('Distance between towers:', distance);
 
     // 두 타워의 중심 간 거리가 타워 너비 이상이어야 설치 가능
     if (distance < 250) {
-      console.log('Cannot place tower: overlaps with another tower.');
+      tower.isInvalidPlacement = true;
+      console.log("Cannot place tower: overlaps with another tower.");
+
       return false;
     }
   }
@@ -549,7 +568,8 @@ canvas.addEventListener('click', (event) => {
       previewTower.x = mouseX - previewTower.width / 2;
       previewTower.y = mouseY - previewTower.height / 2;
       towerControl.towers.push(previewTower);
-
+      //타워 구매 - sendEvent
+      sendEvent(5,{type:previewTower.type, x:previewTower.x, y:previewTower.y ,timestamp:Date.now(),index:towerIndex}); 
       console.log('Tower placed at:', previewTower.x, previewTower.y);
       console.log('All towers:', towerControl.towers);
 
@@ -562,7 +582,8 @@ canvas.addEventListener('click', (event) => {
       // isPreview = false;
       document.body.style.cursor = 'default';
     } else {
-      console.log('해당 위치에 타워를 설치할 수 없습니다!');
+      previewTower.isInvalidPlacement = true;
+      console.log("해당 위치에 타워를 설치할 수 없습니다!");
     }
   }
 });
@@ -669,7 +690,7 @@ canvas.addEventListener('click', (event) => {
       mouseY <= tower.y + tower.height;
 
     if (isClicked) {
-      activeTowerInfo = { x: tower.x - tower.width - 10, y: tower.y }; // 정보창 위치
+      activeTowerInfo = { x: tower.x + tower.width + 10, y: tower.y }; // 정보창 위치
       tower.isClicked = true; // 현재 타워 클릭 상태
       console.log('Tower clicked:', tower);
     } else {
@@ -714,7 +735,8 @@ canvas.addEventListener('click', (event) => {
           isPlacingTower = true; // 설치 모드 활성화
           document.body.style.cursor = 'crosshair'; // 커서 변경
         } else {
-          console.log('골드가 부족합니다!');
+          printMessage = true;
+          console.log("골드가 부족합니다!");
         }
       }
       currentX += towerWidth + towerPadding; // 다음 타워 위치로 이동
