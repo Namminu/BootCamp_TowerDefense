@@ -1,55 +1,49 @@
-import { getStage, setStage } from "../models/stage.model.js"
+import { getGameAssets } from "../init/assets.js";
+import { createRoundInfo, getRoundInfo } from "../models/roundInfo.model.js";
+import { getUserData, setUserRound } from "../models/userData.model.js";
 
-/*라운드 이동시. 라운드 생성하고,
- 저장. 여기엔 시작시간, 시작라운드, 유저아이디, 
- 현재골드(시작골드), 몬스터 잡은수 등 점수 검증이 필요할 거 같은게 추가된다.*/
- 
- // sendEvent(11, payload : { currentRound, timestamp })
- export const moveRoundHandler = (userId, payload, socket) => {
+// sendEvent(11, payload : { currentRound, timestamp })
+export const moveRoundHandler = (userId, payload) => {
+    
     // 라운드 검증. 유저의 현재 라운드와 currentRound 비교
-    if(payload.currentRound){
-        const currentRound = 0;
-        if(currentRound!==payload.currentRound){
-            return { status: 'fail', message: 'currnetStage mismatch'}
+    if (payload.currentRound) {
+        const currentRound = getUserData(userId).round;
+        if (currentRound !== payload.currentRound) {
+            return { status: "fail", message: "currentRound mismatch" };
         }
-    }else return { status: 'fail', message: 'no currnetStage for moveRound'}
+    } else return { status: "fail", message: "no currentRound for moveRound" };
 
     // 진행행시간 검증. 해당 라운드의 진행시간과 실제 진행시간의 오차 계산
-    if(payload.timestamp){
-        const roundStartTime = 0;
-        const roundClearTime = payload.timestamp;
-        const elapsedTime = (roundClearTime - roundStartTime)/1000;
-        const roundTime = 0;
-        if(elapsedTime<roundTime-10 || elapsedTime>roundTime+10){
-            return { status: 'fail', message: 'currnetStage mismatch'};
+    if (payload.timestamp) {
+        const roundStartTime = getUserData.timestamp;   // 현재 라운드 시작 시간
+        const roundClearTime = payload.timestamp;       // 현재 라운드 종료 시간
+        const elapsedTime = (roundClearTime - roundStartTime) / 1000;
+        const roundTime = getRoundInfo(payload.currentRound).time;
+        if (elapsedTime < roundTime - 10 || elapsedTime > roundTime + 10) {
+            return { status: "fail", message: "elapsedTime out of scope" };
         }
-    }else return { status: 'fail', message: 'no timestamp for moveRound'}
+    } else return { status: "fail", message: "no timestamp for moveRound" };
 
     // 다음 라운드
     const nextRound = payload.currentRound + 1;
-  
-    // 다음 라운드드 정보를 담은 객체 생성
-    let nextRoundInfo = {
-        roundNum : nextRound,
-        spawnTimer : 9-(nextRound/10),    // 소환 주기
-        spawnCount : 9+nextRound,        // 소환될 몬스터 수
-        timer : 100-nextRound,          // 라운드 진행시간
-    }
 
     // 유저의 현재 라운드 정보 업데이트
-    // setRound(); ### 선행작업 : round.model.js에 어떻게 저장할지
- 
-     // monster.json 에셋에서 다음 라운드에 해금되는 id인 몬스터들 저장 ### 선행작업 : monster_unlock.json 로드 먼저
-     const { monsters } = getGameAssets();
-     const unlockMonsters = monsters.data.find(mon => mon.round = nextRound); //[{ id:2 }];
-     
-    // 유저의 다음 라운드 정보 업데이트 + 다음 라운드 몬스터 해제
-    //setRound(userId, nextRound, Date.now());
+    setUserRound(userId, nextRound, payload.timestamp );
+
+    // 다음 라운드 정보를 담은 객체 생성
+    // 서버에 저장된 다음 라운드 정보가 있다면 바로 저장, 없다면 생성 후 저장
+    const nextRoundInfo = getRoundInfo(nextRound);
+    if(!nextRoundInfo) nextRoundInfo = createRoundInfo(nextRound);
+
+    // 다음 라운드 해금 정보 
+    const { monster, monster_unlock } = getGameAssets();
+    const unlockMonsterIds = monster_unlock.data.find(e=>e.round_id===1).monster_id;
+    const unlockMonsters = monster.data.filter(e=>unlockMonsterIds.includes(e.id));
+
     return {
         handlerId: 11,
-        status: 'success',
+        status: "success",
         nextRoundInfo,
         unlockMonsters,
     };
- };
- 
+};
