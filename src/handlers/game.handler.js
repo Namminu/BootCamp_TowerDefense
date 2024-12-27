@@ -6,7 +6,7 @@ import { createUserData, setUserGold, setUserRound } from "../models/userData.mo
 
 export const gameStart = (uuid, socket) => {
 
-  const { tower } = getGameAssets();
+  const { tower } = getGameAssets();//타워 에셋 가져오기.
 
   // 게임 시작시 유저 정보 초기값 세팅
   setUserRound(uuid, 1, Date.now());

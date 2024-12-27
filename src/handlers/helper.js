@@ -32,7 +32,7 @@ export const handleConnection = (socket, uuid) => {
   // 1라운드 해금 정보
   const { monster_unlock, monster } = getGameAssets();
   const unlockMonsterIds = monster_unlock.data.find(e=>e.round_id===1).monster_id;
-  const unlockMonsters = monster.data.filter(e=>unlockMonsterIds.includes(e.id));
+  let unlockMonsters = monster.data.filter(e=>unlockMonsterIds.includes(e.id));
 
   socket.emit('connection', { uuid, initRoundInfo, unlockMonsters });
 };
