@@ -1,10 +1,10 @@
 import { createRoundInfo, getRoundInfo } from "../models/roundInfo.model.js";
 
 //먼저 stage에 접근을 해서 stage마다의 생성 주기에 접근?
-export const monsterCreate = (userId, payload, socket) => {
+export const monsterCreate = (socket, userId, payload) => {
   console.log("getMonsterCreateHandler", payload);
 
-  const round  = payload.round;
+  const { round } = payload;
   createRoundInfo(round);
   const roundInfo = getRoundInfo(round);
   console.log("roundInfo: ", roundInfo);

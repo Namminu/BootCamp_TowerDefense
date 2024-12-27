@@ -1,20 +1,7 @@
 import { towerControl } from "./game.js";
-import { sendEvent } from "./socket.js";
 
 export class Tower {
-  constructor(
-    ctx,
-    x,
-    y,
-    damage,
-    range,
-    cooldown,
-    cost,
-    image,
-    type,
-    id,
-    level = 1
-  ) {
+  constructor(ctx, x, y, damage, range, cost, image, type, id, level = 1) {
     // 코스트랑 타입은 에셋에서 다운받아서 넣어준다.
     // 생성자 안에서 타워들의 속성을 정의한다고 생각하시면 됩니다!
     this.ctx = ctx; // 캔버스 컨텍스트
@@ -24,10 +11,10 @@ export class Tower {
     this.height = 270 / 1.5; // 타워 이미지 세로 길이
     this.damage = damage; // 타워 공격력
     this.range = range; // 타워 사거리
-    this.cooldown = cooldown; // 타워 공격 쿨타임
+    this.cooldown = 0; // 타워 공격 쿨타임
     this.originalDamage = damage; // 타워 공격력
     this.originalRange = range; // 타워 사거리
-    this.originalCooldown = cooldown; // 타워 공격 쿨타임
+    this.originalCooldown = 180; // 타워 공격 쿨타임
     this.cost = cost; // 타워 구입 비용
     this.beamDuration = 0; // 타워 광선 지속 시간
     this.target = null; // 타워 광선의 목표
@@ -40,7 +27,6 @@ export class Tower {
     this.isClicked = false;
     this.upgradeBtnClicked = false;
     this.sellBtnClicked = false;
-    this.isInvalidPlacement = false;
   }
 
   draw() {
@@ -50,14 +36,14 @@ export class Tower {
     let beamColor;
     switch (this.type) {
       case 1:
-        beamColor = "white";
+        beamColor = "blue"; // 원거리일 때 파란색
         break;
       case 2:
-        beamColor = "blue";
+        beamColor = "red"; // 근거리일 때 빨간색
         break;
       case 3:
       default:
-        beamColor = "red";
+        beamColor = "gray"; // 기본은 회색
         break;
     }
 
@@ -103,7 +89,7 @@ export class Tower {
       this.target = monster; // 광선의 목표 설정
 
       if (this.feverMode) {
-        this.cooldown = this.originalCooldown / 2;
+        this.cooldown = this.originalCooldown / 2; // 1.5초 쿨타임
       }
     }
   }
@@ -131,31 +117,19 @@ export class Tower {
     });
   }
 
-  showTowerInfo() {
-    const infoX = this.x + this.width + 10; // 타워 왼쪽에 표시
-    const infoY = this.y;
+  showTowerInfo(tower) {
+    const infoX = tower.x - tower.width - 10; // 타워 왼쪽에 표시
+    const infoY = tower.y;
 
     this.ctx.fillStyle = "rgb(0, 0, 0)";
-    this.ctx.fillRect(infoX, infoY, 180, 140); // 정보창 배경
+    this.ctx.fillRect(infoX, infoY, 180, 150); // 정보창 배경
 
     this.ctx.fillStyle = "white";
     this.ctx.font = "14px Arial";
-    this.ctx.fillText(`타워 ID: ${this.id}`, infoX + 10, infoY + 20);
-    this.ctx.fillText(
-      `Level: ${Math.floor(this.level)}`,
-      infoX + 10,
-      infoY + 80
-    );
-    this.ctx.fillText(
-      `Damage: ${Math.floor(this.damage)}`,
-      infoX + 10,
-      infoY + 40
-    );
-    this.ctx.fillText(
-      `Range: ${Math.floor(this.range)}`,
-      infoX + 10,
-      infoY + 60
-    );
+    this.ctx.fillText(`ID: ${tower.id}`, infoX + 10, infoY + 20);
+    this.ctx.fillText(`Damage: ${tower.damage}`, infoX + 10, infoY + 40);
+    this.ctx.fillText(`Range: ${tower.range}`, infoX + 10, infoY + 60);
+    this.ctx.fillText(`Level: ${tower.level}`, infoX + 10, infoY + 80);
 
     // 업그레이드 버튼
     this.ctx.fillStyle = "rgb(255, 255, 255)";
@@ -171,18 +145,15 @@ export class Tower {
   }
 
   upgradeTower(tower, userGold) {
-    const upgradeCost = tower.cost * 1.2; // 업그레이드 비용은 타워 가격의 120%
+    const upgradeCost = tower.cost * 1.5; // 업그레이드 비용은 타워 가격의 150%
 
     if (userGold < upgradeCost) {
       return 0; // 골드 부족
     }
 
-    tower.damage *= 1.2; // 공격력 1.2배 증가
-    tower.originalDamage *= 1.2; // 공격력 1.2배 증가
-    // tower.range *= 1.5; // 사정거리 1.2배 증가
-    // tower.originalRange *= 1.5; // 사정거리 1.2배 증가
-    tower.cooldown -= 10; // 쿨타임 0.1초 감소
-    tower.originalCooldown -= 10; // 쿨타임 0.1초 감소
+    tower.damage *= 2; // 공격력 2배 증가
+    tower.range *= 1.5; // 사정거리 1.5배 증가
+    tower.originalCooldown -= 30; // 쿨타임 0.3초 감소
     tower.level += 1; // 타워 레벨 증가
 
     // 업그레이드에 사용된 포탑 2개 제거
@@ -197,7 +168,6 @@ export class Tower {
   }
 
   sellTower(tower) {
-    sendEvent(6,{ x:this.x, y:this.y, type:this.type})
     const sellPrice = tower.cost * 0.7; // 타워 가격의 70% 환불
 
     // 타워를 판매하면 타워 배열에서 제거
