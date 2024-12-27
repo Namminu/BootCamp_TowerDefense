@@ -97,7 +97,7 @@ export const sellingTower = (userId, payload, socket) => {
 };
 
 /*타워 업그레이드시, 인벤토리에 타워가 있는지, 
-그 타워를 보유하고 있는지, 레벨을 맞는지, 돈은 있는지 확인하고 업그레이드합니다. */
+그 타워를 2개 이상 보유하고 있는지, 레벨을 맞는지, 돈은 있는지 확인하고 업그레이드합니다. */
 export const upgradeTower = (userId, payload, socket) => {
 	const { tower } = getGameAssets();
 	const currentUserData = getUserData(userId);
@@ -138,8 +138,6 @@ export const upgradeTower = (userId, payload, socket) => {
 	setUserGold(userId, currentUserData.gold);
 	setTowerQueue(userId, tower);
 	setUserGold(userId, currentUserData.gold);
-
-	console.log(getTower(userId));
 	
 	if (!isUpgrade) {
 		return { status: 'fail', message: '업그레이드 실패' };
@@ -149,7 +147,11 @@ export const upgradeTower = (userId, payload, socket) => {
 };
 
 // 데이터는 {attecker, hitEntity, x, y, timestemp}
-export const atteckTower = (userId, payload, socket) => {};
+export const atteckTower = (userId, payload, socket) => {
+
+	
+
+};
 
 export const killTower = (userId, payload, socket) => {
 	//타워가 있는지 확인, 사거리가 되는지 확인,체력이 공격을 맞아 알맞게 피가 까였는지, 전부 가져와서 공격 속도가 되는지 확인, 성공시 다음으로.
