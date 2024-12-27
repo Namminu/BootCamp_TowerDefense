@@ -5,7 +5,8 @@ import { getGameAssets } from "../init/assets.js";
 import { getTower, getTowerQueue, removeTower, removeTowerQueue, setTower, setTowerQueue, upTower } from "../models/tower.model.js";
 import { getUserData, setUserGold } from "../models/userData.model.js";
 
-
+/*타워를 구입할때, 인벤토리에 타워가 있는지, 설치하는 위치는 다른타워와 겹치지 않는지, 돈은있는지 등을
+  확인하고 그 뒤 서버에 타워 정보를 저장해 둡니다.*/
 export const buyTower = (userId, payload, socket) => {
 
     const { tower } = getGameAssets();
@@ -64,7 +65,7 @@ export const buyTower = (userId, payload, socket) => {
 return { status: 'success', message: "타워 배치 성공적." };
 };
 
-
+/*타워 판매시, 그 타워를 보유하고 있는지 확인하고 판매합니다. */
 export const sellingTower = (userId, payload, socket) => {
 
     const { tower } = getGameAssets();
@@ -96,7 +97,9 @@ export const sellingTower = (userId, payload, socket) => {
     return { status: 'success', message: '판매 완료.' };
 };
 
-export const upgradeTower = (userId, payload) => {
+/*타워 업그레이드시, 인벤토리에 타워가 있는지, 
+그 타워를 보유하고 있는지, 레벨을 맞는지, 돈은 있는지 확인하고 업그레이드합니다. */
+export const upgradeTower = (userId, payload, socket) => {
     
     const { tower } = getGameAssets();
     const currentUserData = getUserData(userId);
@@ -148,13 +151,9 @@ export const upgradeTower = (userId, payload) => {
 
 };
 
-
-export const atteckTower = (userId,payload, socket)=> {
-   
-
-    // 저장할 정보 [{1.맞은몬스터 id(그 객체를 판단할수 있는거면 뭔들좋음),2.때린 객체-피버타임 유무 확인 
-    // 3.맞은 좌표.   },...]
-    // 라운드 넘어갈때 한번만 검증하자. 검증할때 먼저 이 저장한 맞은 데이터랑 정보가 같은지 확인. 촤라라락 하면서 공속 검증. 여기서 때린객체의 공속을 받아야 겠는데. 나중에 검증하려면.
+    // 데이터는 {attecker, hitEntity, x, y, timestemp}
+export const atteckTower = (userId, payload, socket)=> {
+    
 }
 
 

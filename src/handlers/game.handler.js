@@ -6,13 +6,13 @@ import { createUserData, setUserRound } from "../models/userData.model.js";
 
 export const gameStart = (uuid, payload, socket) => {
 
-  const { tower } = getGameAssets();
+  const { tower } = getGameAssets();//타워 에셋 가져오기.
 
-  createUserData(uuid);
-  createTower(uuid);
-  createTowerQueue(uuid);
-  setTowerQueue(uuid, tower);
-  setUserRound(uuid, 1, Date.now(), 1000);
+  createUserData(uuid);// 유저 인게임 데이터 제작.
+  createTower(uuid);//유저 타워 제작
+  createTowerQueue(uuid);//타워 인벤토리 제작
+  setTowerQueue(uuid, tower);//타워 인벤토리 채워넣기.
+  setUserRound(uuid, 1, Date.now(), 1000); // 유저 인게임 데이터 넣기.
   return { status: "success" };
 };
 
