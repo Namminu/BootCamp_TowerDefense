@@ -4,39 +4,30 @@
   "data": [
     {
       "type": 1,
-      "name": "평범한 고양이",
-      "damage": 40,
-      "range": 225,
-      "cooldown": 130,
-      "cost": 100,
-      "image": "../images/cat/cat3.png"
-    },
-    {
-      "type": 2,
-      "name": "고양이 궁수",
+      "name": "원거리 포탑",
       "damage": 30,
       "range": 300,
-      "cooldown": 140,
+      "atkSpeed": 10,
       "cost": 130,
       "image": "../images/cat/cat5.png"
     },
     {
-      "type": 3,
-      "name": "고양이 전사",
+      "type": 2,
+      "name": "근거리 포탑",
       "damage": 50,
       "range": 150,
-      "cooldown": 120,
+      "atkSpeed": 14,
       "cost": 150,
       "image": "../images/cat/cat4.png"
     },
     {
-      "type": 4,
-      "name": "근육질 고양이",
-      "damage": 80,
+      "type": 3,
+      "name": "평범한 포탑",
+      "damage": 40,
       "range": 225,
-      "cooldown": 180,
-      "cost": 190,
-      "image": "../images/cat/cat7.png"
+      "atkSpeed": 12,
+      "cost": 100,
+      "image": "../images/cat/cat3.png"
     }
   ]
 }
