@@ -56,8 +56,8 @@ export const getTowerQueue = (uuid) => {
 //타워 인벤토리 추가. //여기서 5개 이하면 뭐 추가되게 로직을 짜기.
 export const setTowerQueue = (uuid, towers) => { //towers는 에셋.
   while (towersqueue[uuid].length < 5) {
-    const type = Math.floor(Math.random() * (towers.data.length));
-    towersqueue[uuid].push({type});
+    const towerDataIndex = Math.floor(Math.random() * (towers.data.length));
+    towersqueue[uuid].push({towerDataIndex});
   }
   
 }

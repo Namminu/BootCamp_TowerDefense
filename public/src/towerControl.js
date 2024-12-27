@@ -21,45 +21,42 @@ export class TowerControl {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
   
-  getTowerqueue(monsterLevel) {
+  async getTowerqueue(monsterLevel) {
 
-    // const TowerQueueTyep = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
+    const TowerQueueTyep = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
+    this.towerqueue = [];
 
-    // console.log(TowerQueueTyep)
-    // this.towerqueue = [];
+    for (let i = 0; i < TowerQueueTyep.length; i++) {
+      const towerType = TowerQueueTyep[i].towerDataIndex;
+      const towerIndex = 1+towerData.data.findIndex(tower => tower.type === towerType); // 이새끼 뭐냐;; 이거 빼니까 작동을 안함.
+      if (towerIndex !== -1) {
+        this.towerqueue.push({
+          image: this.towerImages[towerIndex],
+          name: towerData.data[towerIndex].name,
+          cost: towerData.data[towerIndex].cost,
+        });
+      }
+    }
 
-    // for (let i = 0; i < TowerQueueTyep.length; i++) {
-    //   const towerType = TowerQueueTyep[i].type;
-    //   const towerIndex = 1+towerData.data.findIndex(tower => tower.type === towerType); // towerData에서 타입이 일치하는 타워 찾기
-      
-    //   if (towerIndex !== -1) {
-    //     this.towerqueue.push({
-    //       image: this.towerImages[towerIndex],
-    //       name: towerData.data[towerIndex].name,
-    //       cost: towerData.data[towerIndex].cost,
-    //     });
-    //   }
+    return this.towerqueue;
+
+
+    // if (this.towerqueue.length === 5) {
+    //   return this.towerqueue;
     // }
-
-    // return this.towerqueue;
-
-
-    if (this.towerqueue.length === 5) {
-      return this.towerqueue;
-    }
-    while (this.towerqueue.length < 5) {
-      const index = this.getRandomNumber(0, towerData.data.length - 1);
-      // let index = this.getRandomNumber(0, monsterLevel - 1);
-      // if (monsterLevel > towerData.data.length) {
-      //   index = this.getRandomNumber(0, towerData.data.length - 1);
-      // }
-      this.towerqueue.push({
-        image: this.towerImages[index],
-        name: towerData.data[index].name,
-        type: towerData.data[index].type,
-        cost: towerData.data[index].cost,
-      });
-    }
+    // while (this.towerqueue.length < 5) {
+    //   const index = this.getRandomNumber(0, towerData.data.length - 1);
+    //   // let index = this.getRandomNumber(0, monsterLevel - 1);
+    //   // if (monsterLevel > towerData.data.length) {
+    //   //   index = this.getRandomNumber(0, towerData.data.length - 1);
+    //   // }
+    //   this.towerqueue.push({
+    //     image: this.towerImages[index],
+    //     name: towerData.data[index].name,
+    //     type: towerData.data[index].type,
+    //     cost: towerData.data[index].cost,
+    //   });
+    // }
 
     
 
@@ -119,8 +116,6 @@ export class TowerControl {
     const towerName = this.towerqueue[queueIndex].name;
     const index = towerData.data.findIndex((data) => data.name === towerName);
 
-    //sendEvent(5,{type:towerData.data[index].type, x, y,timestamp:Date.now(),index});
-
     const image = this.towerImages[index];
     const damage = towerData.data[index].damage;
     const range = towerData.data[index].range;
@@ -140,6 +135,8 @@ export class TowerControl {
       type,
       id
     );
+
+   
 
     this.id++;
 
