@@ -12,7 +12,7 @@ const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
-let baseHp = 10; // 기지 체력
+let baseHp = 500; // 기지 체력
 
 // 타워 관련 변수
 let towerCost; // 타워 구입 비용
@@ -341,11 +341,8 @@ async function gameLoop() {
 			killCount = 0; // killCount 초기화
 			ableToMoveRound = true;
 
-			// 피버 모드가 끝난 후 플래그 초기화
-			setTimeout(() => {
-				feverTriggered = false;
-				base.selfHeal();
-			}, 5000); // feverTime 메서드 실행 시간과 일치하도록 설정
+			feverTriggered = false;
+			base.selfHeal();
 		});
 	}
 

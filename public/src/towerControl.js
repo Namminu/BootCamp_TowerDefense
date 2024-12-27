@@ -39,25 +39,24 @@ export class TowerControl {
 		}
 
 		return this.towerqueue;
-
-		// if (this.towerqueue.length === 5) {
-		//   return this.towerqueue;
-		// }
-		// while (this.towerqueue.length < 5) {
-		//   const index = this.getRandomNumber(0, towerData.data.length - 1);
-		//   // let index = this.getRandomNumber(0, monsterLevel - 1);
-		//   // if (monsterLevel > towerData.data.length) {
-		//   //   index = this.getRandomNumber(0, towerData.data.length - 1);
-		//   // }
-		//   this.towerqueue.push({
-		//     image: this.towerImages[index],
-		//     name: towerData.data[index].name,
-		//     type: towerData.data[index].type,
-		//     cost: towerData.data[index].cost,
-		//   });
-		// }
-
-		// return this.towerqueue;
+		
+// 		if (this.towerqueue.length === 5) {
+// 			return this.towerqueue;
+// 		}
+// 		while (this.towerqueue.length < 5) {
+// 			const index = this.getRandomNumber(0, towerData.data.length - 1);
+// 			// let index = this.getRandomNumber(0, monsterLevel - 1);
+// 			// if (monsterLevel > towerData.data.length) {
+// 			//   index = this.getRandomNumber(0, towerData.data.length - 1);
+// 			// }
+// 			this.towerqueue.push({
+// 				image: this.towerImages[index],
+// 				name: towerData.data[index].name,
+// 				type: towerData.data[index].type,
+// 				cost: towerData.data[index].cost,
+// 			});
+// 		}
+// 		return this.towerqueue;
 	}
 
 	drawqueue(ctx, canvas, monsterLevel) {
