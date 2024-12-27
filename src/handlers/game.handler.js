@@ -19,8 +19,8 @@ export const gameStart = (userId, payload, socket) => {
 	setUserRound(userId, 1, Date.now());
 	setUserGold(userId, 1000);
 	setTowerQueue(userId, tower);
-	const user =getUserData(userId);
-	console.log("user",user);
+	const user = getUserData(userId);
+	console.log("user", user);
 
 	return { status: 'success' };
 };
@@ -44,7 +44,8 @@ export const gameOver = async (userId, payload, socket) => {
 	const data = {
 		status: 'success',
 		message: result.updated ? '최고 기록 갱신!' : '게임 오버',
-		score: result.currentHighScore.highScore,
+		userName: result.userName,
+		highScore: result.currentHighScore.highScore
 	};
 	return data;
-};
+}

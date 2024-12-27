@@ -8,11 +8,12 @@ datasource db {
 }
 
 model Users {
-  id         Int         @id @default(autoincrement()) @map("id")
-  userId     String      @unique @map("userId")
-  password   String      @map("password")
-  createdAt  DateTime    @default(now()) @map("createAt")
-  nickName   String      @unique @map("nickName")
+  id        Int      @id @default(autoincrement()) @map("id")
+  userId    String   @unique @map("userId")
+  password  String   @map("password")
+  createdAt DateTime @default(now()) @map("createAt")
+  nickName  String   @unique @map("nickName")
+
   highScores HighScores?
 
   @@map("Users")
@@ -22,8 +23,10 @@ model HighScores {
   id        Int      @id @default(autoincrement()) @map("id")
   userId    Int      @unique @map("userId")
   highScore Int      @map("highScore")
+  elapsed   Int      @map("elapsed")
   createdAt DateTime @default(now()) @map("createdAt")
-  users     Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("HighScores")
 }

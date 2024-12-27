@@ -5,6 +5,7 @@ import monsterData from '../assets/monster.json' with { type: 'json' };
 import monsterUnlockData from '../assets/monster_unlock.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
 import { getUserData, sendEvent } from './socket.js';
+import { initModal, showModal } from './modals/gameOverModal.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -250,23 +251,27 @@ async function gameLoop() {
 			continue;
 		}
 
-		if (monster.hp > 0) {
-			const isDestroyed = monster.move(base);
-			if (isDestroyed) {
-				const testRound = 1;
-				/* 게임 오버 */
-				//alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
-				// 게임 종료 시 서버로 gameOver 이벤트 전송
-				queueEvent(3, { currentRound: testRound });
-				//location.reload();
-			}
-			monster.draw(ctx);
-		} else {
-			/* 몬스터가 죽었을 때 */
-			monster.dead();
-			monsters.splice(i, 1);
-		}
-	}
+    if (monster.hp > 0) {
+      const isDestroyed = monster.move(base);
+      if (isDestroyed) {
+        const testRound = 1;
+        /* 게임 오버 */
+        // 게임 종료 시 서버로 gameOver 이벤트 전송
+        const response = await sendEvent(3, { currentRound: testRound /*currentRound*/ });
+        //const { message, userName, highScore } = response;
+        //showModal(message, userName, highScore/*, currentRound*/);
+
+        /* 테스트용 */
+        showModal("테스트 기록!", "테스트입니다", 1500, 1200);
+        //gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
+      }
+      monster.draw(ctx);
+    } else {
+      /* 몬스터가 죽었을 때 */
+      monster.dead();
+      monsters.splice(i, 1);
+    }
+  }
 
 	// towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
 	towerControl.sortTowers();
@@ -407,10 +412,10 @@ async function gameLoop() {
 	requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-function initGame() {
-	if (isInitGame) {
-		return; // 이미 초기화된 경우 방지
-	}
+async function initGame() {
+  if (isInitGame) {
+    return; // 이미 초기화된 경우 방지
+  }
 
 	isInitGame = true;
 	userGold = 800; // 초기 골드 설정
@@ -419,6 +424,8 @@ function initGame() {
 	//monsterSpawnInterval = 2000;
 
 	monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
+	
+	await initModal();  // 게임오버 모달창 초기 로드
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
 	// placeInitialTowers(); // 초기 타워 배치
 	placeBase(); // 기지 배치

@@ -14,7 +14,7 @@ let gameData = {
 };
 
 socket.on('response', (data) => {
-	console.log(data);
+	console.log('response : ', data);
 });
 
 socket.on('connection', (data) => {
@@ -45,17 +45,34 @@ const loadTowerQueue = () => {
 	});
 };
 
+// const sendEvent = async (handlerId, payload) => {
+//   socket.emit('event', {
+//     token: somewhere,
+//     handlerId,
+//     payload,
+//   });
+// };
+
 const sendEvent = (handlerId, payload) => {
-	socket.emit('event', {
-		token: somewhere,
-		handlerId,
-		payload,
+	return new Promise((resolve, reject) => {
+		socket.emit('event', {
+			token: somewhere,
+			handlerId,
+			payload,
+		});
+
+		socket.once('response', (data) => {
+			if (data.status === 'success') resolve(data);
+			else reject(new Error(data.message));
+		});
 	});
 };
 
+
 // 서버에게 생성주기가 완료되면 생성하라는 데이터를 받는다.
-socket.on('spawnMonster', (data) => {
-	console.log('서버로부터 몬스터 생성 명령 수신', data);
+socket.on("spawnMonster", (data) => {
+	console.log("서버로부터 몬스터 생성 명령 수신", data);
 	spawnMonster(); // 클라이언트의 spawnMonster 함수 호출
 });
+
 export { sendEvent, loadTowerQueue };

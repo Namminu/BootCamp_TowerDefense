@@ -11,14 +11,16 @@ router.get('/rank', authmiddlewares, async (req, res) => {
 			select: {
 				userId: true,
 				highScore: true,
-			},
+				released: true
+			}
 		});
-		if (!rankers) return res.status(404).json({ message: 'Rank Data Not Found' });
+		if (!rankers) return res.status(404).json({ message: "Rank Data Not Found" });
 
 		// highScore 컬럼명 Round 로 가공
-		const transformRankers = rankers.map((rank) => ({
+		const transformRankers = rankers.map(rank => ({
 			UserId: rankers.userId,
 			Round: rank.highScore,
+			Time: rankers.released
 		}));
 
 		return res.status(200).json({ message: '전체 랭킹 조회 성공', data: transformRankers });
