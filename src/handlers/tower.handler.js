@@ -149,6 +149,8 @@ export const upgradeTower = (userId, payload, socket) => {
 // 데이터는 {attecker, hitEntity, x, y, timestemp}
 export const atteckTower = (userId, payload, socket) => {
 
+	const currentTowers = getTower(userId);
+
 	
 
 };

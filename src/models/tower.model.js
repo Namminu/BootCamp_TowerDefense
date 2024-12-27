@@ -82,8 +82,22 @@ export const getowerAttackSheet = (uuid) => {
 	return attackSheets[uuid];
 };
 
-// 타워를 돌려서 타워 너비 안에 있는지 확인. 이건 클라랑 상의해 보기.
-export const canPlaceTower = (uuid, x, y) => {};
+
+export const getTowerRange = (towerdata, type, level) => {
+
+	const index = towerdata.data.findIndex((tower) => tower.type === type);
+
+	towerdata.data[index].range*(1.2)^level
+
+	
+	const towerRange = 0;
+	return towerRange;
+};
+
+
 
 // 타워를 돌려서 타워의  공격 범위 안에 있는지 확인. 이건 클라랑 상의해 보기.
-export const canRangeTower = (uuid, x, y, towerid) => {};
+export const canRangeTower = (towerX, towerY, targetX, targetY, length) => {
+
+	
+};
