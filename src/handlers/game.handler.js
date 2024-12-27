@@ -48,4 +48,3 @@ export const gameOver = async (userId, payload, socket) => {
 	};
 	return data;
 };
-
