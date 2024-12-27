@@ -7,7 +7,6 @@ import {
 	setowerAttackSheet,
 	getTower,
 	getTowerQueue,
-	getTowerRangeDamage,
 	removeTower,
 	removeTowerQueue,
 	setTower,
@@ -64,8 +63,6 @@ export const buyTower = (userId, payload, socket) => {
 	setUserGold(userId, currentUserData.gold);
 	setTowerQueue(userId, tower);
 	setTower(userId, payload.type, payload.x, payload.y, 1, selectedTower.damage, selectedTower.range, selectedTower.cooldown, selectedTower.cost, payload.timestamp);
-	console.log("getTower(userId)",getTower(userId));
-	console.log('currentUserData.gold:', currentUserData.gold);
 	return { status: 'success', message: '타워 배치 성공적.' };
 };
 
@@ -91,9 +88,6 @@ export const sellingTower = (userId, payload, socket) => {
 	currentUserData.gold += matchingTower.cost * 0.7;
 	setUserGold(userId, currentUserData.gold);
 
-
-	console.log("getTower(userId)",getTower(userId));
-	console.log('currentUserData.gold:', currentUserData.gold);
 	return { status: 'success', message: '판매 완료.' };
 };
 
@@ -139,9 +133,6 @@ export const upgradeTower = (userId, payload, socket) => {
 	setUserGold(userId, currentUserData.gold);
 	setTowerQueue(userId, tower);
 	setUserGold(userId, currentUserData.gold);
-
-	console.log("getTower(userId)",getTower(userId));
-	console.log('currentUserData.gold:', currentUserData.gold);
 
 	if (!isUpgrade) {
 		return { status: 'fail', message: '업그레이드 실패' };
