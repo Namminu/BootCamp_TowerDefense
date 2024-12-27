@@ -2,13 +2,20 @@ import { Base } from './base.js';
 import { Monster } from './monster.js';
 import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
-import monsterUnlockData from '../assets/monster_unlock.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
-import { getUserData, sendEvent } from './socket.js';
-import { initModal, showModal } from './modals/gameOverModal.js';
+import { sendEvent } from './socket.js';
+import { drawGrid } from './grid.js';
+import { drawGridAndPath, generatePath } from './path.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const cellSize = { WIDTH: 220 / 2, HEIGHT: 270 / 2 };
+
+const startPoint = { x: 0, y: 0 };
+const endPoint = { x: 16, y: 4 };
+const path = generatePath(startPoint, endPoint);
+
+const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
@@ -35,13 +42,9 @@ let feverTriggered = false; // 피버 모드 실행 여부를 확인하는 플�
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
-// 셀 크기 설정하는 곳
-const cellSize = {WIDTH : 146, HEIGHT : 180}; 
 
-// 상수 정의
 const TOWER_CONFIG = towerData.data;
 const MONSTER_CONFIG = monsterData.data;
-const MONSTER_UNLOCK_CONFIG = monsterUnlockData.data;
 
 // 경로를 저장할 배열
 let paths = [];
@@ -111,47 +114,6 @@ function processQueue() {
 
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
-//그리드를 화면에 그릴 함수
-function drawGrid(ctx, cellSize) {
-  const canvasWidth = 1898;
-  const canvasHeight = 720;
-
-  ctx.strokeStyle = '#cccccc'; // 그리드 색상
-  ctx.lineWidth = 1;
-
-  // 수평선 그리기
-  for (let y = 0; y <= canvasHeight; y += cellSize.HEIGHT) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(canvasWidth, y);
-    ctx.stroke();
-  }
-
-  // 마지막 수평선: 캔버스의 하단 끝에 추가
-  ctx.beginPath();
-  ctx.moveTo(0, canvasHeight);
-  ctx.lineTo(canvasWidth, canvasHeight);
-  ctx.stroke();
-
-  // 수직선 그리기
-  for (let x = 0; x <= canvasWidth; x += cellSize.WIDTH) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, canvasHeight);
-    ctx.stroke();
-  }
-
-   // 마지막 수직선: 캔버스의 우측 끝에 추가
-   ctx.beginPath();
-   ctx.moveTo(canvasWidth, 0);
-   ctx.lineTo(canvasWidth, canvasHeight);
-   ctx.stroke();
-}
-
-function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
-  const path = [];
-  let currentX = 0;
-  let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
 function generateRandomMonsterPath() {
 	//몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
 	const path = [];
@@ -182,8 +144,6 @@ function generateRandomMonsterPath() {
 	// 마지막 경로의 y를 시작 y와 동일하게 설정
 	path[path.length - 1].y = path[0].y;
 
-  // 경로 정렬 (x 기준으로 오름차순 정렬)
-  //path.sort((a, b) => a.x - b.x);
 	// 경로 정렬 (x 기준으로 오름차순 정렬)
 	path.sort((a, b) => a.x - b.x);
 
@@ -193,7 +153,9 @@ function generateRandomMonsterPath() {
 function initMap() {
 	// 배경 이미지 그리기
 	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-		drawPath();
+	for (let i = 0; i < 3; i++) {
+		paths[i] = drawPath();
+	}
 }
 
 function drawPath() {
@@ -232,12 +194,15 @@ function drawRotatedImage(image, x, y, width, height, angle) {
 	ctx.restore();
 }
 
-//베이스의 체력 증가 함수는? 모든 라운드의 hp가 동일?
 function placeBase() {
 	//플레이어 베이스를 만드는 함수.
-	const lastPoint = monsterPath[monsterPath.length - 1];
-	base = new Base(lastPoint.x, lastPoint.y, baseHp);
-	base.draw(ctx, baseImage);
+  const lastPoint = path[path.length - 1];
+  if(lastPoint){
+    base = new Base(lastPoint.x * cellSize.WIDTH, lastPoint.y * cellSize.HEIGHT, baseHp);
+    base.draw(ctx, baseImage);
+  } else {
+    console.log('path is not defined');
+  }
 }
 
 // 스테이지를 서버로 전달
@@ -245,41 +210,20 @@ function placeBase() {
 //실질적인 몬스터 소환 함수
 export function spawnMonster() {
 	console.log('몬스터가 생성되었습니다!');
-	const userData = getUserData();
-
-	if (!userData) {
-		console.error('유저 데이터를 찾을 수 없습니다.');
-		return;
-	}
-
-	// 현재 라운드 체크 및 몬스터 출현 가능 여부 체크
-	const currentRound = userData.round;
-	const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
-
-	if (!roundUnlock) {
-		console.error('현재 라운드에 출현 가능한 몬스터가 없습니다.');
-		return;
-	}
-
-	// 현재 라운드에 출현 가능한 몬스터 필터링
-	const availableMonsters = MONSTER_CONFIG.filter((monster) =>
-		roundUnlock.monster_id.includes(monster.id),
-	);
-
-	monsters.push(new Monster(monsterPath, currentRound, availableMonsters));
-	// monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
+	monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
 async function gameLoop() {
-  const currentTime = performance.now();
-  //게임 반복.
-  // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
-  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
+	const currentTime = performance.now();
+	//게임 반복.
+	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
+	// ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
+	// drawPath(monsterPath); // 경로 다시 그리기
 
-  // 그리드 생성 및 호출
-  drawGrid(ctx, cellSize);
+	drawGridAndPath(ctx, cellSize, path);
 
-  drawPath(monsterPath); // 경로 다시 그리기
+	// // 그리드 생성 및 호출
+	drawGrid(ctx, cellSize);
 
 	ctx.font = '25px Times New Roman';
 	ctx.fillStyle = 'skyblue';
@@ -299,27 +243,23 @@ async function gameLoop() {
 			continue;
 		}
 
-    if (monster.hp > 0) {
-      const isDestroyed = monster.move(base);
-      if (isDestroyed) {
-        const testRound = 1;
-        /* 게임 오버 */
-        // 게임 종료 시 서버로 gameOver 이벤트 전송
-        const response = await sendEvent(3, { currentRound: testRound /*currentRound*/ });
-        //const { message, userName, highScore } = response;
-        //showModal(message, userName, highScore/*, currentRound*/);
-
-        /* 테스트용 */
-        showModal("테스트 기록!", "테스트입니다", 1500, 1200);
-        //gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
-      }
-      monster.draw(ctx);
-    } else {
-      /* 몬스터가 죽었을 때 */
-      monster.dead();
-      monsters.splice(i, 1);
-    }
-  }
+		if (monster.hp > 0) {
+			const isDestroyed = monster.move(base);
+			if (isDestroyed) {
+				const testRound = 1;
+				/* 게임 오버 */
+				//alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
+				// 게임 종료 시 서버로 gameOver 이벤트 전송
+				queueEvent(3, { currentRound: testRound });
+				//location.reload();
+			}
+			monster.draw(ctx);
+		} else {
+			/* 몬스터가 죽었을 때 */
+			monster.dead();
+			monsters.splice(i, 1);
+		}
+	}
 
 	// towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
 	towerControl.sortTowers();
@@ -460,10 +400,10 @@ async function gameLoop() {
 	requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-async function initGame() {
-  if (isInitGame) {
-    return; // 이미 초기화된 경우 방지
-  }
+function initGame() {
+	if (isInitGame) {
+		return; // 이미 초기화된 경우 방지
+	}
 
 	isInitGame = true;
 	userGold = 800; // 초기 골드 설정
@@ -471,17 +411,15 @@ async function initGame() {
 	monsterLevel = 1;
 	//monsterSpawnInterval = 2000;
 
-  //몬스터경로를 생성할때 그리드로 생성된 경로를 참조?
-  //그러나 gameLoop
-  monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
-  initMap(); // 맵 초기화 (배경, 경로 그리기)
-  // placeInitialTowers(); // 초기 타워 배치
-  placeBase(); // 기지 배치
-
-  // 서버에 몬스터 스폰 주기와 타이밍 동기화
-  queueEvent(13, { round: 0, timestamp: Date.now() });
-  gameLoop(); // 게임 루프 시작
-} //이게 시작이네. 
+	monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
+	initMap(); // 맵 초기화 (배경, 경로 그리기)
+	// placeInitialTowers(); // 초기 타워 배치
+	placeBase(); // 기지 배치
+	//setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
+	// 서버에 몬스터 스폰 주기와 타이밍 동기화
+	queueEvent(13, { round: 0, timestamp: Date.now() });
+	gameLoop(); // 게임 루프 시작
+} //이게 시작이네.
 
 if (!isInitGame) {
 	// queueEvent(2, { timestamp: Date.now() });
@@ -505,39 +443,14 @@ function canPlaceTower(x, y) {
 		return false;
 	}
 
-	const towerWidth = previewTower ? previewTower.width : 0;
-	const towerHeight = previewTower ? previewTower.height : 0;
+	const cell = { x, y };
+	previewTower.isInvalidPlacement = path.includes(cell);
 
-	const newTowerCenterX = x + towerWidth / 2;
-	const newTowerCenterY = y + towerHeight / 2;
-
-	for (const tower of towerControl.towers) {
-		if (Math.abs(tower.x - x) < 1 && Math.abs(tower.y - y) < 1) {
-			tower.isInvalidPlacement = true;
-			console.log('Cannot place tower: duplicate position.');
-
-			return false;
-		}
-
-		const towerCenterX = tower.x + tower.width / 2;
-		const towerCenterY = tower.y + tower.height / 2;
-
-		const distance = Math.sqrt(
-			Math.pow(towerCenterX - newTowerCenterX, 2) + Math.pow(towerCenterY - newTowerCenterY, 2),
-		).toFixed(2); // 소수점 둘째 자리까지 반올림
-
-		console.log('Distance between towers:', distance);
-
-		// 두 타워의 중심 간 거리가 타워 너비 이상이어야 설치 가능
-		if (distance < 250) {
-			tower.isInvalidPlacement = true;
-			console.log('Cannot place tower: overlaps with another tower.');
-
-			return false;
-		}
-	}
+	if (previewTower.isInvalidPlacement) return false;
 
 	// 경계 확인
+	const towerWidth = previewTower.width;
+	const towerHeight = previewTower.height;
 	const withinBounds =
 		x >= 0 && y >= 0 && x + towerWidth <= canvas.width && y + towerHeight <= canvas.height;
 
@@ -570,10 +483,17 @@ canvas.addEventListener('click', (event) => {
 		const mouseX = event.clientX - rect.left;
 		const mouseY = event.clientY - rect.top;
 
-		if (canPlaceTower(mouseX, mouseY)) {
-			// 타워 설치
-			previewTower.x = mouseX - previewTower.width / 2;
-			previewTower.y = mouseY - previewTower.height / 2;
+		// 클릭된 셀의 행과 열 계산
+		const cellX = Math.floor(mouseX / cellSize.WIDTH);
+		const cellY = Math.floor(mouseY / cellSize.HEIGHT);
+		console.log(`클릭된 셀: (${cellX}, ${cellY})`);
+
+		// 타워 설치가 가능할 때
+		if (canPlaceTower(cellX, cellY)) {
+			// previewTower.x = mouseX - previewTower.width / 2;
+			// previewTower.y = mouseY - previewTower.height / 2;
+			previewTower.x = cellSize.WIDTH * cellX;
+			previewTower.y = cellSize.HEIGHT * cellY;
 			towerControl.towers.push(previewTower);
 			//타워 구매 - sendEvent
 			queueEvent(5, {
@@ -643,12 +563,6 @@ canvas.addEventListener('click', (event) => {
 	const rect = canvas.getBoundingClientRect();
 	const mouseX = event.clientX - rect.left;
 	const mouseY = event.clientY - rect.top;
-
-  // 클릭된 셀의 행과 열 계산
-  const cellX = Math.floor(mouseX / cellSize.WIDTH);
-  const cellY = Math.floor(mouseY / cellSize.HEIGHT);
-
-  console.log(`클릭된 셀: (${cellX}, ${cellY})`);
 
 	if (activeTowerInfo) {
 		const infoX = activeTowerInfo.x;
