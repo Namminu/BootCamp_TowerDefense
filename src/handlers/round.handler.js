@@ -32,7 +32,7 @@ export const moveRoundHandler = (userId, payload) => {
 
     // 다음 라운드 정보를 담은 객체 생성
     // 서버에 저장된 다음 라운드 정보가 있다면 바로 저장, 없다면 생성 후 저장
-    const nextRoundInfo = getRoundInfo(nextRound);
+    let nextRoundInfo = getRoundInfo(nextRound);
     if(!nextRoundInfo) nextRoundInfo = createRoundInfo(nextRound);
 
     // 다음 라운드 해금 정보 

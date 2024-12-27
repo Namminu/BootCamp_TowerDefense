@@ -1,6 +1,5 @@
 import { Base } from './base.js';
 import { Monster } from './monster.js';
-import { Tower } from './tower.js';
 import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
@@ -71,25 +70,16 @@ const backgroundImage = new Image();
 backgroundImage.src = './images/bg.webp';
 
 const towerImages = TOWER_CONFIG.map((tower) => {
-  const image = new Image();
-  image.src = tower.image;
-  return { image, id: tower.id };
+	const image = new Image();
+	image.src = tower.image;
+	return { image, id: tower.id };
 });
-//towerImage.src = "./images/tower1.png";
 
 const baseImage = new Image();
 baseImage.src = './images/base.png';
 
 const pathImage = new Image();
 pathImage.src = './images/path.png';
-
-// 몬스터 이미지를 Monster 클래스 내에서 로드하도록 함.
-// const monsterImages = [];
-// for (let i = 1; i <= NUM_OF_MONSTERS; i++) {
-//   const img = new Image();
-//   img.src = `./images/monster${i}.png`;
-//   monsterImages.push(img);
-// }
 
 export const towerControl = new TowerControl(ctx, towerImages);
 
@@ -99,183 +89,126 @@ const maxRage = 20;
 let gageBarWidth = maxRage * gageBarWidthCoeff;
 
 const gageBar = {
-  x: 300,
-  y: 20,
-  maxWidth: maxRage * gageBarWidthCoeff,
-  width: maxRage * gageBarWidthCoeff,
-  height: 40,
-  drawBG() {
-    ctx.fillStyle = '#F5F5F5';
-    ctx.fillRect(this.x, this.y, this.maxWidth, this.height);
-  },
-  draw() {
-    const my_gradient = ctx.createLinearGradient(
-      0,
-      this.y,
-      0,
-      this.y + this.height
-    ); // gradient
+	x: 300,
+	y: 20,
+	maxWidth: maxRage * gageBarWidthCoeff,
+	width: maxRage * gageBarWidthCoeff,
+	height: 40,
+	drawBG() {
+		ctx.fillStyle = '#F5F5F5';
+		ctx.fillRect(this.x, this.y, this.maxWidth, this.height);
+	},
+	draw() {
+		const my_gradient = ctx.createLinearGradient(0, this.y, 0, this.y + this.height); // gradient
 
-    my_gradient.addColorStop(0, "#F5EEE6");
-    my_gradient.addColorStop(0.5, "#F3D7CA");
-    my_gradient.addColorStop(1, "#E6A4B4");
+		my_gradient.addColorStop(0, '#E3AFAF');
+		my_gradient.addColorStop(0.5, '#E30000');
+		my_gradient.addColorStop(1, '#E30000');
 
-    ctx.fillStyle = my_gradient;
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 3;
-    ctx.fillRect(this.x, this.y, killCount * gageBarWidthCoeff, this.height);
-    ctx.strokeRect(this.x, this.y, this.maxWidth, this.height);
-  },
+		ctx.fillStyle = my_gradient;
+		ctx.strokeStyle = 'black';
+		ctx.lineWidth = 3;
+		ctx.fillRect(this.x, this.y, killCount * gageBarWidthCoeff, this.height);
+		ctx.strokeRect(this.x, this.y, this.maxWidth, this.height);
+	},
 };
 
 let monsterPath;
 
-function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
-  const path = [];
-  let currentX = 0;
-  let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
+function generateRandomMonsterPath() {
+	//몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
+	const path = [];
+	let currentX = 0;
+	let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
 
-  path.push({ x: currentX, y: currentY });
+	path.push({ x: currentX, y: currentY });
 
-  while (currentX < 1800) { // 마지막 x가 1600이 될 때까지 진행
-    currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
-    if (currentX > 1800) {
-      currentX = 1800; // 마지막 x는 1600
-    }
+	while (currentX < 1800) {
+		// 마지막 x가 1600이 될 때까지 진행
+		currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
+		if (currentX > 1800) {
+			currentX = 1800; // 마지막 x는 1600
+		}
 
-    currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
-    // y 좌표에 대한 clamp 처리
-    if (currentY < 100) {
-      currentY = 100;
-    }
-    if (currentY > 900) {
-      currentY = 900;
-    }
+		currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
+		// y 좌표에 대한 clamp 처리
+		// 길이 중간에 만들어지게 조정
+		if (currentY < 300) {
+			currentY = 300;
+		}
+		if (currentY > 600) {
+			currentY = 600;
+		}
 
-    path.push({ x: currentX, y: currentY });
-  }
+		path.push({ x: currentX, y: currentY });
+	}
 
-  // 마지막 경로의 y를 시작 y와 동일하게 설정
-  path[path.length - 1].y = path[0].y;
+	// 마지막 경로의 y를 시작 y와 동일하게 설정
+	path[path.length - 1].y = path[0].y;
 
-  // 경로 정렬 (x 기준으로 오름차순 정렬)
-  path.sort((a, b) => a.x - b.x);
+	// 경로 정렬 (x 기준으로 오름차순 정렬)
+	path.sort((a, b) => a.x - b.x);
 
-  return path;
+	return path;
 }
 
-function initMap() {// 배경 이미지 그리기
-  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-  for (let i = 0; i < 3; i++) {
-    paths[i] = drawPath();
-  }
+function initMap() {
+	// 배경 이미지 그리기
+	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+	for (let i = 0; i < 3; i++) {
+		paths[i] = drawPath();
+	}
 }
 
-function drawPath() {  //경로에 따라 길을 그리는것.
-  const segmentLength = 20; // 몬스터 경로 세그먼트 길이
-  const imageWidth = 60; // 몬스터 경로 이미지 너비
-  const imageHeight = 60; // 몬스터 경로 이미지 높이
-  const gap = 5; // 몬스터 경로 이미지 겹침 방지를 위한 간격
+function drawPath() {
+	//경로에 따라 길을 그리는것.
+	const segmentLength = 20; // 몬스터 경로 세그먼트 길이
+	const imageWidth = 60; // 몬스터 경로 이미지 너비
+	const imageHeight = 60; // 몬스터 경로 이미지 높이
+	const gap = 5; // 몬스터 경로 이미지 겹침 방지를 위한 간격
 
-  for (let i = 0; i < monsterPath.length - 1; i++) {
-    const startX = monsterPath[i].x;
-    const startY = monsterPath[i].y;
-    const endX = monsterPath[i + 1].x;
-    const endY = monsterPath[i + 1].y;
+	for (let i = 0; i < monsterPath.length - 1; i++) {
+		const startX = monsterPath[i].x;
+		const startY = monsterPath[i].y;
+		const endX = monsterPath[i + 1].x;
+		const endY = monsterPath[i + 1].y;
 
-    const deltaX = endX - startX;
-    const deltaY = endY - startY;
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY); // 피타고라스 정리로 두 점 사이의 거리를 구함 (유클리드 거리)
-    const angle = Math.atan2(deltaY, deltaX); // 두 점 사이의 각도는 tan-1(y/x)로 구해야 함 (자세한 것은 역삼각함수 참고): 삼각함수는 변의 비율! 역삼각함수는 각도를 구하는 것!
+		const deltaX = endX - startX;
+		const deltaY = endY - startY;
+		const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY); // 피타고라스 정리로 두 점 사이의 거리를 구함 (유클리드 거리)
+		const angle = Math.atan2(deltaY, deltaX); // 두 점 사이의 각도는 tan-1(y/x)로 구해야 함 (자세한 것은 역삼각함수 참고): 삼각함수는 변의 비율! 역삼각함수는 각도를 구하는 것!
 
-    for (let j = gap; j < distance - gap; j += segmentLength) {
-      // 사실 이거는 삼각함수에 대한 기본적인 이해도가 있으면 충분히 이해하실 수 있습니다.
-      // 자세한 것은 https://thirdspacelearning.com/gcse-maths/geometry-and-measure/sin-cos-tan-graphs/ 참고 부탁해요!
-      const x = startX + Math.cos(angle) * j; // 다음 이미지 x좌표 계산(각도의 코사인 값은 x축 방향의 단위 벡터 * j를 곱하여 경로를 따라 이동한 x축 좌표를 구함)
-      const y = startY + Math.sin(angle) * j; // 다음 이미지 y좌표 계산(각도의 사인 값은 y축 방향의 단위 벡터 * j를 곱하여 경로를 따라 이동한 y축 좌표를 구함)
-      drawRotatedImage(pathImage, x, y, imageWidth, imageHeight, angle);
-    }
-  }
+		for (let j = gap; j < distance - gap; j += segmentLength) {
+			// 사실 이거는 삼각함수에 대한 기본적인 이해도가 있으면 충분히 이해하실 수 있습니다.
+			// 자세한 것은 https://thirdspacelearning.com/gcse-maths/geometry-and-measure/sin-cos-tan-graphs/ 참고 부탁해요!
+			const x = startX + Math.cos(angle) * j; // 다음 이미지 x좌표 계산(각도의 코사인 값은 x축 방향의 단위 벡터 * j를 곱하여 경로를 따라 이동한 x축 좌표를 구함)
+			const y = startY + Math.sin(angle) * j; // 다음 이미지 y좌표 계산(각도의 사인 값은 y축 방향의 단위 벡터 * j를 곱하여 경로를 따라 이동한 y축 좌표를 구함)
+			drawRotatedImage(pathImage, x, y, imageWidth, imageHeight, angle);
+		}
+	}
 }
 
 function drawRotatedImage(image, x, y, width, height, angle) {
-  ctx.save();
-  ctx.translate(x + width / 2, y + height / 2);
-  ctx.rotate(angle);
-  ctx.drawImage(image, -width / 2, -height / 2, width, height);
-  ctx.restore();
-}
-
-function getRandomPositionNearPath(maxDistance) {  // maxDistance 범위 내에서 랜덤한 위치를 반환하는 함수
-  // 타워 배치를 위한 몬스터가 지나가는 경로 상에서 maxDistance 범위 내에서 랜덤한 위치를 반환하는 함수!
-  // 초기 타워들이 좀 중앙에 생겼으면 해서 segmentIndex의 범위를 조정
-  const segmentIndex = Math.floor(
-    Math.random() * (monsterPath.length - 10) + 5
-  );
-  console.log(segmentIndex);
-  const startX = monsterPath[segmentIndex].x;
-  const startY = monsterPath[segmentIndex].y;
-  const endX = monsterPath[segmentIndex + 1].x;
-  const endY = monsterPath[segmentIndex + 1].y;
-
-  const t = Math.random();
-  const posX = startX + t * (endX - startX);
-  const posY = startY + t * (endY - startY);
-
-  const offsetX = (Math.random() - 0.5) * 2 * maxDistance;
-  const offsetY = (Math.random() - 0.5) * 2 * maxDistance;
-
-  return {
-    x: posX + offsetX,
-    y: posY + offsetY,
-  };
-}
-
-// function placeInitialTowers() {
-//   //타워를 초기에 배치하는 함수
-//   /*
-//     타워를 초기에 배치하는 함수입니다.
-//     무언가 빠진 코드가 있는 것 같지 않나요?
-//   */
-//   for (let i = 0; i < numOfInitialTowers; i++) {
-//     const { x, y } = getRandomPositionNearPath(50); //200만큼 떨어지게? 만드는듯.
-//     const tower = towerControl.addTower(x, y);
-//     towerImage = tower.image;
-//     towerCost = tower.cost;
-//     towerControl.drawAndUpdateTowers();
-//   }
-
-//   towerImage = null;
-//   towerCost = null;
-// }
-
-function placeNewTower() {
-  //타워 배치를 알리는 함수. 타워 배치는 밑에서 한다.
-  previewTower = towerControl.addTower(0, 0); // 초기 위치는 (0, 0)으로 설정 여기서 나타나서 바로 마우스로 이동함.
-
-  towerImage = previewTower.image;
-  towerCost = previewTower.cost;
-
-  if (userGold >= towerCost) {
-    isPlacingTower = true; // 타워 배치를 시작
-    document.body.style.cursor = 'crosshair'; // 사용자에게 배치 모드임을 알림
-  }
+	ctx.save();
+	ctx.translate(x + width / 2, y + height / 2);
+	ctx.rotate(angle);
+	ctx.drawImage(image, -width / 2, -height / 2, width, height);
+	ctx.restore();
 }
 
 function placeBase() {
-  //플레이어 베이스를 만드는 함수.
-  const lastPoint = monsterPath[monsterPath.length - 1];
-  base = new Base(lastPoint.x, lastPoint.y, baseHp);
-  base.draw(ctx, baseImage);
+	//플레이어 베이스를 만드는 함수.
+	const lastPoint = monsterPath[monsterPath.length - 1];
+	base = new Base(lastPoint.x, lastPoint.y, baseHp);
+	base.draw(ctx, baseImage);
 }
-
 
 // 스테이지를 서버로 전달
 
 //실질적인 몬스터 소환 함수
 export function spawnMonster() {
-  console.log("몬스터가 생성되었습니다!");
-  monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
+	console.log('몬스터가 생성되었습니다!');
+	monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
 async function gameLoop() {
@@ -285,23 +218,23 @@ async function gameLoop() {
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
   drawPath(monsterPath); // 경로 다시 그리기
 
-  ctx.font = '25px Times New Roman';
-  ctx.fillStyle = 'skyblue';
-  ctx.fillText(`최고 기록: ${highScore}`, 100, 50); // 최고 기록 표시
-  ctx.fillStyle = 'white';
-  ctx.fillText(`점수: ${score}`, 100, 100); // 현재 스코어 표시
-  ctx.fillStyle = 'yellow';
-  ctx.fillText(`골드: ${userGold}`, 100, 150); // 골드 표시
-  ctx.fillStyle = 'black';
-  ctx.fillText(`현재 레벨: ${monsterLevel}`, 100, 200); // 최고 기록 표시
+	ctx.font = '25px Times New Roman';
+	ctx.fillStyle = 'skyblue';
+	ctx.fillText(`최고 기록: ${highScore}`, 100, 50); // 최고 기록 표시
+	ctx.fillStyle = 'white';
+	ctx.fillText(`점수: ${score}`, 100, 100); // 현재 스코어 표시
+	ctx.fillStyle = 'yellow';
+	ctx.fillText(`골드: ${userGold}`, 100, 150); // 골드 표시
+	ctx.fillStyle = 'black';
+	ctx.fillText(`현재 레벨: ${monsterLevel}`, 100, 200); // 최고 기록 표시
 
-  // 몬스터 그리기
-  for (let i = monsters.length - 1; i >= 0; i--) {
-    const monster = monsters[i];
-    if (monster.isDead) {
-      monsters.splice(i, 1); // 이미 죽은 몬스터 제거
-      continue;
-    }
+	// 몬스터 그리기
+	for (let i = monsters.length - 1; i >= 0; i--) {
+		const monster = monsters[i];
+		if (monster.isDead) {
+			monsters.splice(i, 1); // 이미 죽은 몬스터 제거
+			continue;
+		}
 
     if (monster.hp > 0) {
       const isDestroyed = monster.move(base);
@@ -321,144 +254,158 @@ async function gameLoop() {
     }
   }
 
-  // towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
-  towerControl.sortTowers();
+	// towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
+	towerControl.sortTowers();
 
-  // 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
-  towerControl.towers.forEach(async (tower) => {
-    // 몬스터 관련 로직
-    monsters.forEach((monster) => {
-      if (monster.isDead) return; // 이미 죽은 몬스터는 무시
+	// 타워 그리기 및 몬스터 공격 처리 //여기서 타워무슨 타워인지 알수 있음.
+	towerControl.towers.forEach((tower) => {
+		// 몬스터 관련 로직
+		monsters.forEach((monster) => {
+			if (monster.isDead) return; // 이미 죽은 몬스터는 무시
 
-      const distance = Math.sqrt(
-        Math.pow(tower.x - monster.x, 2) + Math.pow(tower.y - monster.y, 2)
-      );
-      if (distance < tower.range) {
-        //여기서 뭔갈 해야함.(몬스터 뭐 스택 올리는거나. 그런거.)
-        tower.attack(monster);
-        if (monster.hp <= 0) {
-          monster.dead();
-          score += monsterLevel;
-          userGold += 10 * monsterLevel;
+			const distance = Math.sqrt(
+				Math.pow(tower.x - monster.x, 2) + Math.pow(tower.y - monster.y, 2),
+			);
+			if (distance < tower.range) {
+				//여기서 뭔갈 해야함.(몬스터 뭐 스택 올리는거나. 그런거.)
+				tower.attack(monster);
+				if (monster.hp <= 0) {
+					monster.dead();
+					score += monsterLevel;
+					userGold += 10 * monsterLevel;
 
-          if (!tower.feverMode) {
-            killCount += 1;
-            console.log(`killCount: ${killCount}`); // 몬스터 처치 수 출력
-          }
+					if (!tower.feverMode && !feverTriggered) {
+						killCount += 1;
+						console.log(`killCount: ${killCount}`); // 몬스터 처치 수 출력
+					}
 
-          if (ableToMoveRound) {
-            monsterLevel += 1;
-            ableToMoveRound = false;
-          }
-        }
-      }
-    });
+					if (ableToMoveRound) {
+						monsterLevel += 1;
+						ableToMoveRound = false;
+					}
+				}
+			}
+		});
 
-    // 타워 그리기 & 마우스가 타워 위에 있을 때만 사정거리 표시하기
-    if (tower.isMouseOver) {
-      tower.drawRangeCircle();
-    }
-    tower.draw();
-    tower.updateCooldown();
-    // 타워를 클릭했을 때 자세히 보기 창을 띄우기
-    if (tower.isClicked) {
-      tower.showTowerInfo();
-    }
-    // 자세히 보기 창에서 업그레이드 버튼을 클릭했을 때
-    if (
-      tower.isClicked &&
-      tower.upgradeBtnClicked &&
-      userGold >= tower.cost * 1.2 &&
-      towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2
-    ) {
-      const upgradePrice = tower.upgradeTower(tower, userGold);
-      userGold -= upgradePrice; // 업그레이드 비용 차감
-      tower.upgradeBtnClicked = false;
-      tower.isClicked = false;
-    } else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
-      console.log("Not enough gold to upgrade the tower.");
-      printMessage = true;
-      tower.upgradeBtnClicked = false;
-      tower.isClicked = false;
-    }
+		// 타워 그리기 & 마우스가 타워 위에 있을 때만 사정거리 표시하기
+		if (tower.isMouseOver) {
+			tower.drawRangeCircle();
+		}
+		tower.draw();
+		tower.updateCooldown();
+	});
 
-    if (printMessage) {
-      ctx.fillStyle = "pink";
-      ctx.font = "bold 20px Arial";
-      ctx.fillText("돈이 모자라요!", tower.x, tower.y);
+	// 타워 자세히 보기창 그리기
+	towerControl.towers.forEach(async (tower) => {
+		// 타워를 클릭했을 때 자세히 보기 창을 띄우기
+		if (tower.isClicked) {
+			tower.showTowerInfo();
+		}
+		// 자세히 보기 창에서 업그레이드 버튼을 클릭했을 때
+		if (
+			tower.isClicked &&
+			tower.upgradeBtnClicked &&
+			userGold >= tower.cost * 1.2 &&
+			towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2
+		) {
+			const upgradePrice = tower.upgradeTower(tower, userGold);
+			userGold -= upgradePrice; // 업그레이드 비용 차감
+			tower.upgradeBtnClicked = false;
+			tower.isClicked = false;
+		} else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
+			console.log('Not enough gold to upgrade the tower.');
+			printMessage = true;
+			tower.upgradeBtnClicked = false;
+			tower.isClicked = false;
+		}
 
-      setTimeout(() => {
-        printMessage = false;
-      }, 3000);
-    }
+		if (printMessage) {
+			ctx.fillStyle = '#D91656';
+			ctx.font = 'bold 20px Arial';
+			ctx.fillText('돈이 모자라요!', tower.x, tower.y);
 
-    // 자세히 보기 창에서 판매 버튼을 클릭했을 때
-    if (tower.isClicked && tower.sellBtnClicked) {
-      const sellPrice = tower.sellTower(tower);
-      userGold += sellPrice; // 타워 판매 시 골드 추가
-      tower.sellBtnClicked = false;
-      tower.isClicked = false;
-    }
-  });
+			setTimeout(() => {
+				printMessage = false;
+			}, 1500);
+		}
 
-  // 피버 타임 시작
-  if (!feverTriggered && killCount === maxRage) {
-    towerControl.towers.forEach(async (tower) => {
-      feverTriggered = true;
-      console.log('fever time start');
-      await tower.feverTime();
-      console.log('fever time end');
-      killCount = 0; // killCount 초기화
-      ableToMoveRound = true;
+		// 자세히 보기 창에서 판매 버튼을 클릭했을 때
+		if (tower.isClicked && tower.sellBtnClicked) {
+			const sellPrice = tower.sellTower(tower);
+			userGold += sellPrice; // 타워 판매 시 골드 추가
+			tower.sellBtnClicked = false;
+			tower.isClicked = false;
+		}
+	});
 
-      // 피버 모드가 끝난 후 플래그 초기화
-      setTimeout(() => {
-        feverTriggered = false;
-      }, 5000); // feverTime 메서드 실행 시간과 일치하도록 설정
-    });
-  }
+	// 피버 타임 시작
+	if (!feverTriggered && killCount === maxRage) {
+		towerControl.towers.forEach(async (tower) => {
+			feverTriggered = true;
+			console.log('fever time start');
 
-  // 미리보기 타워 그리기
-  if (isPlacingTower && previewTower) {
-    previewTower.draw();
-    previewTower.drawRangeCircle();
+			// 피버 타임 메서드 호출(5초 동안 실행)
+			await tower.feverTime();
+			console.log('fever time end');
+			killCount = 0; // killCount 초기화
+			ableToMoveRound = true;
 
-    if (previewTower.isInvalidPlacement) {
-      ctx.fillStyle = "red";
-      ctx.font = "20px Arial";
-      ctx.fillText("너무 가까워요!", previewTower.x, previewTower.y - 10);
-    }
-  }
+			// 피버 모드가 끝난 후 플래그 초기화
+			setTimeout(() => {
+				feverTriggered = false;
+				base.selfHeal();
+			}, 5000); // feverTime 메서드 실행 시간과 일치하도록 설정
+		});
+	}
+
+	if (feverTriggered) {
+		// 피버 타임 알림 문구 띄우기
+		towerControl.towers.forEach((tower) => {
+			ctx.fillStyle = '#FF3F00';
+			ctx.font = 'bold 20px Arial';
+			ctx.fillText('고양이 파워!', tower.x + 5, tower.y + tower.height);
+		});
+	}
+
+	// 미리보기 타워 그리기
+	if (isPlacingTower && previewTower) {
+		previewTower.draw();
+		previewTower.drawRangeCircle();
+
+		if (previewTower.isInvalidPlacement) {
+			ctx.fillStyle = '#D91656';
+			ctx.font = 'bold 20px Arial';
+			ctx.fillText('너무 가까워요!', previewTower.x, previewTower.y - 10);
+		}
+	}
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
   base.draw(ctx, baseImage);
   //base.selfHeal(currentTime);
 
-  // 인벤토리 그리기
-  towerControl.drawqueue(ctx, canvas, monsterLevel);
+	// 인벤토리 그리기
+	towerControl.drawqueue(ctx, canvas, monsterLevel);
 
-  // 피버 게이지바 그리기
-  gageBar.drawBG();
-  gageBar.draw();
+	// 피버 게이지바 그리기
+	gageBar.drawBG();
+	gageBar.draw();
 
-  // console.log(`previewTower: ${previewTower}`);
+	// TO DO : 피버타임 때?
+	// 캔버스 한 번 지워주기
 
-  // TO DO : 피버타임 때?
-  // 캔버스 한 번 지워주기
-
-  requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
+	requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
 function initGame() {
-  if (isInitGame) {
-    return; // 이미 초기화된 경우 방지
-  }
+	if (isInitGame) {
+		return; // 이미 초기화된 경우 방지
+	}
 
-  isInitGame = true;
-  userGold = 800; // 초기 골드 설정
-  score = 0;
-  monsterLevel = 1;
-  //monsterSpawnInterval = 2000;
+	isInitGame = true;
+	userGold = 800; // 초기 골드 설정
+	score = 0;
+	monsterLevel = 1;
+	//monsterSpawnInterval = 2000;
 
   monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
   initMap(); // 맵 초기화 (배경, 경로 그리기)
@@ -490,78 +437,75 @@ Promise.all([
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
-  if (!isPlacingTower || !previewTower) {
-    return false;
-  }
+	if (!isPlacingTower || !previewTower) {
+		return false;
+	}
 
-  const towerWidth = previewTower ? previewTower.width : 0;
-  const towerHeight = previewTower ? previewTower.height : 0;
+	const towerWidth = previewTower ? previewTower.width : 0;
+	const towerHeight = previewTower ? previewTower.height : 0;
 
-  const newTowerCenterX = x + towerWidth / 2;
-  const newTowerCenterY = y + towerHeight / 2;
+	const newTowerCenterX = x + towerWidth / 2;
+	const newTowerCenterY = y + towerHeight / 2;
 
-  for (const tower of towerControl.towers) {
-    if (Math.abs(tower.x - x) < 1 && Math.abs(tower.y - y) < 1) {
-      tower.isInvalidPlacement = true;
-      console.log("Cannot place tower: duplicate position.");
+	for (const tower of towerControl.towers) {
+		if (Math.abs(tower.x - x) < 1 && Math.abs(tower.y - y) < 1) {
+			tower.isInvalidPlacement = true;
+			console.log('Cannot place tower: duplicate position.');
 
-      return false;
-    }
+			return false;
+		}
 
-    const towerCenterX = tower.x + tower.width / 2;
-    const towerCenterY = tower.y + tower.height / 2;
+		const towerCenterX = tower.x + tower.width / 2;
+		const towerCenterY = tower.y + tower.height / 2;
 
-    const distance = Math.sqrt(
-      Math.pow(towerCenterX - newTowerCenterX, 2) +
-      Math.pow(towerCenterY - newTowerCenterY, 2)
-    ).toFixed(2); // 소수점 둘째 자리까지 반올림
+		const distance = Math.sqrt(
+			Math.pow(towerCenterX - newTowerCenterX, 2) +
+				Math.pow(towerCenterY - newTowerCenterY, 2),
+		).toFixed(2); // 소수점 둘째 자리까지 반올림
 
-    console.log('Distance between towers:', distance);
+		console.log('Distance between towers:', distance);
 
-    // 두 타워의 중심 간 거리가 타워 너비 이상이어야 설치 가능
-    if (distance < 250) {
-      tower.isInvalidPlacement = true;
-      console.log("Cannot place tower: overlaps with another tower.");
+		// 두 타워의 중심 간 거리가 타워 너비 이상이어야 설치 가능
+		if (distance < 250) {
+			tower.isInvalidPlacement = true;
+			console.log('Cannot place tower: overlaps with another tower.');
 
-      return false;
-    }
-  }
+			return false;
+		}
+	}
 
-  // 경계 확인
-  const withinBounds =
-    x >= 0 &&
-    y >= 0 &&
-    x + towerWidth <= canvas.width &&
-    y + towerHeight <= canvas.height;
+	// 경계 확인
+	const withinBounds =
+		x >= 0 && y >= 0 && x + towerWidth <= canvas.width && y + towerHeight <= canvas.height;
 
-  if (!withinBounds) {
-    console.log('Cannot place tower: out of bounds.');
-    return false;
-  }
+	if (!withinBounds) {
+		console.log('Cannot place tower: out of bounds.');
+		return false;
+	}
 
-  return true;
+	return true;
 }
 
 // 타워 미리보기 상태일 때 마우스 이동 이벤트 처리
 canvas.addEventListener('mousemove', (event) => {
-  //타워의 미리보기 위치
-  if (isPlacingTower && previewTower) {
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
+	//타워의 미리보기 위치
+	if (isPlacingTower && previewTower) {
+		const rect = canvas.getBoundingClientRect();
+		const mouseX = event.clientX - rect.left;
+		const mouseY = event.clientY - rect.top;
 
-    // 미리보기 타워의 위치를 마우스 위치에 맞게 설정
-    previewTower.x = mouseX - previewTower.width / 2;
-    previewTower.y = mouseY - previewTower.height / 2;
-  }
+		// 미리보기 타워의 위치를 마우스 위치에 맞게 설정
+		previewTower.x = mouseX - previewTower.width / 2;
+		previewTower.y = mouseY - previewTower.height / 2;
+	}
 });
 
 // 타워 미리보기 상태일 때 마우스 클릭 이벤트 처리
 canvas.addEventListener('click', (event) => {
-  if (isPlacingTower && previewTower) {
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
+	if (isPlacingTower && previewTower) {
+		const rect = canvas.getBoundingClientRect();
+		const mouseX = event.clientX - rect.left;
+		const mouseY = event.clientY - rect.top;
 
     if (canPlaceTower(mouseX, mouseY)) {
       // 타워 설치
@@ -573,173 +517,170 @@ canvas.addEventListener('click', (event) => {
       console.log('Tower placed at:', previewTower.x, previewTower.y);
       console.log('All towers:', towerControl.towers);
 
-      // 설치 후 초기화
-      isPlacingTower = false;
-      towerControl.towerqueue.splice(towerIndex, 1); // 인벤토리에서 타워 제거
-      previewTower = null;
-      towerImage = null;
-      towerCost = null;
-      // isPreview = false;
-      document.body.style.cursor = 'default';
-    } else {
-      previewTower.isInvalidPlacement = true;
-      console.log("해당 위치에 타워를 설치할 수 없습니다!");
-    }
-  }
+			// 설치 후 초기화
+			isPlacingTower = false;
+			towerControl.towerqueue.splice(towerIndex, 1); // 인벤토리에서 타워 제거
+			previewTower = null;
+			towerImage = null;
+			towerCost = null;
+			// isPreview = false;
+			document.body.style.cursor = 'default';
+		} else {
+			previewTower.isInvalidPlacement = true;
+			console.log('해당 위치에 타워를 설치할 수 없습니다!');
+		}
+	}
 });
 
 // 타워 미리보기 상태일 때 우클릭으로 타워 배치 취소
 canvas.addEventListener('contextmenu', (event) => {
-  if (isPlacingTower && previewTower) {
-    event.preventDefault(); // 우클릭 기본 메뉴 방지
-    isPlacingTower = false;
-    previewTower = null;
-    document.body.style.cursor = 'default'; // 커서 복원
-    userGold += towerCost; // 골드 반환
-    towerImage = null;
-    towerCost = null;
-    // isPreview = false;
-  }
+	if (isPlacingTower && previewTower) {
+		event.preventDefault(); // 우클릭 기본 메뉴 방지
+		isPlacingTower = false;
+		previewTower = null;
+		document.body.style.cursor = 'default'; // 커서 복원
+		userGold += towerCost; // 골드 반환
+		towerImage = null;
+		towerCost = null;
+		// isPreview = false;
+	}
 });
 
 // 타워 이미지 위로 마우스를 올렸을 때 이벤트 처리
 canvas.addEventListener('mousemove', (event) => {
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = event.clientX - rect.left;
-  const mouseY = event.clientY - rect.top;
+	const rect = canvas.getBoundingClientRect();
+	const mouseX = event.clientX - rect.left;
+	const mouseY = event.clientY - rect.top;
 
-  towerControl.towers.forEach((tower) => {
-    const isMouseOverTower =
-      mouseX >= tower.x &&
-      mouseX <= tower.x + tower.width &&
-      mouseY >= tower.y &&
-      mouseY <= tower.y + tower.height;
+	towerControl.towers.forEach((tower) => {
+		const isMouseOverTower =
+			mouseX >= tower.x &&
+			mouseX <= tower.x + tower.width &&
+			mouseY >= tower.y &&
+			mouseY <= tower.y + tower.height;
 
-    if (isMouseOverTower) {
-      tower.isMouseOver = true;
-    } else {
-      tower.isMouseOver = false;
-    }
-  });
+		if (isMouseOverTower) {
+			tower.isMouseOver = true;
+		} else {
+			tower.isMouseOver = false;
+		}
+	});
 });
 
 // 타워 정보창 관련 변수
 let activeTowerInfo = null;
-// 타워 이미지를 클릭했을 때 정보창 열기 & 이미지 바��을 누르면 닫기
+// 타워 이미지를 클릭했을 때 정보창 열기 & 바깥을 누르면 닫기
 canvas.addEventListener('click', (event) => {
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = event.clientX - rect.left;
-  const mouseY = event.clientY - rect.top;
+	const rect = canvas.getBoundingClientRect();
+	const mouseX = event.clientX - rect.left;
+	const mouseY = event.clientY - rect.top;
 
-  if (activeTowerInfo) {
-    const infoX = activeTowerInfo.x;
-    const infoY = activeTowerInfo.y;
-    // 클릭이 정보창 외부인지 확인
-    const isOutsideInfo =
-      mouseX < infoX ||
-      mouseX > infoX + 180 ||
-      mouseY < infoY ||
-      mouseY > infoY + 150;
+	if (activeTowerInfo) {
+		const infoX = activeTowerInfo.x;
+		const infoY = activeTowerInfo.y;
+		// 클릭이 정보창 외부인지 확인
+		const isOutsideInfo =
+			mouseX < infoX || mouseX > infoX + 170 || mouseY < infoY || mouseY > infoY + 130;
 
-    // 업그레이드 버튼
-    if (
-      mouseX >= infoX + 10 &&
-      mouseX <= infoX + 90 &&
-      mouseY >= infoY + 100 &&
-      mouseY <= infoY + 120
-    ) {
-      console.log('Upgrade button clicked');
-      const tower = towerControl.towers.find((tower) => tower.isClicked);
-      if (tower) {
-        tower.upgradeBtnClicked = true;
-      }
-      activeTowerInfo = null; // 정보창 닫기
-      return; // 다른 처리를 막기 위해 종료
-    }
+		// 업그레이드 버튼
+		if (
+			mouseX >= infoX + 10 &&
+			mouseX <= infoX + 90 &&
+			mouseY >= infoY + 100 &&
+			mouseY <= infoY + 120
+		) {
+			console.log('Upgrade button clicked');
+			const tower = towerControl.towers.find((tower) => tower.isClicked);
+			if (tower) {
+				tower.upgradeBtnClicked = true;
+			}
+			activeTowerInfo = null; // 정보창 닫기
+			return; // 다른 처리를 막기 위해 종료
+		}
 
-    // 판매 버튼
-    if (
-      mouseX >= infoX + 110 &&
-      mouseX <= infoX + 160 &&
-      mouseY >= infoY + 100 &&
-      mouseY <= infoY + 120
-    ) {
-      console.log('Sell button clicked');
-      const tower = towerControl.towers.find((tower) => tower.isClicked);
-      if (tower) {
-        tower.sellBtnClicked = true;
-      }
-      activeTowerInfo = null; // 정보창 닫기
-      return; // 다른 처리를 막기 위해 종료
-    }
+		// 판매 버튼
+		if (
+			mouseX >= infoX + 110 &&
+			mouseX <= infoX + 160 &&
+			mouseY >= infoY + 100 &&
+			mouseY <= infoY + 120
+		) {
+			console.log('Sell button clicked');
+			const tower = towerControl.towers.find((tower) => tower.isClicked);
+			if (tower) {
+				tower.sellBtnClicked = true;
+			}
+			activeTowerInfo = null; // 정보창 닫기
+			return; // 다른 처리를 막기 위해 종료
+		}
 
-    if (isOutsideInfo) {
-      towerControl.towers.forEach((tower) => {
-        tower.isClicked = false; // 타워 클릭 상태 비활성화
-      });
-      activeTowerInfo = null; // 정보창 닫기
-      return; // 정보창 외부 클릭만 처리
-    }
-  }
+		if (isOutsideInfo) {
+			towerControl.towers.forEach((tower) => {
+				tower.isClicked = false; // 타워 클릭 상태 비활성화
+			});
+			activeTowerInfo = null; // 정보창 닫기
+			return; // 정보창 외부 클릭만 처리
+		}
+	}
 
-  towerControl.towers.forEach((tower) => {
-    const isClicked =
-      mouseX >= tower.x &&
-      mouseX <= tower.x + tower.width &&
-      mouseY >= tower.y &&
-      mouseY <= tower.y + tower.height;
+	towerControl.towers.forEach((tower) => {
+		const isClicked =
+			mouseX >= tower.x &&
+			mouseX <= tower.x + tower.width &&
+			mouseY >= tower.y &&
+			mouseY <= tower.y + tower.height;
 
-    if (isClicked) {
-      activeTowerInfo = { x: tower.x + tower.width + 10, y: tower.y }; // 정보창 위치
-      tower.isClicked = true; // 현재 타워 클릭 상태
-      console.log('Tower clicked:', tower);
-    } else {
-      tower.isClicked = false; // 다른 타워 클릭 상태 초기화
-    }
-  });
+		if (isClicked) {
+			activeTowerInfo = { x: tower.x + tower.width + 10, y: tower.y }; // 정보창 위치
+			tower.isClicked = true; // 현재 타워 클릭 상태
+			console.log('Tower clicked:', tower);
+		} else {
+			tower.isClicked = false; // 다른 타워 클릭 상태 초기화
+		}
+	});
 });
 
 // 인벤토리 클릭
 canvas.addEventListener('click', (event) => {
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = event.clientX - rect.left;
-  const mouseY = event.clientY - rect.top;
+	const rect = canvas.getBoundingClientRect();
+	const mouseX = event.clientX - rect.left;
+	const mouseY = event.clientY - rect.top;
 
-  const queueY = canvas.height - 180; // 인벤토리 Y 위치
-  const towerWidth = 220 / 1.5;
-  const towerHeight = 270 / 1.5;
-  const towerPadding = 160;
-  let currentX = 60;
+	const queueY = canvas.height - 180; // 인벤토리 Y 위치
+	const towerWidth = 220 / 1.5;
+	const towerHeight = 270 / 1.5;
+	const towerPadding = 160;
+	let currentX = 60;
 
-  // 인벤토리 클릭 감지
-  if (mouseY >= queueY) {
-    towerControl.towerqueue.forEach((tower, index) => {
-      if (
-        mouseX >= currentX &&
-        mouseX <= currentX + towerWidth &&
-        mouseY >= queueY &&
-        mouseY <= queueY + towerHeight
-      ) {
-        // 타워를 선택하고 설치 모드 활성화
-        if (userGold >= tower.cost) {
-          // isPreview = true;
-          userGold -= tower.cost;
-          previewTower = towerControl.buyqueueTower(0, 0, index); // 선택된 타워 생성
-          if (!previewTower) {
-            console.error('Failed to create preview tower.');
-            return;
-          }
-          towerImage = previewTower.image;
-          towerCost = previewTower.cost;
-          towerIndex = index;
-          isPlacingTower = true; // 설치 모드 활성화
-          document.body.style.cursor = 'crosshair'; // 커서 변경
-        } else {
-          printMessage = true;
-          console.log("골드가 부족합니다!");
-        }
-      }
-      currentX += towerWidth + towerPadding; // 다음 타워 위치로 이동
-    });
-  }
+	// 인벤토리 클릭 감지
+	if (mouseY >= queueY) {
+		towerControl.towerqueue.forEach((tower, index) => {
+			if (
+				mouseX >= currentX &&
+				mouseX <= currentX + towerWidth &&
+				mouseY >= queueY &&
+				mouseY <= queueY + towerHeight
+			) {
+				// 타워를 선택하고 설치 모드 활성화
+				if (userGold >= tower.cost) {
+					// isPreview = true;
+					userGold -= tower.cost;
+					previewTower = towerControl.buyqueueTower(0, 0, index); // 선택된 타워 생성
+					if (!previewTower) {
+						console.error('Failed to create preview tower.');
+						return;
+					}
+					towerImage = previewTower.image;
+					towerCost = previewTower.cost;
+					towerIndex = index;
+					isPlacingTower = true; // 설치 모드 활성화
+					document.body.style.cursor = 'crosshair'; // 커서 변경
+				} else {
+					printMessage = true;
+					console.log('골드가 부족합니다!');
+				}
+			}
+			currentX += towerWidth + towerPadding; // 다음 타워 위치로 이동
+		});
+	}
 });
