@@ -58,6 +58,8 @@ let feverTriggered = false; // 피버 모드 실행 여부를 확인하는 플�
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
+// 셀 크기 설정하는 곳
+const cellSize = {WIDTH : 146, HEIGHT : 180}; 
 
 const TOWER_CONFIG = towerData.data;
 const MONSTER_CONFIG = monsterData.data;
@@ -131,6 +133,42 @@ function processQueue() {
 
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
+//그리드를 화면에 그릴 함수
+function drawGrid(ctx, cellSize) {
+  const canvasWidth = 1898;
+  const canvasHeight = 720;
+
+  ctx.strokeStyle = '#cccccc'; // 그리드 색상
+  ctx.lineWidth = 1;
+
+  // 수평선 그리기
+  for (let y = 0; y <= canvasHeight; y += cellSize.HEIGHT) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvasWidth, y);
+    ctx.stroke();
+  }
+
+  // 마지막 수평선: 캔버스의 하단 끝에 추가
+  ctx.beginPath();
+  ctx.moveTo(0, canvasHeight);
+  ctx.lineTo(canvasWidth, canvasHeight);
+  ctx.stroke();
+
+  // 수직선 그리기
+  for (let x = 0; x <= canvasWidth; x += cellSize.WIDTH) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvasHeight);
+    ctx.stroke();
+  }
+
+   // 마지막 수직선: 캔버스의 우측 끝에 추가
+   ctx.beginPath();
+   ctx.moveTo(canvasWidth, 0);
+   ctx.lineTo(canvasWidth, canvasHeight);
+   ctx.stroke();
+}
 
 function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
   const path = [];
@@ -169,9 +207,7 @@ function generateRandomMonsterPath() { //몬스터 경로이동 함수. 경로�
 function initMap() {
 	// 배경 이미지 그리기
 	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-	for (let i = 0; i < 3; i++) {
-		paths[i] = drawPath();
-	}
+		drawPath();
 }
 
 function drawPath() {
@@ -230,6 +266,10 @@ async function gameLoop() {
   //게임 반복.
   // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
+
+  // 그리드 생성 및 호출
+  drawGrid(ctx, cellSize);
+
   drawPath(monsterPath); // 경로 다시 그리기
 
 	ctx.font = '25px Times New Roman';
@@ -425,7 +465,7 @@ function initGame() {
   initMap(); // 맵 초기화 (배경, 경로 그리기)
   // placeInitialTowers(); // 초기 타워 배치
   placeBase(); // 기지 배치
-  //setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
+
   // 서버에 몬스터 스폰 주기와 타이밍 동기화
   queueEvent(13, { round: 0, timestamp: Date.now() });
   gameLoop(); // 게임 루프 시작
@@ -588,6 +628,12 @@ canvas.addEventListener('click', (event) => {
 	const rect = canvas.getBoundingClientRect();
 	const mouseX = event.clientX - rect.left;
 	const mouseY = event.clientY - rect.top;
+
+  // 클릭된 셀의 행과 열 계산
+  const cellX = Math.floor(mouseX / cellSize.WIDTH);
+  const cellY = Math.floor(mouseY / cellSize.HEIGHT);
+
+  console.log(`클릭된 셀: (${cellX}, ${cellY})`);
 
 	if (activeTowerInfo) {
 		const infoX = activeTowerInfo.x;
