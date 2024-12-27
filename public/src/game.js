@@ -433,22 +433,30 @@ Promise.all([
 	// ),
 ]).then(() => {});
 
-// 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
 	if (!isPlacingTower || !previewTower) {
 		return false;
 	}
 
-	const cell = { x, y };
-	previewTower.isInvalidPlacement = path.includes(cell);
+	const isOnPath = path.some((pathCell) => pathCell.x === x && pathCell.y === y);
+	previewTower.isInvalidPlacement = isOnPath;
 
-	if (previewTower.isInvalidPlacement) return false;
+	if (previewTower.isInvalidPlacement) {
+		console.log('Cannot place tower: on path.');
+		return false;
+	}
 
 	// 경계 확인
 	const towerWidth = previewTower.width;
 	const towerHeight = previewTower.height;
+	const cellWidth = canvas.width / cellSize.WIDTH;
+	const cellHeight = canvas.height / cellSize.HEIGHT;
+
 	const withinBounds =
-		x >= 0 && y >= 0 && x + towerWidth <= canvas.width && y + towerHeight <= canvas.height;
+		x >= 0 &&
+		y >= 0 &&
+		x + towerWidth / cellWidth <= cellSize.WIDTH &&
+		y + towerHeight / cellHeight <= cellSize.HEIGHT;
 
 	if (!withinBounds) {
 		console.log('Cannot place tower: out of bounds.');
