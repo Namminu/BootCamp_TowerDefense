@@ -58,12 +58,12 @@ export const buyTower = (userId, payload, socket) => {
 
 	currentUserData.gold -= selectedTower.cost;
 
-	console.log('currentUserData.gold:', currentUserData.gold);
+	
 
 	setUserGold(userId, currentUserData.gold);
 	setTowerQueue(userId, tower);
 	setTower(userId, payload.type, payload.x, payload.y, 1, payload.timestamp);
-
+	console.log('currentUserData.gold:', currentUserData.gold);
 	return { status: 'success', message: '타워 배치 성공적.' };
 };
 
@@ -91,8 +91,8 @@ export const sellingTower = (userId, payload, socket) => {
 
 	currentUserData.gold += selectedTower.cost * 0.7;
 	setUserGold(userId, currentUserData.gold);
+	
 	console.log('currentUserData.gold:', currentUserData.gold);
-
 	return { status: 'success', message: '판매 완료.' };
 };
 
@@ -103,7 +103,6 @@ export const upgradeTower = (userId, payload, socket) => {
 	const currentUserData = getUserData(userId);
 	const currentTowers = getTower(userId);
 	const currentTowersQueue = getTowerQueue(userId);
-
 	const matchingTower = currentTowers.find(
 		(tower) => tower.x === payload.x && tower.y === payload.y && tower.type === payload.type,
 	);
@@ -114,11 +113,10 @@ export const upgradeTower = (userId, payload, socket) => {
 
 	const index = tower.data.findIndex((tower) => tower.type === matchingTower.type);
 
-	const matchingTowerQueueIndex = currentTowersQueue.findIndex(
-		(tower) => tower.towerDataIndex === index,
-	);
-
-	if (!matchingTowerQueueIndex) {
+	const matchingTowerQueueIndex = currentTowersQueue.map((tower, i) => (tower.towerDataIndex === index ? i : -1)) // 조건을 만족하는 인덱스 반환, 아니면 -1
+	.filter((i) => i !== -1); // 유효한 인덱스만 필터링
+	console.log("matchingTowerQueueIndex",matchingTowerQueueIndex);
+	if (matchingTowerQueueIndex.length < 2) {
 		return { status: 'fail', message: '타워가 인벤토리에 없음.' };
 	}
 
@@ -128,12 +126,21 @@ export const upgradeTower = (userId, payload, socket) => {
 		return { status: 'fail', message: '돈 없음' };
 	}
 
+
 	currentUserData.gold -= 1.2 * matchingTowerData.cost;
 	const isUpgrade = upTower(userId, payload.x, payload.y, payload.level); //이 레벨을 올라가고 싶은 레벨임. 안에서 레벨검증함.
-	removeTowerQueue(userId, matchingTowerQueueIndex);
+
+	for(let i=1; i<3; i++){ 
+		removeTowerQueue(userId, matchingTowerQueueIndex[matchingTowerQueueIndex.length-i]);
+	}
+	
+
 	setUserGold(userId, currentUserData.gold);
 	setTowerQueue(userId, tower);
+	setUserGold(userId, currentUserData.gold);
 
+	console.log(getTower(userId));
+	
 	if (!isUpgrade) {
 		return { status: 'fail', message: '업그레이드 실패' };
 	}

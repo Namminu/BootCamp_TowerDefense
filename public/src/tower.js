@@ -154,6 +154,7 @@ export class Tower {
 			return 0; // 골드 부족
 		}
 
+		queueEvent(7,{ x:this.x, y:this.y, type:this.type, level:this.level+1});
 		tower.damage *= 1.2; // 공격력 1.2배 증가
 		tower.originalDamage *= 1.2; // 공격력 1.2배 증가
 		// tower.range *= 1.5; // 사정거리 1.2배 증가
@@ -161,7 +162,7 @@ export class Tower {
 		tower.cooldown -= 10; // 쿨타임 0.1초 감소
 		tower.originalCooldown -= 10; // 쿨타임 0.1초 감소
 		tower.level += 1; // 타워 레벨 증가
-
+		
     // 업그레이드에 사용된 포탑 2개 제거
     for (let i = 0; i < 2; i++) {
       towerControl.towerqueue.splice(
