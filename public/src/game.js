@@ -4,7 +4,7 @@ import { Tower } from './tower.js';
 import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
-import { sendEvent } from "./socket.js";
+import { sendEvent } from './socket.js';
 
 
 /* 
@@ -133,6 +133,8 @@ let monsterPath;
 //길이 한개만 생성이 되네
 function generateMultiplePaths(numberOfPaths) {
   paths = [];
+  //디버깅용
+  console.log("길 갯수 : " ,numberOfPaths);
   for(let i = 0; i < numberOfPaths; i++){
     // 개별 경로 생성
     const path = generateRandomMonsterPath(); 
@@ -142,6 +144,8 @@ function generateMultiplePaths(numberOfPaths) {
 
 // 여러 경로를 그리는 함수
 function drawAllPaths() {
+  //디버깅용
+  console.log("경로 리스트 : ", paths);
   paths.forEach((path) => {
     // 저장된 경로를 하나씩 그리기
     drawPath(path); 
@@ -188,17 +192,19 @@ function initMap() {// 배경 이미지 그리기
   drawAllPaths();
 }
 
-function drawPath() {  //경로에 따라 길을 그리는것.
+function drawPath(path) {  //경로에 따라 길을 그리는것.
+  //디버깅용
+  console.log("drawPath 들어옴");
   const segmentLength = 20; // 몬스터 경로 세그먼트 길이
   const imageWidth = 60; // 몬스터 경로 이미지 너비
   const imageHeight = 60; // 몬스터 경로 이미지 높이
   const gap = 5; // 몬스터 경로 이미지 겹침 방지를 위한 간격
 
-  for (let i = 0; i < monsterPath.length - 1; i++) {
-    const startX = monsterPath[i].x;
-    const startY = monsterPath[i].y;
-    const endX = monsterPath[i + 1].x;
-    const endY = monsterPath[i + 1].y;
+  for (let i = 0; i < path.length - 1; i++) {
+    const startX = path[i].x;
+    const startY = path[i].y;
+    const endX = path[i + 1].x;
+    const endY = path[i + 1].y;
 
     const deltaX = endX - startX;
     const deltaY = endY - startY;
@@ -488,7 +494,12 @@ function initGame() {
 } //이게 시작이네. 
 
 if (!isInitGame) {
-  sendEvent(2, { timestamp: Date.now() })
+  if(typeof sendEvent === 'function') {
+    sendEvent(2, { timestamp: Date.now() })
+  } else {
+    console.log("ㅅㄱ");
+  }
+  
   initGame();
 }
 
