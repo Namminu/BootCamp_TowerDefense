@@ -409,7 +409,7 @@ function initGame() {
 } //이게 시작이네.
 
 if (!isInitGame) {
-	queueEvent(2, { timestamp: Date.now() });
+	// queueEvent(2, { timestamp: Date.now() });
 	initGame();
 }
 

@@ -18,6 +18,7 @@ import { getUserData, setUserGold } from '../models/userData.model.js';
 export const buyTower = (userId, payload, socket) => {
 	const { tower } = getGameAssets();
 	const currentUserData = getUserData(userId);
+	console.log("currentUserData",currentUserData);
 	let currentTowersQueue = getTowerQueue(userId);
 	const selectedTower = tower.data.find((tower) => tower.type === payload.type);
 	const selectedTowerInQueue = currentTowersQueue[payload.index];

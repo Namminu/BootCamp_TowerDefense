@@ -3,7 +3,7 @@ import { createRoundInfo, getRoundInfo } from '../models/roundInfo.model.js';
 import { getUserData, setUserRound } from '../models/userData.model.js';
 
 // sendEvent(11, payload : { currentRound, timestamp })
-export const moveRoundHandler = (userId, payload) => {
+export const moveRoundHandler = (userId, payload, socket) => {
 	// 라운드 검증. 유저의 현재 라운드와 currentRound 비교
 	if (payload.currentRound) {
 		const currentRound = getUserData(userId).round;
