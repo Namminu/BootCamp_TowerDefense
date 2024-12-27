@@ -288,6 +288,8 @@ async function gameLoop() {
 			if (distance < tower.range) {
 				//여기서 뭔갈 해야함.(몬스터 뭐 스택 올리는거나. 그런거.)
 				tower.attack(monster);
+				
+
 				if (monster.hp <= 0) {
 					monster.dead();
 					score += monsterLevel;
