@@ -60,8 +60,18 @@ export function drawGridAndPath(ctx, cellSize, path) {
 	const canvasHeight = ctx.canvas.height;
 
 	// 배경색으로 채우기
-	ctx.fillStyle = '#FFFDF0';
+	ctx.fillStyle = '#5CB338';
 	ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+	// path를 노란색으로 칠하기
+	const pathImage = new Image();
+	pathImage.src = './images/path/cheese_low.png';
+
+	path.forEach((point) => {
+		const cellX = point.x * cellSize.WIDTH;
+		const cellY = point.y * cellSize.HEIGHT;
+		ctx.drawImage(pathImage, cellX, cellY, 220 / 2, 270 / 2);
+	});
 
 	// 그리드 선 그리기
 	ctx.strokeStyle = 'black'; // 그리드 선 색상
@@ -81,11 +91,12 @@ export function drawGridAndPath(ctx, cellSize, path) {
 		ctx.stroke();
 	}
 
-	// path를 노란색으로 칠하기
-	ctx.fillStyle = '#FAC67A';
-	path.forEach((point) => {
-		const cellX = point.x * cellSize.WIDTH;
-		const cellY = point.y * cellSize.HEIGHT;
-		ctx.fillRect(cellX, cellY, cellSize.WIDTH, cellSize.HEIGHT);
-	});
+	// ctx.fillStyle = '#FFC145';
+	// path.forEach((point) => {
+	// 	const cellX = point.x * cellSize.WIDTH;
+	// 	const cellY = point.y * cellSize.HEIGHT;
+	// 	ctx.fillRect(cellX, cellY, cellSize.WIDTH, cellSize.HEIGHT);
+	// });
+
+	// drawGrid(ctx, cellSize);
 }

@@ -67,7 +67,7 @@ export class TowerControl {
 		// 인벤토리 영역 설정
 		const queueHeight = 200; // 인벤토리 높이
 		const queueY = canvas.height - queueHeight; // 인벤토리 위치
-		ctx.fillStyle = 'rgba(255, 182, 249, 0.7)';
+		ctx.fillStyle = 'rgba(255, 182, 249)';
 		ctx.fillRect(0, queueY - 15, canvas.width, queueHeight);
 
 		const imageWidth = 220 / 1.5;

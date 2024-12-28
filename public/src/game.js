@@ -229,14 +229,12 @@ export function spawnMonster() {
 async function gameLoop() {
 	const currentTime = performance.now();
 	//게임 반복.
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
-	// ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
-	// drawPath(monsterPath); // 경로 다시 그리기
-
-	drawGridAndPath(ctx, cellSize, path);
-
 	// // 그리드 생성 및 호출
-	drawGrid(ctx, cellSize);
+	drawGridAndPath(ctx, cellSize, path);
+	// drawGrid(ctx, cellSize);
 
 	ctx.font = '25px Times New Roman';
 	ctx.fillStyle = 'skyblue';
