@@ -275,7 +275,8 @@ async function gameLoop() {
 				Math.pow(tower.x - monster.x, 2) + Math.pow(tower.y - monster.y, 2),
 			);
 			if (distance < tower.range) {
-				//여기서 뭔갈 해야함.(몬스터 뭐 스택 올리는거나. 그런거.)
+				// 몬스터가 있는 그리드의 좌표 구하기
+
 				tower.attack(monster);
 				if (monster.hp <= 0) {
 					monster.dead();
@@ -462,15 +463,28 @@ Promise.all([
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
+	// 타워 설치 중이 아니라면 return false
 	if (!isPlacingTower || !previewTower) {
 		return false;
 	}
 
+	// 몬스터 공격로에 설치하려고 하면 return false
 	const isOnPath = path.some((pathCell) => pathCell.x === x && pathCell.y === y);
 	previewTower.isInvalidPlacement = isOnPath;
-
 	if (previewTower.isInvalidPlacement) {
 		console.log('Cannot place tower: on path.');
+		return false;
+	}
+
+	// 이미 타워가 설치된 곳에 설치하려고 하면 return false
+	const isOnExistingTower = towerControl.towers.some((tower) => {
+		const towerCellX = Math.floor(tower.x / cellSize.WIDTH);
+		const towerCellY = Math.floor(tower.y / cellSize.HEIGHT);
+		return towerCellX === x && towerCellY === y;
+	});
+	previewTower.isInvalidPlacement = isOnExistingTower;
+	if (previewTower.isInvalidPlacement) {
+		console.log('Cannot place tower: position occupied by another tower.');
 		return false;
 	}
 
@@ -522,8 +536,6 @@ canvas.addEventListener('click', (event) => {
 
 		// 타워 설치가 가능할 때
 		if (canPlaceTower(cellX, cellY)) {
-			// previewTower.x = mouseX - previewTower.width / 2;
-			// previewTower.y = mouseY - previewTower.height / 2;
 			previewTower.x = cellSize.WIDTH * cellX;
 			previewTower.y = cellSize.HEIGHT * cellY;
 			towerControl.towers.push(previewTower);
