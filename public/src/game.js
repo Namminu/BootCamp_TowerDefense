@@ -10,6 +10,10 @@ import { initModal, showModal } from './modals/gameOverModal.js';
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// 게임 실행 관련 변수
+let isGameRun = false;
+let gameLoopId;
+
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
 let baseHp = 10; // 기지 체력
@@ -227,6 +231,8 @@ export function spawnMonster() {
 }
 
 async function gameLoop() {
+	if (!isGameRun) return;
+
 	const currentTime = Date.now();
 	// 게임 반복.
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
@@ -262,7 +268,8 @@ async function gameLoop() {
 				console.log('message : ', message, 'userName : ', userName, 'highScore : ', highScore, 'time : ', time);
 				showModal(message, userName, highScore, 1, time);
 
-				//gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
+				// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
+				stopGame();
 			}
 			monster.draw(ctx);
 		} else {
@@ -408,14 +415,15 @@ async function gameLoop() {
 	// TO DO : 피버타임 때?
 	// 캔버스 한 번 지워주기
 
-	requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
+	gameLoopId = requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-export async function initGame(getReset = false) {
-	if (isInitGame && !getReset) return; // 이미 초기화된 경우 방지
-	if (getReset) isInitGame = false;
+async function initGame() {
+	if (isInitGame) return; // 이미 초기화된 경우 방지
 
 	isInitGame = true;
+	isGameRun = true;
+
 	userGold = 800; // 초기 골드 설정
 	score = 0;
 	monsterLevel = 1;
@@ -437,6 +445,19 @@ export async function initGame(getReset = false) {
 if (!isInitGame) {
 	// queueEvent(2, { timestamp: Date.now() });
 	initGame();
+}
+
+// 게임 리셋
+export function resetGame() {
+	console.log("Reset Game!");
+
+	cancelAnimationFrame(gameLoopId);
+}
+
+// 게임 스탑
+function stopGame() {
+	console.log("Stop Game!");
+
 }
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화

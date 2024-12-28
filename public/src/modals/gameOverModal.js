@@ -1,4 +1,4 @@
-import { initGame } from "../game.js";
+import { resetGame } from "../game.js";
 
 // 게임 오버 모달창 html 파일 로드
 export async function initModal() {
@@ -31,7 +31,7 @@ export function showModal(message, userName, highScore, currentRound, time) {
     document.getElementById('restartButton').addEventListener('click', () => {
         console.log('재시작 버튼 클릭');
         closeModal();
-        initGame(true); // 게임 재시작
+        resetGame(); // 게임 재시작
     });
 
     document.getElementById('mainButton').addEventListener('click', () => {
