@@ -141,7 +141,7 @@ export const upgradeTower = (userId, payload, socket) => {
 	return { status: 'success', message: '업그레이드 성공' };
 };
 
-// {atteckerX ,atteckerY, hitEntity, x, y, timestemp}
+// {atteckerX ,atteckerY, hitEntity, x, y, timestemp} //피버 타임에 대해 고민하기.
 export const atteckTower = (userId, payload, socket) => {
 	const currentTowers = getTower(userId);
 
