@@ -73,7 +73,7 @@ const maxRage = 20;
 let gageBarWidth = maxRage * gageBarWidthCoeff;
 
 const gageBar = {
-	x: 300,
+	x: 20,
 	y: 20,
 	maxWidth: maxRage * gageBarWidthCoeff,
 	width: maxRage * gageBarWidthCoeff,
@@ -229,22 +229,12 @@ export function spawnMonster() {
 async function gameLoop() {
 	const currentTime = performance.now();
 	//게임 반복.
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
 	// // 그리드 생성 및 호출
 	drawGridAndPath(ctx, cellSize, path);
 	// drawGrid(ctx, cellSize);
-
-	ctx.font = '25px Times New Roman';
-	ctx.fillStyle = 'skyblue';
-	ctx.fillText(`최고 기록: ${highScore}`, 100, 50); // 최고 기록 표시
-	ctx.fillStyle = 'white';
-	ctx.fillText(`점수: ${score}`, 100, 100); // 현재 스코어 표시
-	ctx.fillStyle = 'yellow';
-	ctx.fillText(`골드: ${userGold}`, 100, 150); // 골드 표시
-	ctx.fillStyle = 'black';
-	ctx.fillText(`현재 레벨: ${monsterLevel}`, 100, 200); // 최고 기록 표시
 
 	// 몬스터 그리기
 	for (let i = monsters.length - 1; i >= 0; i--) {
@@ -400,6 +390,19 @@ async function gameLoop() {
 
 	// 인벤토리 그리기
 	towerControl.drawqueue(ctx, canvas, monsterLevel);
+
+	// 유저 UI창
+	// ctx.fillStyle = 'white';
+	// ctx.fillRect(canvas.width - 250, canvas.height - 180, 200, 100);
+	ctx.font = '25px Times New Roman';
+	ctx.fillStyle = '#074799';
+	ctx.fillText(`최고 기록: ${highScore}`, canvas.width - 250, canvas.height - 30); // 최고 기록 표시
+	ctx.fillStyle = 'white';
+	ctx.fillText(`점수: ${score}`, canvas.width - 250, canvas.height - 80); // 현재 스코어 표시
+	ctx.fillStyle = 'yellow';
+	ctx.fillText(`골드: ${userGold}`, canvas.width - 250, canvas.height - 110); // 골드 표시
+	ctx.fillStyle = 'black';
+	ctx.fillText(`현재 레벨: ${monsterLevel}`, canvas.width - 250, canvas.height - 160); // 최고 기록 표시
 
 	// 피버 게이지바 그리기
 	gageBar.drawBG();
