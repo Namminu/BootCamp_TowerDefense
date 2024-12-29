@@ -15,7 +15,7 @@ const PORT = 8080;
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const publicPath = path.join(process.cwd(), 'public');
+const publicPath = path.join(process.cwd(), 'public/htmls');
 app.use(express.static(publicPath));
 
 app.use(

@@ -1,4 +1,4 @@
-import { resetGame } from "../game.js";
+import { resetGame } from "../../game.js";
 
 // 게임 오버 모달창 html 파일 로드
 export async function initModal() {

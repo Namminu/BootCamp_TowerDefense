@@ -5,7 +5,7 @@ import monsterData from '../assets/monster.json' with { type: 'json' };
 import monsterUnlockData from '../assets/monster_unlock.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
 import { getUserData, sendEvent } from './socket.js';
-import { initModal, showModal } from './modals/gameOverModal.js';
+import { initModal, showModal } from './webpages/modals/gameOverModal.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -474,6 +474,7 @@ export function resetGame() {
 	// 캔버스 초기화
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+	// 게임 재시작
 	initGame(true);
 }
 
