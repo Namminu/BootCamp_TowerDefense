@@ -204,6 +204,8 @@ function placeBase() {
 
 //실질적인 몬스터 소환 함수
 export function spawnMonster() {
+	if (!isGameRun) return;	// 게임 정지 상태일 때는 return
+
 	console.log('몬스터가 생성되었습니다!');
 	const userData = getUserData();
 
@@ -260,9 +262,8 @@ async function gameLoop() {
 		if (monster.hp > 0) {
 			const isDestroyed = monster.move(base);
 			if (isDestroyed) {
-				const testRound = 1;
+				const testRound = 1;	//테스트용 코드. 추후 currentRound 받아와야 함
 				/* 게임 오버 */
-				// 게임 종료 시 서버로 gameOver 이벤트 전송
 				const response = await sendEvent(3, { currentRound: testRound, timestamp: currentTime });
 				const { message, userName, highScore, time } = response;
 				console.log('message : ', message, 'userName : ', userName, 'highScore : ', highScore, 'time : ', time);
@@ -418,8 +419,9 @@ async function gameLoop() {
 	gameLoopId = requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-async function initGame() {
-	if (isInitGame) return; // 이미 초기화된 경우 방지
+async function initGame(getReset = false) {
+	if (isInitGame && !getReset) return; // 이미 초기화된 경우 방지
+	if (getReset) isInitGame = false;	// resetGame으로 강제 초기화
 
 	isInitGame = true;
 	isGameRun = true;
@@ -451,13 +453,37 @@ if (!isInitGame) {
 export function resetGame() {
 	console.log("Reset Game!");
 
+	// 게임 루프 중단
+	isGameRun = false;
 	cancelAnimationFrame(gameLoopId);
+
+	// 게임 상태 초기화
+	monsters.length = 0;
+	towerControl.towers.length = 0;
+	userGold = 0;
+	baseHp = 10;
+	score = 0;
+	killCount = 0;
+	monsterLevel = 1;
+	feverTriggered = false;
+
+	// 몬스터 스폰 초기화
+	sendEvent(14, {});
+	eventQueue.length = 0;
+
+	// 캔버스 초기화
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	initGame(true);
 }
 
 // 게임 스탑
 function stopGame() {
 	console.log("Stop Game!");
 
+	// 게임 루프 중단
+	isGameRun = false;
+	cancelAnimationFrame(gameLoopId);
 }
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
