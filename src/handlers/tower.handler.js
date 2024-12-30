@@ -111,6 +111,8 @@ export const upgradeTower = (userId, payload, socket) => {
 	const matchingTowerQueueIndex = currentTowersQueue
 		.map((tower, i) => (tower.towerDataIndex === index ? i : -1)) // 조건을 만족하는 인덱스 반환, 아니면 -1
 		.filter((i) => i !== -1); // 유효한 인덱스만 필터링
+
+	console.log("currentTowersQueue",currentTowersQueue);	
 	console.log('matchingTowerQueueIndex', matchingTowerQueueIndex);
 	
 	if (matchingTowerQueueIndex.length < 2) {
