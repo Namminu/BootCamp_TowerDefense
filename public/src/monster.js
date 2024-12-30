@@ -59,12 +59,6 @@ export class Monster {
 
 		// this.speed = 2; // 몬스터의 이동 속도
 	}
-	//생성 시간 추가해서 경로와 속도를 계산 살아있어야 할 시간보다 오래살아 있다면 ..버그를 쓴거겠지.
-	// init(level) {
-	//   this.maxHp = 100 + 10 * level; // 몬스터의 현재 HP
-	//   this.hp = this.maxHp; // 몬스터의 현재 HP
-	//   this.attackPower = 200 + 1 * level; // 몬스터의 공격력 (기지에 가해지는 데미지)
-	// }
 
 	move(base) {
 		if (this.currentIndex < this.path.length - 1) {

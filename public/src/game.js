@@ -202,6 +202,7 @@ async function gameLoop(frameTime) {
 	const currentTime = Date.now();
 	const deltaTime2 = currentTime - previousTime;
 	previousTime = currentTime;
+
 	if (!isRoundExpired) {
 		round_timer -= deltaTime2;
 		if (round_timer <= 0) {
@@ -789,9 +790,6 @@ let round_timer = 0;
 let roundUnlock = null;
 
 export function setRound(roundInfo, unlockMonsters) {
-	console.log('라운드 세팅');
-	console.log(roundInfo);
-
 	round = roundInfo.round;
 	monsterSpawnInterval = roundInfo.duration;
 	spawn_count = roundInfo.count;

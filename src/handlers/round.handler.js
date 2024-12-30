@@ -29,7 +29,7 @@ export const moveRoundHandler = (userId, payload, socket) => {
 	const nextRound = payload.currentRound + 1;
 
 	// 유저의 현재 라운드 정보 업데이트
-	setUserRound(userId, nextRound);
+	setUserRound(userId, nextRound, payload.timestamp);
 
 	// 다음 라운드 정보를 담은 객체 생성
 	// 서버에 저장된 다음 라운드 정보가 있다면 바로 저장, 없다면 생성 후 저장
