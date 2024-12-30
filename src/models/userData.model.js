@@ -27,3 +27,7 @@ export const setUserGold = (uuid, gold) => {
 export const setUserRound = (uuid, round) => {
 	userData[uuid].round = round;
 };
+
+export const setUserTimestamp = (uuid, timestamp) => {
+	userData[uuid].timestamp = timestamp;
+};
