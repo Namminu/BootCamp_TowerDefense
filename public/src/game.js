@@ -180,6 +180,8 @@ export function spawnMonster() {
 	);
 
 	monsters.push(new Monster(monsterPath, currentRound, availableMonsters));
+
+	console.log('클라 - monsters: ', monsters);
 }
 
 let previousTime = null;
