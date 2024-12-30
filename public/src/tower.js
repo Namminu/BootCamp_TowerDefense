@@ -119,6 +119,9 @@ export class Tower {
 		if (this.cooldown <= 0) {
 			this.isAttacking = true;
 			monster.hp -= this.damage;
+			// 데미지 텍스트 추가
+			monster.addDamageText(this.damage);
+
 			this.cooldown = this.originalCooldown; // 3초 쿨타임 (초당 60프레임)
 			this.beamDuration = 30; // 광선 지속 시간 (0.5초)
 			this.target = monster; // 광선의 목표 설정
@@ -188,7 +191,7 @@ export class Tower {
 			return 0; // 골드 부족
 		}
 
-		queueEvent(7,{ x:this.x, y:this.y, type:this.type, level:this.level+1});
+		queueEvent(7, { x: this.x, y: this.y, type: this.type, level: this.level + 1 });
 		tower.damage *= 1.2; // 공격력 1.2배 증가
 		tower.originalDamage *= 1.2; // 공격력 1.2배 증가
 		// tower.range *= 1.5; // 사정거리 1.2배 증가

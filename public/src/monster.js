@@ -36,6 +36,8 @@ export class Monster {
 		this.gold = monsterData.gold;
 		this.isDead = false; // 몬스터가 죽었는지 여부
 
+		this.damageTexts = []; // 데미지 텍스트 배열
+
 		// 따로 정보를 보내줘야 한다.
 		// class round
 		// Gold
@@ -77,12 +79,50 @@ export class Monster {
 
 	draw(ctx) {
 		ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+
+		// 배경 그리기
+		ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+		ctx.fillRect(this.x - 2, this.y - 20, 100, 20);
+
+		// HP 텍스트 그리기
 		ctx.font = '12px Arial';
 		ctx.fillStyle = 'white';
-		ctx.fillText(`(레벨 ${this.level}) ${this.hp}/${this.maxHp}`, this.x, this.y - 5);
+		ctx.fillText(`Lv. ${this.level} ${this.hp}/${this.maxHp}`, this.x + 5, this.y - 5);
+
+		// 데미지 텍스트 그리기
+		const currentTime = performance.now();
+		this.damageTexts = this.damageTexts.filter((text) => {
+			const elapsed = currentTime - text.createdAt;
+			if (elapsed > 2000) return false;
+
+			// 오프셋 위치 업데이트 (위로 올라가는 효과)
+			text.offsetY -= 0.5;
+			text.opacity = 1 - elapsed / 2000;
+
+			// 몬스터의 현재 위치 + 오프셋으로 실제 표시 위치 계산
+			const textX = this.x + text.offsetX;
+			const textY = this.y + text.offsetY;
+
+			// 텍스트 그리기
+			ctx.font = 'bold 20px Arial';
+			ctx.fillStyle = `rgba(255, 0, 0, ${text.opacity})`;
+			ctx.fillText(`${text.value}`, textX, textY);
+
+			return true;
+		});
 	}
 
 	dead() {
 		this.isDead = true; // 몬스터를 죽음 상태로 표시
+	}
+
+	addDamageText(damage) {
+		this.damageTexts.push({
+			value: damage,
+			offsetX: this.width / 2 - 15, // 몬스터 중앙에서의 X 오프셋
+			offsetY: -20, // 몬스터 위쪽으로의 Y 오프셋
+			opacity: 1,
+			createdAt: performance.now(),
+		});
 	}
 }

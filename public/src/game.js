@@ -7,8 +7,7 @@ import { TowerControl } from './towerControl.js';
 import { getUserData, sendEvent } from './socket.js';
 import { drawGrid } from './grid.js';
 import { drawGridAndPath, generatePath } from './path.js';
-import { } from './modals/gameOverModal.js'
-
+import {} from './modals/gameOverModal.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -253,17 +252,11 @@ export function spawnMonster() {
 	);
 
 	monsters.push(new Monster(monsterPath, currentRound, availableMonsters));
-	// monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
 async function gameLoop(frameTime) {
 	const currentTime = performance.now();
-	//게임 반복.
-	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	// 게임 시간 설정
-	// frameTime - lastFrameTime : 1프레임당 걸리는 시간(밀리초)
-	// ((frameTime - lastFrameTime) / 1000): 1프레임당 걸린 시간을 초 단위로 변환(처음 시작할 땐 0으로 설정)
 	deltaTime = (frameTime - lastFrameTime) / 1000 || 0;
 	// 마지막으로 기록된 frameTime(직전 frameTime)
 	lastFrameTime = frameTime;
@@ -283,27 +276,25 @@ async function gameLoop(frameTime) {
 			continue;
 		}
 
-    if (monster.hp > 0) {
-      const isDestroyed = monster.move(base);
-      if (isDestroyed) {
-        const testRound = 1;
-        /* 게임 오버 */
-        // 게임 종료 시 서버로 gameOver 이벤트 전송
-        const response = await sendEvent(3, { currentRound: testRound /*currentRound*/ });
-        //const { message, userName, highScore } = response;
-        //showModal(message, userName, highScore/*, currentRound*/);
+		if (monster.hp > 0) {
+			const isDestroyed = monster.move(base);
+			if (isDestroyed) {
+				const testRound = 1;
+				/* 게임 오버 */
+				// 게임 종료 시 서버로 gameOver 이벤트 전송
+				const response = await sendEvent(3, { currentRound: testRound /*currentRound*/ });
 
-        /* 테스트용 */
-        showModal("테스트 기록!", "테스트입니다", 1500, 1200);
-        //gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
-      }
-      monster.draw(ctx);
-    } else {
-      /* 몬스터가 죽었을 때 */
-      monster.dead();
-      monsters.splice(i, 1);
-    }
-  }
+				/* 테스트용 */
+				showModal('테스트 기록!', '테스트입니다', 1500, 1200);
+				//gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
+			}
+			monster.draw(ctx);
+		} else {
+			/* 몬스터가 죽었을 때 */
+			monster.dead();
+			monsters.splice(i, 1);
+		}
+	}
 
 	// towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
 	towerControl.sortTowers();
@@ -321,7 +312,6 @@ async function gameLoop(frameTime) {
 				// 몬스터가 있는 그리드의 좌표 구하기
 
 				tower.attack(monster);
-				
 
 				if (monster.hp <= 0) {
 					monster.dead();
@@ -463,9 +453,9 @@ async function gameLoop(frameTime) {
 }
 
 async function initGame() {
-  if (isInitGame) {
-    return; // 이미 초기화된 경우 방지
-  }
+	if (isInitGame) {
+		return; // 이미 초기화된 경우 방지
+	}
 
 	console.log('monsterPath: ', path);
 
