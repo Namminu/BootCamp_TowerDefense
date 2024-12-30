@@ -6,9 +6,7 @@ import monsterUnlockData from '../assets/monster_unlock.json' with { type: 'json
 import { TowerControl } from './towerControl.js';
 import { getUserData, sendEvent } from './socket.js';
 import { initModal, showModal } from './webpages/modals/gameOverModal.js';
-import { drawGrid } from './grid.js';
 import { drawGridAndPath, generatePath } from './path.js';
-import { initModal, showModal } from './modals/gameOverModal.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -234,7 +232,7 @@ function placeBase() {
 
 //실질적인 몬스터 소환 함수
 export function spawnMonster() {
-	if (!isGameRun) return;	// 게임 정지 상태일 때는 return
+	if (!isGameRun) return; // 게임 정지 상태일 때는 return
 
 	console.log('몬스터가 생성되었습니다!');
 	const userData = getUserData();
@@ -264,12 +262,14 @@ export function spawnMonster() {
 
 let previousTime = null;
 let isRoundExpired = false;
+
 async function gameLoop(frameTime) {
 	if (!isGameRun) return;
 	if (previousTime === null) {
 		previousTime = Date.now();
 		requestAnimationFrame(gameLoop);
 	}
+	ctx.textAlign = 'left';
 	const currentTime = Date.now();
 	const deltaTime2 = currentTime - previousTime;
 	previousTime = currentTime;
@@ -297,7 +297,6 @@ async function gameLoop(frameTime) {
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
 	// // 그리드 생성 및 호출
 	drawGridAndPath(ctx, cellSize, path);
-	// drawGrid(ctx, cellSize);
 
 	// 몬스터 그리기
 	for (let i = monsters.length - 1; i >= 0; i--) {
@@ -313,7 +312,16 @@ async function gameLoop(frameTime) {
 				/* 게임 오버 */
 				const response = await sendEvent(3, { currentRound: round, timestamp: currentTime });
 				const { message, userName, highScore, time } = response;
-				console.log('message : ', message, 'userName : ', userName, 'highScore : ', highScore, 'time : ', time);
+				console.log(
+					'message : ',
+					message,
+					'userName : ',
+					userName,
+					'highScore : ',
+					highScore,
+					'time : ',
+					time,
+				);
 				showModal(message, userName, highScore, 1, time);
 
 				// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
@@ -343,7 +351,6 @@ async function gameLoop(frameTime) {
 				// 몬스터가 있는 그리드의 좌표 구하기
 
 				tower.attack(monster);
-
 
 				if (monster.hp <= 0) {
 					monster.dead();
@@ -461,8 +468,8 @@ async function gameLoop(frameTime) {
 
 	// 인벤토리 그리기
 	if (towerControl.towerqueue.length < 5) {
-        await towerControl.getTowerqueue(monsterLevel);
-    }
+		await towerControl.getTowerqueue(monsterLevel);
+	}
 
 	towerControl.drawqueue(ctx, canvas, monsterLevel);
 
@@ -486,9 +493,17 @@ async function gameLoop(frameTime) {
 	ctx.font = '40px Times New Roman';
 	ctx.strokeStyle = '#000000';
 	ctx.fillStyle = '#ffffff';
-	ctx.textAlign = "center";
-	ctx.strokeText(`${round}라운드     남은 시간: ${Math.round(round_timer / 1000)}`, canvas.width / 2, 50);
-	ctx.fillText(`${round}라운드     남은 시간: ${Math.round(round_timer / 1000)}`, canvas.width / 2, 50);
+	ctx.textAlign = 'center';
+	ctx.strokeText(
+		`${round}라운드     남은 시간: ${Math.round(round_timer / 1000)}`,
+		canvas.width / 2,
+		50,
+	);
+	ctx.fillText(
+		`${round}라운드     남은 시간: ${Math.round(round_timer / 1000)}`,
+		canvas.width / 2,
+		50,
+	);
 
 	// TO DO : 피버타임 때?
 	// 캔버스 한 번 지워주기
@@ -498,7 +513,7 @@ async function gameLoop(frameTime) {
 
 async function initGame(getReset = false) {
 	if (isInitGame && !getReset) return; // 이미 초기화된 경우 방지
-	if (getReset) isInitGame = false;	// resetGame으로 강제 초기화
+	if (getReset) isInitGame = false; // resetGame으로 강제 초기화
 
 	console.log('monsterPath: ', path);
 
@@ -527,7 +542,7 @@ async function initGame(getReset = false) {
 	queueEvent(13, { round: 0, timestamp: Date.now() });
 	gameLoop(); // 게임 루프 시작
 
-	await initModal();  // 게임오버 모달창 초기 로드
+	await initModal(); // 게임오버 모달창 초기 로드
 } //이게 시작이네.
 
 export function gameStart() {
@@ -539,7 +554,7 @@ export function gameStart() {
 
 // 게임 리셋
 export function resetGame() {
-	console.log("Reset Game!");
+	console.log('Reset Game!');
 
 	// 게임 루프 중단
 	isGameRun = false;
@@ -569,7 +584,7 @@ export function resetGame() {
 
 // 게임 스탑
 function stopGame() {
-	console.log("Stop Game!");
+	console.log('Stop Game!');
 
 	// 게임 루프 중단
 	isGameRun = false;
@@ -585,7 +600,7 @@ Promise.all([
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),
-]).then(() => { });
+]).then(() => {});
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
@@ -665,7 +680,6 @@ canvas.addEventListener('click', async (event) => {
 			previewTower.x = cellSize.WIDTH * cellX;
 			previewTower.y = cellSize.HEIGHT * cellY;
 			towerControl.towers.push(previewTower);
-			
 
 			//타워 구매 - sendEvent
 			await sendEvent(5, {

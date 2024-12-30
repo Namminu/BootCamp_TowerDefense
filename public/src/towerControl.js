@@ -24,34 +24,34 @@ export class TowerControl {
 
 	async getTowerqueue(monsterLevel) {
 		if (this.isUpdatingTowerQueue) return; // 이미 업데이트 중이라면 반환
-    		this.isUpdatingTowerQueue = true;
+		this.isUpdatingTowerQueue = true;
 
-			try {
-		 const TowerQueueType = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
-		 
-	console.log("TowerQueueType", TowerQueueType);
-	const newQueue = []
-		 for (let i = 0; i < TowerQueueType.length; i++) {
-		 	const towerType = TowerQueueType[i].towerDataIndex;
-		 	const towerIndex = 1 + towerData.data.findIndex((tower) => tower.type === towerType); // 이새끼 뭐냐;; 이거 빼니까 작동을 안함.
-			const img = await loadImage(this.towerImages[towerIndex].idle[0]);
-			if (towerIndex !== -1) {
-				newQueue.push({
-		 			image: img,
-		 			name: towerData.data[towerIndex].name,
-		 			type: towerData.data[towerIndex].type,
-		 			cost: towerData.data[towerIndex].cost,
-		 		});
-		 	}
-		 }
-		 this.towerqueue = newQueue;
-		 console.log("Updated towerqueue:", this.towerqueue);
-		return this.towerqueue;
-	} catch (error) {
-        console.error("Failed to load tower queue:", error);
-    } finally {
-        this.isUpdatingTowerQueue = false; // 상태 해제
-    }
+		try {
+			const TowerQueueType = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
+
+			console.log('TowerQueueType', TowerQueueType);
+			const newQueue = [];
+			for (let i = 0; i < TowerQueueType.length; i++) {
+				const towerType = TowerQueueType[i].towerDataIndex;
+				const towerIndex = 1 + towerData.data.findIndex((tower) => tower.type === towerType); // 이새끼 뭐냐;; 이거 빼니까 작동을 안함.
+				const img = await loadImage(this.towerImages[towerIndex].idle[0]);
+				if (towerIndex !== -1) {
+					newQueue.push({
+						image: img,
+						name: towerData.data[towerIndex].name,
+						type: towerData.data[towerIndex].type,
+						cost: towerData.data[towerIndex].cost,
+					});
+				}
+			}
+			this.towerqueue = newQueue;
+			console.log('Updated towerqueue:', this.towerqueue);
+			return this.towerqueue;
+		} catch (error) {
+			console.error('Failed to load tower queue:', error);
+		} finally {
+			this.isUpdatingTowerQueue = false; // 상태 해제
+		}
 	}
 
 	drawqueue(ctx, canvas, monsterLevel) {
@@ -63,6 +63,7 @@ export class TowerControl {
 		const queueHeight = 200; // 인벤토리 높이
 		const queueY = canvas.height - queueHeight; // 인벤토리 위치
 		ctx.fillStyle = '#F0BB78';
+		this.ctx.textAlign = 'left';
 		ctx.fillRect(0, queueY - 15, canvas.width, queueHeight);
 
 		const imageWidth = 220 / 1.5;
