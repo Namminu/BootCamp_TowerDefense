@@ -121,40 +121,6 @@ function processQueue() {
 
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
-// function generateRandomMonsterPath() {
-// 	//몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
-// 	const path = [];
-// 	let currentX = 0;
-// 	let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
-
-// 	path.push({ x: currentX, y: currentY });
-
-// 	while (currentX < 1800) {
-// 		// 마지막 x가 1600이 될 때까지 진행
-// 		currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
-// 		if (currentX > 1800) {
-// 			currentX = 1800; // 마지막 x는 1600
-// 		}
-
-// 		currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
-// 		// y 좌표에 대한 clamp 처리
-// 		if (currentY < 100) {
-// 			currentY = 100;
-// 		}
-// 		if (currentY > 900) {
-// 			currentY = 900;
-// 		}
-
-// 		path.push({ x: currentX, y: currentY });
-// 	}
-
-// 	// 마지막 경로의 y를 시작 y와 동일하게 설정
-// 	path[path.length - 1].y = path[0].y;
-
-// 	// 경로 정렬 (x 기준으로 오름차순 정렬)
-// 	path.sort((a, b) => a.x - b.x);
-
-// 	return path;
 function setMonsterPathFromGeneratedPath() {
 	// generatePath 결과를 기반으로 몬스터 경로 설정
 	const generatedPath = path;
@@ -318,7 +284,9 @@ async function gameLoop(frameTime) {
 					//daethSheets.push({killer:tower:{x:tower.x,y:tower.y}, daethEntity:monster, timestamp:Date.now()});
 					//일단 여기서 넣는데, 죽인놈(타워,라운드,베이스중 하나.타워라면, 이곳에 위치정보들어가기.),죽인몬스터(id,hp,speed,gold,timestemp),죽인시간 넣어서 보네기.
 					score += monsterLevel;
-					userGold += 10 * monsterLevel;
+					userGold += monster.gold;
+
+					console.log(`${monster.gold}골드를 획득했습니다.`);
 
 					if (!tower.feverMode && !feverTriggered) {
 						killCount += 1;
