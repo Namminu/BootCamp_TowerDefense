@@ -8,7 +8,7 @@ import { sendEvent } from './socket.js';
 import { initModal, showModal } from './webpages/modals/gameOverModal.js';
 import { drawGrid } from './grid.js';
 import { drawGridAndPath, generatePath } from './path.js';
-import {} from './modals/gameOverModal.js';
+// import {} from './modals/gameOverModal.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -469,8 +469,8 @@ async function gameLoop(frameTime) {
 	gameLoopId = requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-async function initGame() {
-	if (isInitGame) {
+export async function initGame(receivedUserData) {
+	if (isInitGame || !receivedUserData) {
 		return; // 이미 초기화된 경우 방지
 	}
 

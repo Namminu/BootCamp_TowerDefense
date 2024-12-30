@@ -57,12 +57,15 @@ export const gameOver = async (userId, payload, socket) => {
 	};
 	return data;
 };
+
 export const updateUserGold = (userId, payload, socket) => {
 	if (!userId || !payload) return { status: 'fail', message: '필수 값이 없습니다.' };
 
 	const userData = getUserData(userId);
 	const newGold = userData.gold + payload.gold;
 	setUserGold(userId, newGold);
+
+	console.log('서버에 들어온 골드', payload.gold);
 
 	console.log('서버 userData: ', userData);
 };
