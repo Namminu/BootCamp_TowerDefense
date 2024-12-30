@@ -1,14 +1,14 @@
-import { queueEvent, towerControl } from "./game.js";
+import { queueEvent, towerControl, accumulatedTime } from './game.js';
 
 export class Tower {
-	constructor(ctx, x, y, damage, range, cooldown, cost, image, type, id, level = 1) {
+	constructor(ctx, x, y, damage, range, cooldown, cost, imageSet, type, id, level = 1) {
 		// 코스트랑 타입은 에셋에서 다운받아서 넣어준다.
 		// 생성자 안에서 타워들의 속성을 정의한다고 생각하시면 됩니다!
 		this.ctx = ctx; // 캔버스 컨텍스트
 		this.x = x; // 타워 이미지 x 좌표
 		this.y = y; // 타워 이미지 y 좌표
-		this.width = 220 / 1.5; // 타워 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
-		this.height = 270 / 1.5; // 타워 이미지 세로 길이
+		this.width = 280 / 2.5; // 타워 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
+		this.height = 320 / 2.5; // 타워 이미지 세로 길이
 		this.damage = damage; // 타워 공격력
 		this.range = range; // 타워 사거리
 		this.cooldown = cooldown; // 타워 공격 쿨타임
@@ -21,18 +21,18 @@ export class Tower {
 		this.type = type; // 타워 타입
 		this.id = id;
 		this.level = level;
-		this.image = image;
+		this.imageSet = imageSet;
 		this.feverMode = false;
+		this.isAttacking = false;
 		this.isMouseOver = false;
 		this.isClicked = false;
 		this.upgradeBtnClicked = false;
 		this.sellBtnClicked = false;
 		this.isInvalidPlacement = false;
+		this.currentFrame = 0;
 	}
 
 	draw() {
-		this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-
 		// 타워 광선 그리기
 		let beamColor;
 		switch (this.type) {
@@ -61,6 +61,39 @@ export class Tower {
 			this.ctx.closePath();
 			this.beamDuration--;
 		}
+
+		let currentImage;
+		let upgradeCount = 0;
+		if (this.level === 0 || this.level === 1) {
+			upgradeCount = 0;
+		} else if (this.level === 2 || this.level === 3) {
+			upgradeCount = 1;
+		} else if (this.level === 4 || this.level === 5) {
+			upgradeCount = 2;
+		} else if (this.level === 6 || this.level === 7) {
+			upgradeCount = 3;
+		} else if (this.level > 7) {
+			upgradeCount = 3;
+		}
+
+		if (this.isAttacking) {
+			// 공격 상태일 때 애니메이션 처리
+			console.log(accumulatedTime);
+			const frameIndex = Math.floor(accumulatedTime) % 2;
+			currentImage = this.imageSet.attacking[upgradeCount][frameIndex];
+		} else {
+			// 기본 상태 이미지
+			currentImage = this.imageSet.idle[upgradeCount];
+		}
+
+		const img = new Image();
+		img.src = currentImage;
+		this.ctx.drawImage(img, this.x, this.y, this.width, this.height);
+
+		// 공격 상태 해제
+		if (this.cooldown <= 0) {
+			this.isAttacking = false;
+		}
 	}
 
 	drawRangeCircle() {
@@ -84,6 +117,7 @@ export class Tower {
 	attack(monster) {
 		// 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
 		if (this.cooldown <= 0) {
+			this.isAttacking = true;
 			monster.hp -= this.damage;
 			this.cooldown = this.originalCooldown; // 3초 쿨타임 (초당 60프레임)
 			this.beamDuration = 30; // 광선 지속 시간 (0.5초)
@@ -104,8 +138,8 @@ export class Tower {
 	async feverTime() {
 		this.feverMode = true;
 
-    this.damage = 1.5 * this.originalDamage;
-    this.range = 1.2 * this.originalRange;
+		this.damage = 1.5 * this.originalDamage;
+		this.range = 1.2 * this.originalRange;
 
 		return new Promise((resolve) => {
 			setTimeout(() => {
@@ -162,21 +196,21 @@ export class Tower {
 		tower.cooldown -= 10; // 쿨타임 0.1초 감소
 		tower.originalCooldown -= 10; // 쿨타임 0.1초 감소
 		tower.level += 1; // 타워 레벨 증가
-		
-    // 업그레이드에 사용된 포탑 2개 제거
-    //  for (let i = 0; i < 2; i++) {
-    //  towerControl.towerqueue.splice(
-    //    towerControl.towerqueue.findIndex((t) => t.type === tower.type),
-    //   1
-    //  );
-    //}
 
-    return upgradeCost;
-  }
+		// 업그레이드에 사용된 포탑 2개 제거
+		//for (let i = 0; i < 2; i++) {
+		//	towerControl.towerqueue.splice(
+		//		towerControl.towerqueue.findIndex((t) => t.type === tower.type),
+		//		1,
+		//	);
+		//}
 
-  sellTower(tower) {
-    queueEvent(6,{ x:this.x, y:this.y, type:this.type});
-    const sellPrice = tower.cost * 0.7; // 타워 가격의 70% 환불
+		return upgradeCost;
+	}
+
+	sellTower(tower) {
+		queueEvent(6, { x: this.x, y: this.y, type: this.type });
+		const sellPrice = tower.cost * 0.7; // 타워 가격의 70% 환불
 
 		// 타워를 판매하면 타워 배열에서 제거
 		towerControl.towers = towerControl.towers.filter((t) => t.id !== tower.id);
