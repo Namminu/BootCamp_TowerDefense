@@ -24,9 +24,9 @@ export class Monster {
 		this.height = monsterData.height; // 몬스터 이미지 세로 길이
 		this.level = level; // 몬스터 레벨
 
-		// 이미지 로드
-		this.image = new Image();
-		this.image.src = monsterData.image;
+		// 몬스터 이미지 로드
+		// this.image = new Image();
+		// this.image.src = monsterData.image;
 
 		// monster.json 데이터 기반으로 초기화
 		this.maxHp = monsterData.hp + level * 10; // 테스트용
@@ -44,6 +44,13 @@ export class Monster {
 		// 생성 시간 기록
 		this.createdAt = Date.now();
 
+		// 애니메이션 관련
+		this.imageSet = monsterData.imageSet;
+		this.currentFrame = 0;
+		this.isHit = false;
+		this.hitDuration = 0;
+		this.animationSpeed = 0.05; // 프레임 전환 속도
+
 		// 따로 정보를 보내줘야 한다.
 		// class round
 		// Gold
@@ -52,12 +59,6 @@ export class Monster {
 
 		// this.speed = 2; // 몬스터의 이동 속도
 	}
-	//생성 시간 추가해서 경로와 속도를 계산 살아있어야 할 시간보다 오래살아 있다면 ..버그를 쓴거겠지.
-	// init(level) {
-	//   this.maxHp = 100 + 10 * level; // 몬스터의 현재 HP
-	//   this.hp = this.maxHp; // 몬스터의 현재 HP
-	//   this.attackPower = 200 + 1 * level; // 몬스터의 공격력 (기지에 가해지는 데미지)
-	// }
 
 	move(base) {
 		if (this.currentIndex < this.path.length - 1) {
@@ -84,7 +85,25 @@ export class Monster {
 	}
 
 	draw(ctx) {
-		ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+		// ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+
+		let currentImage = new Image();
+
+		if (this.isHit && this.hitDuration > 0) {
+			// 피격 상태일 때
+			currentImage.src = this.imageSet.hit;
+			this.hitDuration--;
+			if (this.hitDuration <= 0) {
+				this.isHit = false;
+			}
+		} else {
+			// 일반 상태일 때 (idle 애니메이션)
+			const frameIndex = Math.floor(this.currentFrame) % this.imageSet.idle.length;
+			currentImage.src = this.imageSet.idle[frameIndex];
+			this.currentFrame += this.animationSpeed;
+		}
+
+		ctx.drawImage(currentImage, this.x, this.y, this.width, this.height);
 
 		// 배경 그리기
 		ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
@@ -126,7 +145,15 @@ export class Monster {
 		this.isDead = true; // 몬스터를 죽음 상태로 표시
 	}
 
+	// 피격 효과를 위한 메서드
+	onHit() {
+		this.isHit = true;
+		this.hitDuration = 50; // 피격 지속 시간 (프레임 수)
+	}
+
 	addDamageText(damage) {
+		this.onHit();
+
 		this.damageTexts.push({
 			value: damage,
 			offsetX: this.width / 2 - 15, // 몬스터 중앙에서의 X 오프셋

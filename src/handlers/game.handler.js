@@ -11,9 +11,9 @@ import {
 import {
 	createUserData,
 	getUserData,
-	setUserData,
 	setUserGold,
 	setUserRound,
+	setUserData,
 } from '../models/userData.model.js';
 import { getRoundInfo } from '../models/roundInfo.model.js';
 
@@ -25,7 +25,7 @@ export const gameStart = (userId, payload, socket) => {
 	createTower(userId);
 	createTowerQueue(userId);
 	createTowerAttackSheet(userId);
-	setUserData(userId, 1, Date.now(), 800);
+	setUserData(userId, 1, Date.now(), 1000);
 	setTowerQueue(userId, tower);
 	
 

@@ -157,7 +157,6 @@ export function spawnMonster() {
 	if (!isGameRun) return; // 게임 정지 상태일 때는 return
 
 	console.log('몬스터가 생성되었습니다!');
-	// const userData = getUserData();
 	console.log('스폰몬스터', userData);
 
 	if (!userData) {
@@ -165,9 +164,13 @@ export function spawnMonster() {
 		return;
 	}
 
-	// 현재 라운드 체크 및 몬스터 출현 가능 여부 체크
-	const currentRound = userData.round;
+	// userData.round 대신 전역 round 변수 사용
+	const currentRound = round; // 전역 round 변수 사용
 	const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
+
+	console.log('------------');
+	console.log(currentRound, roundUnlock);
+	console.log('------------');
 
 	if (!roundUnlock) {
 		console.error('현재 라운드에 출현 가능한 몬스터가 없습니다.');
@@ -180,8 +183,6 @@ export function spawnMonster() {
 	);
 
 	monsters.push(new Monster(monsterPath, currentRound, availableMonsters));
-
-	console.log('클라 - monsters: ', monsters);
 }
 
 let previousTime = null;
@@ -201,6 +202,7 @@ async function gameLoop(frameTime) {
 	const currentTime = Date.now();
 	const deltaTime2 = currentTime - previousTime;
 	previousTime = currentTime;
+
 	if (!isRoundExpired) {
 		round_timer -= deltaTime2;
 		if (round_timer <= 0) {
@@ -790,9 +792,6 @@ let round_timer = 0;
 let roundUnlock = null;
 
 export function setRound(roundInfo, unlockMonsters) {
-	console.log('라운드 세팅');
-	console.log(roundInfo);
-
 	round = roundInfo.round;
 	monsterSpawnInterval = roundInfo.duration;
 	spawn_count = roundInfo.count;
