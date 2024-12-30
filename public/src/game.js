@@ -64,18 +64,12 @@ let paths = [];
 const daethSheets = [];
 
 // 이미지 로딩 파트
-const backgroundImage = new Image();
-backgroundImage.src = './images/bg.webp';
-
 const towerImages = TOWER_CONFIG.map((tower) => {
 	return { imageSet: tower.imageSet, id: tower.id };
 });
 
 const baseImage = new Image();
 baseImage.src = './images/base.png';
-
-const pathImage = new Image();
-pathImage.src = './images/path.png';
 
 export const towerControl = new TowerControl(ctx, towerImages);
 
@@ -143,10 +137,8 @@ function setMonsterPathFromGeneratedPath() {
 
 function initMap() {
 	// 배경 이미지 그리기
-	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-	for (let i = 0; i < 3; i++) {
-		paths[i] = setMonsterPathFromGeneratedPath();
-	}
+	paths = setMonsterPathFromGeneratedPath();
+	drawGridAndPath(ctx, cellSize, paths);
 }
 
 function placeBase() {
@@ -197,7 +189,7 @@ async function gameLoop(frameTime) {
 	if (!isGameRun) return;
 	// 캔버스 새로 그리기
 	ctx.textAlign = 'left';
-	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
+	drawGridAndPath(ctx, cellSize, paths);
 	setMonsterPathFromGeneratedPath(); // 경로 다시 그리기
 
 	if (previousTime === null) {
@@ -521,10 +513,8 @@ function stopGame() {
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
 Promise.all([
-	new Promise((resolve) => (backgroundImage.onload = resolve)),
 	new Promise((resolve) => (towerImages.onload = resolve)),
 	new Promise((resolve) => (baseImage.onload = resolve)),
-	new Promise((resolve) => (pathImage.onload = resolve)),
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),
