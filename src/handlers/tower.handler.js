@@ -59,7 +59,7 @@ export const buyTower = (userId, payload, socket) => {
 	removeTowerQueue(userId, payload.index);
 
 	currentUserData.gold -= selectedTower.cost;
-
+	console.log("현재 서버 골드:",currentUserData.gold);
 	setUserGold(userId, currentUserData.gold);
 	setTowerQueue(userId, tower);
 	setTower(userId, payload.type, payload.x, payload.y, 1, selectedTower.damage, selectedTower.range, selectedTower.cooldown, selectedTower.cost, payload.timestamp);
@@ -87,6 +87,7 @@ export const sellingTower = (userId, payload, socket) => {
 
 	currentUserData.gold += matchingTower.cost * 0.7;
 	setUserGold(userId, currentUserData.gold);
+	console.log("현재 서버 골드:",currentUserData.gold);
 
 	return { status: 'success', message: '판매 완료.' };
 };
@@ -139,7 +140,7 @@ export const upgradeTower = (userId, payload, socket) => {
 	if (!isUpgrade) {
 		return { status: 'fail', message: '업그레이드 실패' };
 	}
-
+	console.log("현재 서버 골드:",currentUserData.gold);
 	return { status: 'success', message: '업그레이드 성공' };
 };
 

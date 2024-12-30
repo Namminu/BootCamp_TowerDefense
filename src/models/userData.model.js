@@ -15,10 +15,15 @@ export const getUserData = (uuid) => {
 	return userData[uuid];
 };
 
-export const setUserRound = (uuid, round, timestamp) => {
-	userData[uuid] = { round, timestamp };
+export const setUserData = (uuid, round, timestamp, gold) => {
+	userData[uuid] = { round, timestamp, gold };
+	console.log("만들어짐",userData[uuid]);
 };
 
 export const setUserGold = (uuid, gold) => {
 	userData[uuid].gold = gold;
+};
+
+export const setUserRound = (uuid, round) => {
+	userData[uuid].round = round;
 };
