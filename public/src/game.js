@@ -256,8 +256,26 @@ export function spawnMonster() {
 	// monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
+let previousTime = null;
+let isRoundExpired = false;
 async function gameLoop(frameTime) {
-	const currentTime = performance.now();
+	if(previousTime===null){
+		previousTime = Date.now();
+		requestAnimationFrame(gameLoop);
+	}
+	const currentTime = Date.now();
+	const deltaTime = currentTime - previousTime;
+	previousTime = currentTime;
+	round_timer -= deltaTime;
+	if(round_timer<=0 && !isRoundExpired){
+		isRoundExpired = true;
+		sendEvent(11, {currentRound:round, timestamp:Date.now()} );
+	}
+	ctx.font = '40px Times New Roman';
+	ctx.strokeStyle = '#ffff11';
+	ctx.textAlign = "center";
+	ctx.strokeText(`${round}라운드     남은 시간: ${Math.round(round_timer/1000)}`, canvas.width/2, 50);
+
 	//게임 반복.
 	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
