@@ -175,8 +175,26 @@ export const atteckTower = (userId, payload, socket) => {
 //킬 목록을 가져온다. 목록은 [{ killer{killer ,killerX, killerY}, dethEntity{id,hp,speed,gold,timestemp}, x, y,},...] 나는 x,y(죽은위치) 안쓰지만 베이스랑 라운드에서 쓰기 때문.
 export const killTower = (userId, daethSheets) => {
 
-	//1. 죽은 엔티티와 같은 어택시트를 전부 가져옴. 데미지 계산해서 체력이 맞는지 확인.
-	const damageSheet = getowerAttackSheet(userId);
+	// daethSheets = daethSheets.filter(item => item.killer === 'killtower');
+	// const currentTowers = getTower(userId);
+	// const damageSheet = getowerAttackSheet(userId);
+
+	// // daethSheets.forEach(sheet => {
+	// // 	const matchingTower = currentTowers.find(
+	// // 		tower => tower.x === sheet.x && tower.y === sheet.y
+	// // 	);
+	
+	// // 	if (matchingTower) {
+	// // 		console.log("Matching tower found:", matchingTower);
+	// // 	} else {
+	// // 		console.log("No matching tower for daethSheet:", sheet);
+	// // 	}
+	// // });
+	// // const matchingTower = currentTowers.find(
+	// // 	(tower) => tower.x === daethSheets.x && tower.y === daethSheets.y,
+	// // );
+	
+	
 
 	//폴문으로 dethEntity 와 같은 hitEntity 의 데미지 시트만 가져와서 데미지를 전부 더한게 최대 체력보다 높은지 검증, 마지막 때린놈이 죽인놈이 맞는지 검증.
 
