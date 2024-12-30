@@ -1,4 +1,5 @@
 import { queueEvent, towerControl, accumulatedTime } from './game.js';
+import { sendEvent } from './socket.js';
 
 export class Tower {
 	constructor(ctx, x, y, damage, range, cooldown, cost, imageSet, type, id, level = 1) {
@@ -78,7 +79,7 @@ export class Tower {
 
 		if (this.isAttacking) {
 			// 공격 상태일 때 애니메이션 처리
-			console.log(accumulatedTime);
+			//console.log(accumulatedTime);
 			const frameIndex = Math.floor(accumulatedTime) % 2;
 			currentImage = this.imageSet.attacking[upgradeCount][frameIndex];
 		} else {
@@ -188,7 +189,7 @@ export class Tower {
 			return 0; // 골드 부족
 		}
 
-		queueEvent(7,{ x:this.x, y:this.y, type:this.type, level:this.level+1});
+		sendEvent(7,{ x:this.x, y:this.y, type:this.type, level:this.level+1});
 		tower.damage *= 1.2; // 공격력 1.2배 증가
 		tower.originalDamage *= 1.2; // 공격력 1.2배 증가
 		// tower.range *= 1.5; // 사정거리 1.2배 증가
@@ -198,12 +199,6 @@ export class Tower {
 		tower.level += 1; // 타워 레벨 증가
 
 		// 업그레이드에 사용된 포탑 2개 제거
-		for (let i = 0; i < 2; i++) {
-			towerControl.towerqueue.splice(
-				towerControl.towerqueue.findIndex((t) => t.type === tower.type),
-				1,
-			);
-		}
 
 		return upgradeCost;
 	}

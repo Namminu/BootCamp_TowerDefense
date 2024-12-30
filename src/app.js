@@ -31,20 +31,20 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-	return res.sendFile(path.join(publicPath, 'index.html'));
+	return res.sendFile(path.join(publicPath, '/htmls/index.html'));
 });
 app.use('/api', [userRouter]);
 
 initSocket(server); //웹소켓 서버 연결.
 
 server.listen(PORT, async () => {
-  console.log(`Server is running on port ${PORT}`);
+	console.log(`Server is running on port ${PORT}`);
 
-  try {
-    const assets = await loadGameAssets(); //여기서 에셋 가져옴
-  } catch (e) {
-    console.error('Failed to load game assets:', e);
-  }
+	try {
+		const assets = await loadGameAssets(); //여기서 에셋 가져옴
+	} catch (e) {
+		console.error('Failed to load game assets:', e);
+	}
 });
 
 //npx nodemon src/app.js 실행 키임 ㅇㅇ

@@ -38,7 +38,7 @@ export const upTower = (uuid, x, y, level) => {
 		{
 			towers[uuid][index].level += 1;
 			towers[uuid][index].damage *=1.2;
-			towers[uuid][index].range *=1.2;
+			towers[uuid][index].cooldown -= 10;
 			return true;
 		}
 	}
