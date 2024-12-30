@@ -1,51 +1,61 @@
 {
-  "name": "monster",
-  "version": "1.0.0",
-  "data": [
-    {
-      "id": 101,
-      "name": "외눈박이 괴물",
-      "damage": 40,
-      "hp": 150,
-      "speed": 2,
-      "gold": 100,
-      "image": "images/monster1.png"
-    },
-    {
-      "id": 102,
-      "name": "말라비틀어진 애벌레",
-      "damage": 20,
-      "hp": 80,
-      "speed": 1,
-      "gold": 50,
-      "image": "images/monster2.png"
-    },
-    {
-      "id": 103,
-      "name": "고블린 자폭병",
-      "damage": 120,
-      "hp": 50,
-      "speed": 3,
-      "gold": 150,
-      "image": "images/monster3.png"
-    },
-    {
-      "id": 104,
-      "name": "못생긴 아귀",
-      "damage": 80,
-      "hp": 300,
-      "speed": 1.5,
-      "gold": 200,
-      "image": "images/monster4.png"
-    },
-    {
-      "id": 105,
-      "name": "초음파 박쥐",
-      "damage": 30,
-      "hp": 50,
-      "speed": 4,
-      "gold": 75,
-      "image": "images/monster5.png"
-    }
-  ]
+	"name": "monster",
+	"version": "1.0.0",
+	"data": [
+		{
+			"id": 101,
+			"name": "평범한 실험실 쥐",
+			"damage": 40,
+			"hp": 150,
+			"speed": 2,
+			"gold": 100,
+			"image": "images/monster1.png",
+			"width": 120,
+			"height": 70
+		},
+		{
+			"id": 102,
+			"name": "약삭빠른 도둑쥐",
+			"damage": 30,
+			"hp": 80,
+			"speed": 3.5,
+			"gold": 120,
+			"image": "images/monster2.png",
+			"width": 120,
+			"height": 104
+		},
+		{
+			"id": 103,
+			"name": "햄버거 매니아 쥐",
+			"damage": 50,
+			"hp": 250,
+			"speed": 1.5,
+			"gold": 150,
+			"image": "images/monster3.png",
+			"width": 120,
+			"height": 101
+		},
+		{
+			"id": 104,
+			"name": "근육왕 헬창쥐",
+			"damage": 80,
+			"hp": 400,
+			"speed": 1,
+			"gold": 200,
+			"image": "images/monster4.png",
+			"width": 120,
+			"height": 208
+		},
+		{
+			"id": 105,
+			"name": "굶주린 질주쥐",
+			"damage": 35,
+			"hp": 60,
+			"speed": 4,
+			"gold": 130,
+			"image": "images/monster5.png",
+			"width": 120,
+			"height": 104
+		}
+	]
 }

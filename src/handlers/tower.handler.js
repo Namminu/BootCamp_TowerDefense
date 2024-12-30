@@ -35,8 +35,8 @@ export const buyTower = (userId, payload, socket) => {
 		}
 	}
 
-	const towerWidth = 220 / 1.5;
-	const towerHeight = 270 / 1.5;
+	const towerWidth = 100 / 1.5;
+	const towerHeight = 100 / 1.5;
 	const newTowerCenterX = payload.x + towerWidth / 2;
 	const newTowerCenterY = payload.y + towerHeight / 2;
 
@@ -111,6 +111,8 @@ export const upgradeTower = (userId, payload, socket) => {
 	const matchingTowerQueueIndex = currentTowersQueue
 		.map((tower, i) => (tower.towerDataIndex === index ? i : -1)) // 조건을 만족하는 인덱스 반환, 아니면 -1
 		.filter((i) => i !== -1); // 유효한 인덱스만 필터링
+
+	console.log("currentTowersQueue",currentTowersQueue);	
 	console.log('matchingTowerQueueIndex', matchingTowerQueueIndex);
 	
 	if (matchingTowerQueueIndex.length < 2) {
@@ -141,7 +143,7 @@ export const upgradeTower = (userId, payload, socket) => {
 	return { status: 'success', message: '업그레이드 성공' };
 };
 
-// {atteckerX ,atteckerY, hitEntity, x, y, timestemp} //피버 타임에 대해 고민하기.
+// {atteckerX ,atteckerY, hitEntity, x, y, timestemp} //피버 타임에 대해 고민하기.//여기는 맞은 위치x,y.
 export const atteckTower = (userId, payload, socket) => {
 	const currentTowers = getTower(userId);
 
