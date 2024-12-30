@@ -3,7 +3,7 @@ import { resetGame } from "../../game.js";
 // 게임 오버 모달창 html 파일 로드
 export async function initModal() {
     try {
-        const response = await fetch('/gameOverModal.html');
+        const response = await fetch('/htmls/modalHTMLs/gameOverModal.html');
         const modalHtml = await response.text();
 
         const modalContainer = document.createElement('div');

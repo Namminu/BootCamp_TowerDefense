@@ -4,6 +4,7 @@
         <style>
             /* 모달 콘텐츠 스타일 */
             .modal-content {
+                position: fixed;
                 width: 300px;
                 margin: auto;
                 padding: 20px;
@@ -73,8 +74,8 @@
         </style>
     </head>
     <body>
-        <div class="modal-content">
-            <span class="close" id="closeLogin">&times;</span>
+        <div id= "loginModal" class="modal-content">
+            <span id="closeLogin" class="close">&times;</span>
             <h2>로그인</h2>
             <form>
                 <input type="text" id="username" name="username" placeholder="ID" required>

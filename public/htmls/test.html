@@ -159,16 +159,16 @@
     </style>
 </head>
 <body>
-    <header>
+    <header id="header">
         <!-- 로고 -->
         <img src="https://profiles.greetinghr.com/group/45f1fba4-e463-4b1b-922f-c243dacfad8b" alt="SPARTA 로고">
         <!-- 페이지 타이틀 -->
         <h1 class="page-title">내배캠 타워디펜스</h1>
         <!-- 네비게이션 -->
         <nav>
-            <a href="#">게임 소개</a>
-            <a href="#">랭킹 조회</a>
-            <a href="#">게시판</a>
+            <a href="#" id="introduceHeader">게임 소개</a>
+            <a href="#" id="rankingHeader">랭킹 조회</a>
+            <a href="#" id="boardHeader">게시판</a>
             <a href="#" class="nav-button" id="loginButton">로그인</a>
             <a href="#" class="nav-button" id="registerButton">회원가입</a>
         </nav>
@@ -182,7 +182,8 @@
             </div>
         </div>
     </main>
-
+    <!-- 모달 로드 영역 -->
+    <div id="modalConatiner"></div>
     <!-- 랭킹/게시판 등 -->
     <div class="section">
         <!-- 랭킹 -->
@@ -208,6 +209,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
     <script src="../src/webpages/pages/mainPage.js"></script>
 </body>
 </html>
