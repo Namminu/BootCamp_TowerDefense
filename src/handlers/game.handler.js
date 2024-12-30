@@ -7,7 +7,12 @@ import {
 	getTowerQueue,
 	setTowerQueue,
 } from '../models/tower.model.js';
-import { createUserData, getUserData, setUserGold, setUserRound } from '../models/userData.model.js';
+import {
+	createUserData,
+	getUserData,
+	setUserGold,
+	setUserRound,
+} from '../models/userData.model.js';
 
 export const gameStart = (userId, payload, socket) => {
 	const { tower } = getGameAssets(); //타워 에셋 가져오기.
@@ -20,7 +25,7 @@ export const gameStart = (userId, payload, socket) => {
 	setUserGold(userId, 1000);
 	setTowerQueue(userId, tower);
 	const user = getUserData(userId);
-	console.log("user", user);
+	console.log('user', user);
 
 	return { status: 'success' };
 };
@@ -45,7 +50,17 @@ export const gameOver = async (userId, payload, socket) => {
 		status: 'success',
 		message: result.updated ? '최고 기록 갱신!' : '게임 오버',
 		userName: result.userName,
-		highScore: result.currentHighScore.highScore
+		highScore: result.currentHighScore.highScore,
 	};
 	return data;
-}
+};
+
+export const updateUserGold = (userId, payload, socket) => {
+	if (!userId || !payload) return { status: 'fail', message: '필수 값이 없습니다.' };
+
+	const userData = getUserData(userId);
+	const newGold = userData.gold + payload.gold;
+	setUserGold(userId, newGold);
+
+	console.log('서버 userData: ', userData);
+};

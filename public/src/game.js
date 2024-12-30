@@ -4,7 +4,7 @@ import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import monsterUnlockData from '../assets/monster_unlock.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
-import { getUserData, sendEvent } from './socket.js';
+import { sendEvent } from './socket.js';
 import { drawGrid } from './grid.js';
 import { drawGridAndPath, generatePath } from './path.js';
 import {} from './modals/gameOverModal.js';
@@ -286,6 +286,7 @@ async function gameLoop(frameTime) {
 					userGold += monster.gold;
 
 					console.log(`${monster.gold}골드를 획득했습니다.`);
+					sendEvent(8, { gold: monster.gold });
 
 					if (!tower.feverMode && !feverTriggered) {
 						killCount += 1;
