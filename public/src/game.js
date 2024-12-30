@@ -7,6 +7,8 @@ import { TowerControl } from './towerControl.js';
 import { getUserData, sendEvent } from './socket.js';
 import { drawGrid } from './grid.js';
 import { drawGridAndPath, generatePath } from './path.js';
+import { } from './modals/gameOverModal.js'
+
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -475,7 +477,7 @@ async function initGame() {
 
 	//monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
 	monsterPath = setMonsterPathFromGeneratedPath();
-	await initModal();
+	//await initModal();
 
 	if (monsterPath.length === 0) {
 		console.error('monsterPath is not defined');
