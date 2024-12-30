@@ -61,7 +61,7 @@ const MONSTER_UNLOCK_CONFIG = monsterUnlockData.data;
 // 경로를 저장할 배열
 let paths = [];
 // 몬스터의 죽음을 기록할 배열. 라운드마다 보네주고 초기화.
-const daethSheets = [];
+let daethSheets = [];
 
 // 이미지 로딩 파트
 const towerImages = TOWER_CONFIG.map((tower) => {
@@ -205,7 +205,8 @@ async function gameLoop(frameTime) {
 		round_timer -= deltaTime2;
 		if (round_timer <= 0) {
 			isRoundExpired = true;
-			sendEvent(11, { currentRound: round, timestamp: Date.now() });
+			await sendEvent(11, { currentRound: round, timestamp: Date.now(), daethSheets });
+			daethSheets = [];
 		}
 	}
 	//게임 반복.
@@ -274,15 +275,16 @@ async function gameLoop(frameTime) {
 				// 몬스터가 있는 그리드의 좌표 구하기
 
 				tower.attack(monster);
+				
 
 				if (monster.hp <= 0) {
+					daethSheets.push({killer:'killtower', x:tower.x, y:tower.y, monsterId: monster.uniqueId, monsterHp:monster.maxHp, monsterGold:monster.gold, monsterX:monster.x, monsterY:monster.y, monsterTimestemp: Date.now()});
 					monster.dead();
-
 					score += monsterLevel;
 					userGold += monster.gold;
 
 					console.log(`${monster.gold}골드를 획득했습니다.`);
-					sendEvent(8, { gold: monster.gold });
+					queueEvent(8, { gold: monster.gold });
 
 					if (!tower.feverMode && !feverTriggered) {
 						killCount += 1;

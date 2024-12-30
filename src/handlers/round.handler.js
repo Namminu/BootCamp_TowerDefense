@@ -1,6 +1,7 @@
 import { getGameAssets } from '../init/assets.js';
 import { createRoundInfo, getRoundInfo } from '../models/roundInfo.model.js';
-import { getUserData, setUserRound } from '../models/userData.model.js';
+import { getUserData, setUserRound, setUserTimestamp } from '../models/userData.model.js';
+import { killTower } from './tower.handler.js';
 
 // sendEvent(11, payload : { currentRound, timestamp })
 export const moveRoundHandler = (userId, payload, socket) => {
@@ -25,11 +26,22 @@ export const moveRoundHandler = (userId, payload, socket) => {
 		} else return { status: 'fail', message: 'no timestamp for moveRound' };	
 	}
 
+
+
+	const isKillTower= killTower(userId, payload.daethSheets);
+
+	if(!isKillTower) {
+		return { status: 'fail', message: '이새끼 핵씀.' };
+	}
+
+
+
 	// 다음 라운드
 	const nextRound = payload.currentRound + 1;
 
 	// 유저의 현재 라운드 정보 업데이트
 	setUserRound(userId, nextRound);
+	setUserTimestamp(userId, Date.now());
 
 	// 다음 라운드 정보를 담은 객체 생성
 	// 서버에 저장된 다음 라운드 정보가 있다면 바로 저장, 없다면 생성 후 저장
