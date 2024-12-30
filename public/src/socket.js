@@ -1,4 +1,4 @@
-import { spawnMonster } from './game.js';
+import { spawnMonster, initGame } from './game.js';
 
 let somewhere = localStorage.getItem('authToken');
 
@@ -27,6 +27,7 @@ socket.on('connection', (data) => {
 	// 클라이언트에서 userData.model.js의 userData를 사용하기 위한 로직
 	if (data.userData) {
 		gameData.userData = data.userData;
+		initGame(data.userData);
 	}
 });
 
@@ -68,10 +69,9 @@ const sendEvent = (handlerId, payload) => {
 	});
 };
 
-
 // 서버에게 생성주기가 완료되면 생성하라는 데이터를 받는다.
-socket.on("spawnMonster", (data) => {
-	console.log("서버로부터 몬스터 생성 명령 수신", data);
+socket.on('spawnMonster', (data) => {
+	console.log('서버로부터 몬스터 생성 명령 수신', data);
 	spawnMonster(); // 클라이언트의 spawnMonster 함수 호출
 });
 

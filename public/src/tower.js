@@ -78,7 +78,7 @@ export class Tower {
 
 		if (this.isAttacking) {
 			// 공격 상태일 때 애니메이션 처리
-			console.log(accumulatedTime);
+			// console.log(accumulatedTime);
 			const frameIndex = Math.floor(accumulatedTime) % 2;
 			currentImage = this.imageSet.attacking[upgradeCount][frameIndex];
 		} else {
