@@ -1,4 +1,4 @@
-import { spawnMonster, initGame } from './game.js';
+import { gameStart, setRound, spawnMonster } from './game.js';
 
 let somewhere = localStorage.getItem('authToken');
 
@@ -10,6 +10,7 @@ const socket = io('http://localhost:8080', {
 
 socket.on('response', (data) => {
 	console.log('response : ', data);
+	if (data.handlerId === 11) setRound(data.nextRoundInfo, data.unlockMonsters);
 });
 
 socket.on('connection', (data) => {
@@ -23,6 +24,9 @@ socket.on('connection', (data) => {
 	if (data.userData) {
 		initGame(data.userData);
 	}
+
+	setRound(data.initRoundInfo, data.unlockMonsters);
+	gameStart();
 });
 
 const loadTowerQueue = () => {
