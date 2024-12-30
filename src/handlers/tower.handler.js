@@ -13,6 +13,7 @@ import {
 	setTowerQueue,
 	upTower,
 	getowerAttackSheet,
+	createTowerAttackSheet,
 } from '../models/tower.model.js';
 import { getUserData, setUserGold } from '../models/userData.model.js';
 
@@ -229,6 +230,7 @@ export const killTower = (userId, daethSheets) => {
 	
 
 	if (!isValid) {
+		createTowerAttackSheet(uuid);
 		return false;
 	}
 
@@ -239,7 +241,7 @@ export const killTower = (userId, daethSheets) => {
     	const isValid3 =currentDamageSheet.every((sheet) => {
         if (previousTimestamp !== null) {
             const timeDifference = sheet.timestemp - previousTimestamp;
-			if(timeDifference < tower.cooldown*5){ //8.3 언저리긴 함. 정확하게 하려면 8배 하기.
+			if(timeDifference < tower.cooldown*3){ //8.3 언저리긴 함. 정확하게 하려면 8배 하기.
 				console.log("timeDifference",timeDifference);
 				console.log("tower.cooldown",tower.cooldown*5);
 				return false;
@@ -256,8 +258,11 @@ export const killTower = (userId, daethSheets) => {
 	});
 
 	if (!isValid2) {
+		createTowerAttackSheet(uuid);
 		return false;
 	}
+
+	
 
 	return true;
 };
