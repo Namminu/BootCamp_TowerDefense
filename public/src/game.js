@@ -124,40 +124,6 @@ function processQueue() {
 
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
-// function generateRandomMonsterPath() {
-// 	//몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
-// 	const path = [];
-// 	let currentX = 0;
-// 	let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
-
-// 	path.push({ x: currentX, y: currentY });
-
-// 	while (currentX < 1800) {
-// 		// 마지막 x가 1600이 될 때까지 진행
-// 		currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
-// 		if (currentX > 1800) {
-// 			currentX = 1800; // 마지막 x는 1600
-// 		}
-
-// 		currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
-// 		// y 좌표에 대한 clamp 처리
-// 		if (currentY < 100) {
-// 			currentY = 100;
-// 		}
-// 		if (currentY > 900) {
-// 			currentY = 900;
-// 		}
-
-// 		path.push({ x: currentX, y: currentY });
-// 	}
-
-// 	// 마지막 경로의 y를 시작 y와 동일하게 설정
-// 	path[path.length - 1].y = path[0].y;
-
-// 	// 경로 정렬 (x 기준으로 오름차순 정렬)
-// 	path.sort((a, b) => a.x - b.x);
-
-// 	return path;
 function setMonsterPathFromGeneratedPath() {
 	// generatePath 결과를 기반으로 몬스터 경로 설정
 	const generatedPath = path;
@@ -177,44 +143,8 @@ function initMap() {
 	// 배경 이미지 그리기
 	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 	for (let i = 0; i < 3; i++) {
-		paths[i] = drawPath();
+		paths[i] = setMonsterPathFromGeneratedPath();
 	}
-}
-
-function drawPath() {
-	//경로에 따라 길을 그리는것.
-	const segmentLength = 20; // 몬스터 경로 세그먼트 길이
-	const imageWidth = 60; // 몬스터 경로 이미지 너비
-	const imageHeight = 60; // 몬스터 경로 이미지 높이
-	const gap = 5; // 몬스터 경로 이미지 겹침 방지를 위한 간격
-
-	for (let i = 0; i < monsterPath.length - 1; i++) {
-		const startX = monsterPath[i].x;
-		const startY = monsterPath[i].y;
-		const endX = monsterPath[i + 1].x;
-		const endY = monsterPath[i + 1].y;
-
-		const deltaX = endX - startX;
-		const deltaY = endY - startY;
-		const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY); // 피타고라스 정리로 두 점 사이의 거리를 구함 (유클리드 거리)
-		const angle = Math.atan2(deltaY, deltaX); // 두 점 사이의 각도는 tan-1(y/x)로 구해야 함 (자세한 것은 역삼각함수 참고): 삼각함수는 변의 비율! 역삼각함수는 각도를 구하는 것!
-
-		for (let j = gap; j < distance - gap; j += segmentLength) {
-			// 사실 이거는 삼각함수에 대한 기본적인 이해도가 있으면 충분히 이해하실 수 있습니다.
-			// 자세한 것은 https://thirdspacelearning.com/gcse-maths/geometry-and-measure/sin-cos-tan-graphs/ 참고 부탁해요!
-			const x = startX + Math.cos(angle) * j; // 다음 이미지 x좌표 계산(각도의 코사인 값은 x축 방향의 단위 벡터 * j를 곱하여 경로를 따라 이동한 x축 좌표를 구함)
-			const y = startY + Math.sin(angle) * j; // 다음 이미지 y좌표 계산(각도의 사인 값은 y축 방향의 단위 벡터 * j를 곱하여 경로를 따라 이동한 y축 좌표를 구함)
-			drawRotatedImage(pathImage, x, y, imageWidth, imageHeight, angle);
-		}
-	}
-}
-
-function drawRotatedImage(image, x, y, width, height, angle) {
-	ctx.save();
-	ctx.translate(x + width / 2, y + height / 2);
-	ctx.rotate(angle);
-	ctx.drawImage(image, -width / 2, -height / 2, width, height);
-	ctx.restore();
 }
 
 function placeBase() {
@@ -281,7 +211,7 @@ async function gameLoop(frameTime) {
 		}
 	}
 	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
-	drawPath(monsterPath); // 경로 다시 그리기
+	setMonsterPathFromGeneratedPath(); // 경로 다시 그리기
 	//게임 반복.
 	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
