@@ -495,7 +495,6 @@ export function resetGame() {
 	killCount = 0;
 	monsterLevel = 1;
 	feverTriggered = false;
-	//sendEvent(4, {0, timestamp:Date.now()});
 
 	// 몬스터 스폰 초기화
 	sendEvent(12, {});
