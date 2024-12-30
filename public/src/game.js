@@ -256,8 +256,24 @@ export function spawnMonster() {
 	// monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
+let previousTime = null;
+let isRoundExpired = false;
 async function gameLoop(frameTime) {
-	const currentTime = performance.now();
+	if(previousTime===null){
+		previousTime = Date.now();
+		requestAnimationFrame(gameLoop);
+	}
+	const currentTime = Date.now();
+	const deltaTime2 = currentTime - previousTime;
+	previousTime = currentTime;
+	if(!isRoundExpired){
+		round_timer -= deltaTime2;
+		if(round_timer<=0){
+			isRoundExpired = true;
+			sendEvent(11, {currentRound:round, timestamp:Date.now()} );
+		}
+	}
+
 	//게임 반복.
 	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -303,6 +319,7 @@ async function gameLoop(frameTime) {
       monster.dead();
       monsters.splice(i, 1);
     }
+	
   }
 
 	// towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
@@ -455,6 +472,13 @@ async function gameLoop(frameTime) {
 	// 피버 게이지바 그리기
 	gageBar.drawBG();
 	gageBar.draw();
+	
+	ctx.font = '40px Times New Roman';
+	ctx.strokeStyle = '#000000';
+	ctx.fillStyle = '#ffffff';
+	ctx.textAlign = "center";
+	ctx.strokeText(`${round}라운드     남은 시간: ${Math.round(round_timer/1000)}`, canvas.width/2, 50);
+	ctx.fillText(`${round}라운드     남은 시간: ${Math.round(round_timer/1000)}`, canvas.width/2, 50);
 
 	// TO DO : 피버타임 때?
 	// 캔버스 한 번 지워주기
@@ -493,9 +517,11 @@ async function initGame() {
 	gameLoop(); // 게임 루프 시작
 } //이게 시작이네.
 
-if (!isInitGame) {
-	// queueEvent(2, { timestamp: Date.now() });
-	initGame();
+export function gameStart() {
+	if (!isInitGame) {
+		// queueEvent(2, { timestamp: Date.now() });
+		initGame();
+	}
 }
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
@@ -765,3 +791,20 @@ canvas.addEventListener('click', (event) => {
 		});
 	}
 });
+
+let round = 0;
+let spawn_count = 0;
+let round_timer = 0;
+let roundUnlock = null;
+
+export function setRound(roundInfo, unlockMonsters) {
+	console.log('라운드 세팅');
+	console.log(roundInfo);
+
+	round = roundInfo.round;
+	monsterSpawnInterval = roundInfo.duration;
+	spawn_count = roundInfo.count;
+	round_timer = roundInfo.time;
+	roundUnlock = unlockMonsters;
+	isRoundExpired = false;
+}
