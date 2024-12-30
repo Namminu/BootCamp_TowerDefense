@@ -9,7 +9,10 @@
 			"hp": 150,
 			"speed": 2,
 			"gold": 100,
-			"image": "images/monster/monster1.png",
+			"imageSet": {
+				"idle": ["images/monster/monster1.png", "images/monster/monster1_1.png"],
+				"hit": "images/monster/monster1_hit.png"
+			},
 			"width": 120,
 			"height": 70
 		},
@@ -20,7 +23,10 @@
 			"hp": 80,
 			"speed": 3.5,
 			"gold": 120,
-			"image": "images/monster/monster2.png",
+			"imageSet": {
+				"idle": ["images/monster/monster2.png", "images/monster/monster2_1.png"],
+				"hit": "images/monster/monster2_hit.png"
+			},
 			"width": 120,
 			"height": 104
 		},
@@ -31,7 +37,10 @@
 			"hp": 250,
 			"speed": 1.5,
 			"gold": 150,
-			"image": "images/monster/monster3.png",
+			"imageSet": {
+				"idle": ["images/monster/monster3.png", "images/monster/monster3_1.png"],
+				"hit": "images/monster/monster3_hit.png"
+			},
 			"width": 120,
 			"height": 101
 		},
@@ -42,7 +51,10 @@
 			"hp": 400,
 			"speed": 1,
 			"gold": 200,
-			"image": "images/monster/monster4.png",
+			"imageSet": {
+				"idle": ["images/monster/monster4.png", "images/monster/monster4_1.png"],
+				"hit": "images/monster/monster4_hit.png"
+			},
 			"width": 120,
 			"height": 208
 		},
@@ -53,7 +65,10 @@
 			"hp": 60,
 			"speed": 4,
 			"gold": 130,
-			"image": "images/monster/monster5.png",
+			"imageSet": {
+				"idle": ["images/monster/monster5.png", "images/monster/monster5_1.png"],
+				"hit": "images/monster/monster5_hit.png"
+			},
 			"width": 120,
 			"height": 104
 		}
