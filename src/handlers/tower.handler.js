@@ -216,22 +216,26 @@ export const killTower = (userId, daethSheets) => {
 			return false;
 		}
 
-		// //데미지 시트를 확인해 데미지를 준게 맞는지 확인합니다.
-		// const relatedDamage = damageSheet.filter((damage) => damage.hitEntity === sheet.monsterId);
-		// // damage 값의 합계 계산
-		// const totalDamage = relatedDamage.reduce((sum, damage) => sum + damage.damage, 0);
+		//데미지 시트를 확인해 데미지를 준게 맞는지 확인합니다.
+		const relatedDamage = damageSheet.filter((damage) => damage.hitEntity === sheet.monsterId);
+		// damage 값의 합계 계산
+		const totalDamage = relatedDamage.reduce((sum, damage) => sum + damage.damage, 0);
 
-		// if (totalDamage+20 < sheet.monsterHp) { //소수점 보정.
-		// 	console.log('타워 데미지 이상');
-		// 	return false;
-		// }
+		if (totalDamage+20 < sheet.monsterHp) { //소수점 보정.
+			console.log("damageSheet",damageSheet);
+			console.log("relatedDamage",relatedDamage);
+			console.log("totalDamage",totalDamage);
+			console.log("sheet.monsterHp",sheet.monsterHp);
+
+			console.log('타워 데미지 이상');
+			return false;
+		}
 		return true;
 	});
 
 	
 
 	if (!isValid) {
-		createTowerAttackSheet(userId);
 		return false;
 	}
 
@@ -264,11 +268,9 @@ export const killTower = (userId, daethSheets) => {
 	});
 
 	if (!isValid2) {
-		createTowerAttackSheet(userId);
 		return false;
 	}
 
 	
-	createTowerAttackSheet(userId);
 	return true;
 };
