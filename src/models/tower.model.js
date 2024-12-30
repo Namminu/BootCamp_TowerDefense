@@ -85,8 +85,8 @@ export const getowerAttackSheet = (uuid) => {
 };
 
 //때린 기록 저장.
-export const setowerAttackSheet = (uuid, atteckerX, atteckerY, hitEntity, damage, timestemp) => {
-	return attackSheets[uuid].push({ atteckerX, atteckerY, hitEntity, damage, timestemp });
+export const setowerAttackSheet = (uuid, atteckerX, atteckerY, hitEntity, damage, timestemp, feverTriggered) => {
+	return attackSheets[uuid].push({ atteckerX, atteckerY, hitEntity, damage, timestemp, feverTriggered });
 };
 
 

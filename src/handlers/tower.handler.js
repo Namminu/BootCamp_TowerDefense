@@ -190,6 +190,7 @@ export const atteckTower = (userId, payload, socket) => {
 		payload.hitEntity,
 		matchingTower.damage,
 		payload.timestemp,
+		payload.feverTriggered,
 	);
 
 	return { status: 'success', message: '때릴 수 있는 놈이군.' };
@@ -215,22 +216,22 @@ export const killTower = (userId, daethSheets) => {
 			return false;
 		}
 
-		//데미지 시트를 확인해 데미지를 준게 맞는지 확인합니다.
-		const relatedDamage = damageSheet.filter((damage) => damage.hitEntity === sheet.monsterId);
-		// damage 값의 합계 계산
-		const totalDamage = relatedDamage.reduce((sum, damage) => sum + damage.damage, 0);
+		// //데미지 시트를 확인해 데미지를 준게 맞는지 확인합니다.
+		// const relatedDamage = damageSheet.filter((damage) => damage.hitEntity === sheet.monsterId);
+		// // damage 값의 합계 계산
+		// const totalDamage = relatedDamage.reduce((sum, damage) => sum + damage.damage, 0);
 
-		if (totalDamage < sheet.monsterHp) {
-			console.log('타워 데미지 이상');
-			return false;
-		}
+		// if (totalDamage+20 < sheet.monsterHp) { //소수점 보정.
+		// 	console.log('타워 데미지 이상');
+		// 	return false;
+		// }
 		return true;
 	});
 
 	
 
 	if (!isValid) {
-		createTowerAttackSheet(uuid);
+		createTowerAttackSheet(userId);
 		return false;
 	}
 
@@ -241,7 +242,12 @@ export const killTower = (userId, daethSheets) => {
     	const isValid3 =currentDamageSheet.every((sheet) => {
         if (previousTimestamp !== null) {
             const timeDifference = sheet.timestemp - previousTimestamp;
-			if(timeDifference < tower.cooldown*3){ //8.3 언저리긴 함. 정확하게 하려면 8배 하기.
+			let adjustedCooldown = tower.cooldown;
+			if (sheet.feverTriggered){
+				adjustedCooldown = tower.cooldown / 2;
+			}
+
+			if(timeDifference < adjustedCooldown*5){ //8.3 언저리긴 함. 정확하게 하려면 8배 하기.
 				console.log("timeDifference",timeDifference);
 				console.log("tower.cooldown",tower.cooldown*5);
 				return false;
@@ -258,11 +264,11 @@ export const killTower = (userId, daethSheets) => {
 	});
 
 	if (!isValid2) {
-		createTowerAttackSheet(uuid);
+		createTowerAttackSheet(userId);
 		return false;
 	}
 
 	
-
+	createTowerAttackSheet(userId);
 	return true;
 };
