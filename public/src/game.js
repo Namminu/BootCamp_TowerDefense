@@ -6,6 +6,7 @@ import { TowerControl } from './towerControl.js';
 import { getUserData, sendEvent } from './socket.js';
 import { drawGrid } from './grid.js';
 import { drawGridAndPath, generatePath } from './path.js';
+import { initModal, showModal } from './modals/gameOverModal.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -19,6 +20,8 @@ let userGold = 0; // 유저 골드
 let base; // 기지 객체
 let baseHp = 10; // 기지 체력
 
+//베이스의 체력 | 라운드 별 증가량 
+
 // 시간 변수
 let deltaTime = 0;
 let lastFrameTime = 0;
@@ -28,7 +31,6 @@ export let accumulatedTime = 0;
 let towerCost; // 타워 구입 비용
 let towerImage; // 타워 이미지
 let towerIndex; // 타워 인덱스
-let numOfInitialTowers = 3; // 초기 타워 개수
 let isPlacingTower = false; // 현재 타워를 배치 중인지 확인하는 플래그
 let previewTower = null; // 미리보기를 위한 타워 객체
 
@@ -38,7 +40,6 @@ let printMessage = false;
 const monsters = [];
 let ableToMoveRound = false; // 라운드 이동 가능 여부
 let monsterLevel = 1; // 몬스터 레벨
-let monsterSpawnInterval = 3; // 몬스터 생성 주기 ms
 let killCount = 0; // 몬스터 처치 수
 let feverTriggered = false; // 피버 모드 실행 여부를 확인하는 플래그
 
@@ -397,7 +398,7 @@ async function gameLoop(frameTime) {
 	requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-function initGame() {
+async function initGame() {
 	if (isInitGame) {
 		return; // 이미 초기화된 경우 방지
 	}
@@ -410,7 +411,6 @@ function initGame() {
 	userGold = 800; // 초기 골드 설정
 	score = 0;
 	monsterLevel = 1;
-	//monsterSpawnInterval = 2000;
 
 	//monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
 	monsterPath = setMonsterPathFromGeneratedPath();
@@ -422,9 +422,7 @@ function initGame() {
 	}
 
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
-	// placeInitialTowers(); // 초기 타워 배치
 	placeBase(); // 기지 배치
-	//setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
 	// 서버에 몬스터 스폰 주기와 타이밍 동기화
 	queueEvent(13, { round: 0, timestamp: Date.now() });
 	gameLoop(); // 게임 루프 시작
