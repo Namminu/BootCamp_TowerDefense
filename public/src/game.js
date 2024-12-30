@@ -4,10 +4,11 @@ import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
 import monsterUnlockData from '../assets/monster_unlock.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
-import { getUserData, sendEvent } from './socket.js';
+import { sendEvent } from './socket.js';
 import { initModal, showModal } from './webpages/modals/gameOverModal.js';
 import { drawGrid } from './grid.js';
 import { drawGridAndPath, generatePath } from './path.js';
+// import {} from './modals/gameOverModal.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -51,6 +52,7 @@ let feverTriggered = false; // 피버 모드 실행 여부를 확인하는 플�
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
+let userData = null;
 
 // 상수 정의
 const TOWER_CONFIG = towerData.data;
@@ -125,40 +127,6 @@ function processQueue() {
 
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
-// function generateRandomMonsterPath() {
-// 	//몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
-// 	const path = [];
-// 	let currentX = 0;
-// 	let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
-
-// 	path.push({ x: currentX, y: currentY });
-
-// 	while (currentX < 1800) {
-// 		// 마지막 x가 1600이 될 때까지 진행
-// 		currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
-// 		if (currentX > 1800) {
-// 			currentX = 1800; // 마지막 x는 1600
-// 		}
-
-// 		currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
-// 		// y 좌표에 대한 clamp 처리
-// 		if (currentY < 100) {
-// 			currentY = 100;
-// 		}
-// 		if (currentY > 900) {
-// 			currentY = 900;
-// 		}
-
-// 		path.push({ x: currentX, y: currentY });
-// 	}
-
-// 	// 마지막 경로의 y를 시작 y와 동일하게 설정
-// 	path[path.length - 1].y = path[0].y;
-
-// 	// 경로 정렬 (x 기준으로 오름차순 정렬)
-// 	path.sort((a, b) => a.x - b.x);
-
-// 	return path;
 function setMonsterPathFromGeneratedPath() {
 	// generatePath 결과를 기반으로 몬스터 경로 설정
 	const generatedPath = path;
@@ -229,14 +197,13 @@ function placeBase() {
 	}
 }
 
-// 스테이지를 서버로 전달
-
 //실질적인 몬스터 소환 함수
 export function spawnMonster() {
-	if (!isGameRun) return;	// 게임 정지 상태일 때는 return
+	if (!isGameRun) return; // 게임 정지 상태일 때는 return
 
 	console.log('몬스터가 생성되었습니다!');
-	const userData = getUserData();
+	// const userData = getUserData();
+	console.log('스폰몬스터', userData);
 
 	if (!userData) {
 		console.error('유저 데이터를 찾을 수 없습니다.');
@@ -258,7 +225,6 @@ export function spawnMonster() {
 	);
 
 	monsters.push(new Monster(monsterPath, currentRound, availableMonsters));
-	// monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
 let previousTime = null;
@@ -284,9 +250,6 @@ async function gameLoop(frameTime) {
 	//게임 반복.
 	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	// 게임 시간 설정
-	// frameTime - lastFrameTime : 1프레임당 걸리는 시간(밀리초)
-	// ((frameTime - lastFrameTime) / 1000): 1프레임당 걸린 시간을 초 단위로 변환(처음 시작할 땐 0으로 설정)
 	deltaTime = (frameTime - lastFrameTime) / 1000 || 0;
 	// 마지막으로 기록된 frameTime(직전 frameTime)
 	lastFrameTime = frameTime;
@@ -312,10 +275,9 @@ async function gameLoop(frameTime) {
 				/* 게임 오버 */
 				const response = await sendEvent(3, { currentRound: round, timestamp: currentTime });
 				const { message, userName, highScore, time } = response;
-				console.log('message : ', message, 'userName : ', userName, 'highScore : ', highScore, 'time : ', time);
 				showModal(message, userName, highScore, 1, time);
 
-				// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
+				// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기
 				stopGame();
 			}
 			monster.draw(ctx);
@@ -343,13 +305,14 @@ async function gameLoop(frameTime) {
 
 				tower.attack(monster);
 
-
 				if (monster.hp <= 0) {
 					monster.dead();
-					//daethSheets.push({killer:tower:{x:tower.x,y:tower.y}, daethEntity:monster, timestamp:Date.now()});
-					//일단 여기서 넣는데, 죽인놈(타워,라운드,베이스중 하나.타워라면, 이곳에 위치정보들어가기.),죽인몬스터(id,hp,speed,gold,timestemp),죽인시간 넣어서 보네기.
+
 					score += monsterLevel;
-					userGold += 10 * monsterLevel;
+					userGold += monster.gold;
+
+					console.log(`${monster.gold}골드를 획득했습니다.`);
+					sendEvent(8, { gold: monster.gold });
 
 					if (!tower.feverMode && !feverTriggered) {
 						killCount += 1;
@@ -460,8 +423,8 @@ async function gameLoop(frameTime) {
 
 	// 인벤토리 그리기
 	if (towerControl.towerqueue.length < 5) {
-        await towerControl.getTowerqueue(monsterLevel);
-    }
+		await towerControl.getTowerqueue(monsterLevel);
+	}
 
 	towerControl.drawqueue(ctx, canvas, monsterLevel);
 
@@ -485,9 +448,17 @@ async function gameLoop(frameTime) {
 	ctx.font = '40px Times New Roman';
 	ctx.strokeStyle = '#000000';
 	ctx.fillStyle = '#ffffff';
-	ctx.textAlign = "center";
-	ctx.strokeText(`${round}라운드     남은 시간: ${Math.round(round_timer / 1000)}`, canvas.width / 2, 50);
-	ctx.fillText(`${round}라운드     남은 시간: ${Math.round(round_timer / 1000)}`, canvas.width / 2, 50);
+	ctx.textAlign = 'center';
+	ctx.strokeText(
+		`${round}라운드     남은 시간: ${Math.round(round_timer / 1000)}`,
+		canvas.width / 2,
+		50,
+	);
+	ctx.fillText(
+		`${round}라운드     남은 시간: ${Math.round(round_timer / 1000)}`,
+		canvas.width / 2,
+		50,
+	);
 
 	// TO DO : 피버타임 때?
 	// 캔버스 한 번 지워주기
@@ -495,12 +466,14 @@ async function gameLoop(frameTime) {
 	gameLoopId = requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-async function initGame(getReset = false) {
-	if (isInitGame && !getReset) return; // 이미 초기화된 경우 방지
-	if (getReset) isInitGame = false;	// resetGame으로 강제 초기화
+export async function initGame(receivedUserData) {
+	if (isInitGame || !receivedUserData) {
+		return; // 이미 초기화된 경우 방지
+	}
 
-	console.log('monsterPath: ', path);
+	// console.log('monsterPath: ', path);
 
+	userData = receivedUserData;
 	isInitGame = true;
 	isGameRun = true;
 
@@ -508,6 +481,8 @@ async function initGame(getReset = false) {
 	score = 0;
 	monsterLevel = 1;
 	//monsterSpawnInterval = 2000;
+
+	console.log('userData: ', userData);
 
 	//monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
 	monsterPath = setMonsterPathFromGeneratedPath();
@@ -526,7 +501,7 @@ async function initGame(getReset = false) {
 	queueEvent(13, { round: 0, timestamp: Date.now() });
 	gameLoop(); // 게임 루프 시작
 
-	await initModal();  // 게임오버 모달창 초기 로드
+	await initModal(); // 게임오버 모달창 초기 로드
 } //이게 시작이네.
 
 export function gameStart() {
@@ -538,7 +513,7 @@ export function gameStart() {
 
 // 게임 리셋
 export function resetGame() {
-	console.log("Reset Game!");
+	console.log('Reset Game!');
 
 	// 게임 루프 중단
 	isGameRun = false;
@@ -568,7 +543,7 @@ export function resetGame() {
 
 // 게임 스탑
 function stopGame() {
-	console.log("Stop Game!");
+	console.log('Stop Game!');
 
 	// 게임 루프 중단
 	isGameRun = false;
@@ -584,7 +559,7 @@ Promise.all([
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),
-]).then(() => { });
+]).then(() => {});
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
@@ -664,7 +639,6 @@ canvas.addEventListener('click', async (event) => {
 			previewTower.x = cellSize.WIDTH * cellX;
 			previewTower.y = cellSize.HEIGHT * cellY;
 			towerControl.towers.push(previewTower);
-			
 
 			//타워 구매 - sendEvent
 			await sendEvent(5, {
