@@ -1,5 +1,4 @@
 const BASE_URL = 'http://localhost:8080/api';
-let isLogin = false;
 // 회원가입 버튼
 document.getElementById('registerButton').addEventListener('click', async () => {
     console.log("회원가입 버튼 클릭");
@@ -65,7 +64,6 @@ document.getElementById('loginButton').addEventListener('click', async () => {
                             localStorage.setItem('authToken', token);
                             alert(result.message || '로그인 성공!');
                             loginModal.style.display = 'none';
-                            isLogin = true;
                         } else alert('로그인에 성공했지만 토큰을 받을 수 없습니다.');
                     } else alert(result.message || '로그인에 실패했습니다.');
                 } catch (error) {
@@ -99,17 +97,13 @@ document.getElementById('loginButton').addEventListener('click', async () => {
 
 // 게임 시작 버튼
 document.getElementById('playButton').addEventListener('click', () => {
-    if (isLogin) {
-        console.log("Play Start");
+    console.log("Play Start");
 
-        document.getElementById('header').style.display = 'none';
-        document.querySelector('.banner').style.display = 'none';
-        document.querySelector('.section').style.display = 'none';
-        document.getElementById('gameCanvas').style.display = 'block';
+    document.getElementById('header').style.display = 'none';
+    document.querySelector('.banner').style.display = 'none';
+    document.querySelector('.section').style.display = 'none';
+    document.getElementById('gameCanvas').style.display = 'block';
 
-        import('../../socket.js');
-        import('../../game.js');
-    } else {
-        alert("로그인 먼저 진행해주세요!");
-    }
+    import('../../socket.js');
+    import('../../game.js');
 });
