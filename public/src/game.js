@@ -277,10 +277,10 @@ async function gameLoop(frameTime) {
 				// 몬스터가 있는 그리드의 좌표 구하기
 
 				tower.attack(monster);
-				
+
 
 				if (monster.hp <= 0) {
-					daethSheets.push({killer:'killtower', x:tower.x, y:tower.y, monsterId: monster.uniqueId, monsterHp:monster.maxHp, monsterGold:monster.gold, monsterX:monster.x, monsterY:monster.y, monsterTimestemp: Date.now()});
+					daethSheets.push({ killer: 'killtower', x: tower.x, y: tower.y, monsterId: monster.uniqueId, monsterHp: monster.maxHp, monsterGold: monster.gold, monsterX: monster.x, monsterY: monster.y, monsterTimestemp: Date.now() });
 					monster.dead();
 					score += monsterLevel;
 					userGold += monster.gold;
@@ -495,7 +495,6 @@ export function resetGame() {
 	killCount = 0;
 	monsterLevel = 1;
 	feverTriggered = false;
-	//sendEvent(4, {0, timestamp:Date.now()});
 
 	// 몬스터 스폰 초기화
 	sendEvent(12, {});
@@ -505,7 +504,7 @@ export function resetGame() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	// 게임 재시작
-	initGame(true);
+	initGame(userData, true);
 }
 
 // 게임 스탑
@@ -524,7 +523,7 @@ Promise.all([
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),
-]).then(() => {});
+]).then(() => { });
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
