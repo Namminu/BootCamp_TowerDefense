@@ -7,7 +7,7 @@ export class TowerControl {
 		this.id = 1;
 		this.ctx = ctx; // 캔버스 컨텍스트
 		this.canvas = ctx.canvas; // 캔버스
-		this.towerImages = towerImages.map((ele) => ele.image); // 타워 이미지 배열
+		this.towerImages = towerImages.map((ele) => ele.imageSet); // 타워 이미지 배열
 		this.towerId = towerImages.map((ele) => ele.id); // 타워 이미지 아이디 배열
 		this.towers = []; // 설치된 타워들을 관리하는 배열
 		this.towerqueue = [];
@@ -43,12 +43,10 @@ export class TowerControl {
 		}
 		while (this.towerqueue.length < 5) {
 			const index = this.getRandomNumber(0, towerData.data.length - 1);
-			// let index = this.getRandomNumber(0, monsterLevel - 1);
-			// if (monsterLevel > towerData.data.length) {
-			//   index = this.getRandomNumber(0, towerData.data.length - 1);
-			// }
+			const img = await loadImage(this.towerImages[index].idle[0]);
+
 			this.towerqueue.push({
-				image: this.towerImages[index],
+				image: img,
 				name: towerData.data[index].name,
 				type: towerData.data[index].type,
 				cost: towerData.data[index].cost,
@@ -110,14 +108,15 @@ export class TowerControl {
 		const towerName = this.towerqueue[queueIndex].name;
 		const index = towerData.data.findIndex((data) => data.name === towerName);
 
-		const image = this.towerImages[index];
+		// const image = this.towerImages[index];
+		const imageSet = this.towerImages[index];
 		const damage = towerData.data[index].damage;
 		const range = towerData.data[index].range;
 		const cooldown = towerData.data[index].cooldown;
 		const cost = towerData.data[index].cost;
 		const type = towerData.data[index].type;
 		const id = this.id;
-		const newTower = new Tower(this.ctx, x, y, damage, range, cooldown, cost, image, type, id);
+		const newTower = new Tower(this.ctx, x, y, damage, range, cooldown, cost, imageSet, type, id);
 
 		this.id++;
 
@@ -164,4 +163,14 @@ export class TowerControl {
 			});
 		});
 	}
+}
+
+// 이미지 로딩 함수
+function loadImage(src) {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+		img.onload = () => resolve(img);
+		img.onerror = (err) => reject(err);
+		img.src = src;
+	});
 }

@@ -9,7 +9,7 @@ import { drawGridAndPath, generatePath } from './path.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const cellSize = { WIDTH: 220 / 2, HEIGHT: 270 / 2 };
+const cellSize = { WIDTH: 280 / 2.5, HEIGHT: 320 / 2.5 };
 
 const startPoint = { x: 0, y: 0 };
 const endPoint = { x: 16, y: 4 };
@@ -20,6 +20,11 @@ const NUM_OF_MONSTERS = 5; // 몬스터 개수
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
 let baseHp = 10; // 기지 체력
+
+// 시간 변수
+let deltaTime = 0;
+let lastFrameTime = 0;
+export let accumulatedTime = 0;
 
 // 타워 관련 변수
 let towerCost; // 타워 구입 비용
@@ -54,9 +59,7 @@ const backgroundImage = new Image();
 backgroundImage.src = './images/bg.webp';
 
 const towerImages = TOWER_CONFIG.map((tower) => {
-	const image = new Image();
-	image.src = tower.image;
-	return { image, id: tower.id };
+	return { imageSet: tower.imageSet, id: tower.id };
 });
 
 const baseImage = new Image();
@@ -226,10 +229,19 @@ export function spawnMonster() {
 	monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
-async function gameLoop() {
+async function gameLoop(frameTime) {
 	const currentTime = performance.now();
 	//게임 반복.
 	// ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	// 게임 시간 설정
+	// frameTime - lastFrameTime : 1프레임당 걸리는 시간(밀리초)
+	// ((frameTime - lastFrameTime) / 1000): 1프레임당 걸린 시간을 초 단위로 변환(처음 시작할 땐 0으로 설정)
+	deltaTime = (frameTime - lastFrameTime) / 1000 || 0;
+	// 마지막으로 기록된 frameTime(직전 frameTime)
+	lastFrameTime = frameTime;
+	// 총 누적 시간
+	accumulatedTime += deltaTime;
 
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
 	// // 그리드 생성 및 호출

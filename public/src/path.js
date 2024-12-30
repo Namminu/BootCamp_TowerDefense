@@ -59,19 +59,19 @@ export function drawGridAndPath(ctx, cellSize, path) {
 	const canvasWidth = ctx.canvas.width;
 	const canvasHeight = ctx.canvas.height;
 
-	// 배경색으로 채우기
+	// 배경 이미지로 채우기
 	const grassImage = new Image();
-	grassImage.src = './images/path/grass_low.png';
+	grassImage.src = './images/path/grass.png';
 	ctx.drawImage(grassImage, 0, 0, canvasWidth, canvasHeight);
 
-	// path를 노란색으로 칠하기
+	// path를 이미지로 채우기
 	const pathImage = new Image();
 	pathImage.src = './images/path/cheese4.png';
 
 	path.forEach((point) => {
 		const cellX = point.x * cellSize.WIDTH;
 		const cellY = point.y * cellSize.HEIGHT;
-		ctx.drawImage(pathImage, cellX, cellY, 220 / 2, 270 / 2);
+		ctx.drawImage(pathImage, cellX, cellY, 280 / 2.5, 320 / 2.5);
 	});
 
 	// 그리드 선 그리기
