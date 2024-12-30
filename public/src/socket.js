@@ -15,6 +15,8 @@ let gameData = {
 
 socket.on('response', (data) => {
 	console.log('response : ', data);
+  if(data.handlerId===11)
+    setRound(data.nextRoundInfo, data.unlockMonsters);
 });
 
 socket.on('connection', (data) => {
@@ -28,6 +30,9 @@ socket.on('connection', (data) => {
 	if (data.userData) {
 		gameData.userData = data.userData;
 	}
+
+  gameStart();
+  setRound(data.initRoundInfo, data.unlockMonsters);
 });
 
 // gameData 사용을 위한 getter 함수들
