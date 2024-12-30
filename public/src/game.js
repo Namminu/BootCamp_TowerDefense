@@ -43,6 +43,8 @@ const MONSTER_UNLOCK_CONFIG = monsterUnlockData.data;
 
 // 경로를 저장할 배열
 let paths = [];
+// 몬스터의 죽음을 기록할 배열. 라운드마다 보네주고 초기화.
+const daethSheets = [];
 
 // 이미지 로딩 파트
 const backgroundImage = new Image();
@@ -292,6 +294,8 @@ async function gameLoop() {
 
 				if (monster.hp <= 0) {
 					monster.dead();
+					//daethSheets.push({killer:tower:{x:tower.x,y:tower.y}, daethEntity:monster, timestamp:Date.now()});
+					//일단 여기서 넣는데, 죽인놈(타워,라운드,베이스중 하나.타워라면, 이곳에 위치정보들어가기.),죽인몬스터(id,hp,speed,gold,timestemp),죽인시간 넣어서 보네기.
 					score += monsterLevel;
 					userGold += 10 * monsterLevel;
 
