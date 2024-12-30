@@ -309,9 +309,8 @@ async function gameLoop(frameTime) {
 		if (monster.hp > 0) {
 			const isDestroyed = monster.move(base);
 			if (isDestroyed) {
-				const testRound = 1;	//테스트용 코드. 추후 currentRound 받아와야 함
 				/* 게임 오버 */
-				const response = await sendEvent(3, { currentRound: testRound, timestamp: currentTime });
+				const response = await sendEvent(3, { currentRound: round, timestamp: currentTime });
 				const { message, userName, highScore, time } = response;
 				console.log('message : ', message, 'userName : ', userName, 'highScore : ', highScore, 'time : ', time);
 				showModal(message, userName, highScore, 1, time);
@@ -549,6 +548,7 @@ export function resetGame() {
 	killCount = 0;
 	monsterLevel = 1;
 	feverTriggered = false;
+	//sendEvent(4, {0, timestamp:Date.now()});
 
 	// 몬스터 스폰 초기화
 	sendEvent(12, {});

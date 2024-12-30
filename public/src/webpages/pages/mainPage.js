@@ -1,4 +1,4 @@
-import { loadModal, showModal } from '../modals/registerAndloginModal.js';
+import { loadModal, showRegisterModal, showLogInModal } from '../modals/registerAndloginModal.js';
 
 const BASE_URL = 'http://localhost:8080/api';
 
@@ -9,13 +9,13 @@ loadModal('loginModal');
 // 회원가입 버튼
 document.getElementById('registerButton').addEventListener('click', () => {
     console.log("회원가입 버튼 클릭");
-    showModal('registerModal');
+    showRegisterModal('registerModal');
 });
 
 // 로그인 버튼
 document.getElementById('loginButton').addEventListener('click', () => {
     console.log("로그인 버튼 클릭");
-    showModal('loginModal');
+    showLogInModal('loginModal');
 });
 
 // 게임 시작 버튼

@@ -24,10 +24,10 @@ export const handleConnection = (socket, uuid) => {
 	// 연결되면 바로 게임이 시작되므로 여기서 gameStart 호출 (클라에서 호출X)
 	gameStart(uuid, socket);
 
-  // 현재 시간으로 라운드 시작
-  const response = moveRoundHandler(uuid, { currentRound:0, timestamp:Date.now() })
-  const initRoundInfo = response.nextRoundInfo;
-  const unlockMonsters = response.unlockMonsters;
+	// 현재 시간으로 라운드 시작
+	const response = moveRoundHandler(uuid, { currentRound: 0, timestamp: Date.now() })
+	const initRoundInfo = response.nextRoundInfo;
+	const unlockMonsters = response.unlockMonsters;
 
 	// userData.model.js의 userData 불러오기
 	const userData = getUserData(uuid);
