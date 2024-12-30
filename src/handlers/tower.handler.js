@@ -143,7 +143,7 @@ export const upgradeTower = (userId, payload, socket) => {
 	return { status: 'success', message: '업그레이드 성공' };
 };
 
-// {atteckerX ,atteckerY, hitEntity, x, y, timestemp} //피버 타임에 대해 고민하기.//여기는 맞은 위치x,y.
+// {atteckerX ,atteckerY, hitEntity, x, y, timestemp,} //피버 타임에 대해 고민하기.//여기는 맞은 위치x,y.
 export const atteckTower = (userId, payload, socket) => {
 	const currentTowers = getTower(userId);
 
@@ -153,6 +153,10 @@ export const atteckTower = (userId, payload, socket) => {
 
 	if (!matchingTower) {
 		return { status: 'fail', message: '어캐 때림? 이거 뜨면 꼭 알려주셈.' };
+	}
+	if (payload.feverTriggered) {
+		matchingTower.range *=1.2;
+		matchingTower.damage *=1.5;
 	}
 	
 	const isatteck = canRangeTower(matchingTower.x ,matchingTower.y ,payload.x ,payload.y , matchingTower.range);
@@ -168,10 +172,28 @@ export const atteckTower = (userId, payload, socket) => {
 
 
 //킬 목록을 가져온다. 목록은 [{ killer{killer ,killerX, killerY}, dethEntity{id,hp,speed,gold,timestemp}, x, y,},...] 나는 x,y(죽은위치) 안쓰지만 베이스랑 라운드에서 쓰기 때문.
-export const killTower = (userId, payload, socket) => {
+export const killTower = (userId, daethSheets) => {
 
-	//1. 죽은 엔티티와 같은 어택시트를 전부 가져옴. 데미지 계산해서 체력이 맞는지 확인.
-	const damageSheet = getowerAttackSheet(userId);
+	// daethSheets = daethSheets.filter(item => item.killer === 'killtower');
+	// const currentTowers = getTower(userId);
+	// const damageSheet = getowerAttackSheet(userId);
+
+	// // daethSheets.forEach(sheet => {
+	// // 	const matchingTower = currentTowers.find(
+	// // 		tower => tower.x === sheet.x && tower.y === sheet.y
+	// // 	);
+	
+	// // 	if (matchingTower) {
+	// // 		console.log("Matching tower found:", matchingTower);
+	// // 	} else {
+	// // 		console.log("No matching tower for daethSheet:", sheet);
+	// // 	}
+	// // });
+	// // const matchingTower = currentTowers.find(
+	// // 	(tower) => tower.x === daethSheets.x && tower.y === daethSheets.y,
+	// // );
+	
+	
 
 	//폴문으로 dethEntity 와 같은 hitEntity 의 데미지 시트만 가져와서 데미지를 전부 더한게 최대 체력보다 높은지 검증, 마지막 때린놈이 죽인놈이 맞는지 검증.
 
@@ -184,4 +206,5 @@ export const killTower = (userId, payload, socket) => {
 
 	//타워가 있는지 확인, 사거리가 되는지 확인,체력이 공격을 맞아 알맞게 피가 까였는지, 전부 가져와서 공격 속도가 되는지 확인, 성공시 다음으로.
 	//애는 리스트를 받고, 그 리스트에 있는 타워를 한번에 가져온뒤, 공격 속도 확인.
+	return true;
 };

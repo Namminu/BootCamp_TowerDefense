@@ -126,10 +126,11 @@ export class Tower {
 			this.cooldown = this.originalCooldown; // 3초 쿨타임 (초당 60프레임)
 			this.beamDuration = 30; // 광선 지속 시간 (0.5초)
 			this.target = monster; // 광선의 목표 설정
-
+			sendEvent(14,{atteckerX: this.x ,atteckerY: this.y , hitEntity: monster.uniqueId, x : monster.x, y: monster.y, timestemp : Date.now(), feverTriggered : this.feverMode});
 			if (this.feverMode) {
 				this.cooldown = this.originalCooldown / 2;
 			}
+			
 		}
 	}
 
