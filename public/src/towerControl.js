@@ -7,7 +7,7 @@ export class TowerControl {
 		this.id = 1;
 		this.ctx = ctx; // 캔버스 컨텍스트
 		this.canvas = ctx.canvas; // 캔버스
-		this.towerImages = towerImages.map((ele) => ele.image); // 타워 이미지 배열
+		this.towerImages = towerImages.map((ele) => ele.imageSet); // 타워 이미지 배열
 		this.towerId = towerImages.map((ele) => ele.id); // 타워 이미지 아이디 배열
 		this.towers = []; // 설치된 타워들을 관리하는 배열
 		this.towerqueue = [];
@@ -22,42 +22,37 @@ export class TowerControl {
 	}
 
 	async getTowerqueue(monsterLevel) {
-		const TowerQueueType = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
-		this.towerqueue = [];
-
-		for (let i = 0; i < TowerQueueType.length; i++) {
-			const towerType = TowerQueueType[i].towerDataIndex;
-			const towerIndex = 1 + towerData.data.findIndex((tower) => tower.type === towerType); // 이새끼 뭐냐;; 이거 빼니까 작동을 안함.
-			if (towerIndex !== -1) {
-				this.towerqueue.push({
-					image: this.towerImages[towerIndex],
-					name: towerData.data[towerIndex].name,
-					type: towerData.data[towerIndex].type,
-					cost: towerData.data[towerIndex].cost,
-				});
-			}
-		}
-
-		return this.towerqueue;
-
-		// if (this.towerqueue.length === 5) {
-		//   return this.towerqueue;
+		// const TowerQueueType = await loadTowerQueue(); // [{type:},{type:},... 이런식으로 받습니다. 5개를 받습니다.]
+		// this.towerqueue = [];
+		// for (let i = 0; i < TowerQueueType.length; i++) {
+		// 	const towerType = TowerQueueType[i].towerDataIndex;
+		// 	const towerIndex = 1 + towerData.data.findIndex((tower) => tower.type === towerType); // 이새끼 뭐냐;; 이거 빼니까 작동을 안함.
+		// 	if (towerIndex !== -1) {
+		// 		this.towerqueue.push({
+		// 			image: this.towerImages[towerIndex],
+		// 			name: towerData.data[towerIndex].name,
+		// 			type: towerData.data[towerIndex].type,
+		// 			cost: towerData.data[towerIndex].cost,
+		// 		});
+		// 	}
 		// }
-		// while (this.towerqueue.length < 5) {
-		//   const index = this.getRandomNumber(0, towerData.data.length - 1);
-		//   // let index = this.getRandomNumber(0, monsterLevel - 1);
-		//   // if (monsterLevel > towerData.data.length) {
-		//   //   index = this.getRandomNumber(0, towerData.data.length - 1);
-		//   // }
-		//   this.towerqueue.push({
-		//     image: this.towerImages[index],
-		//     name: towerData.data[index].name,
-		//     type: towerData.data[index].type,
-		//     cost: towerData.data[index].cost,
-		//   });
-		// }
-
 		// return this.towerqueue;
+
+		if (this.towerqueue.length === 5) {
+			return this.towerqueue;
+		}
+		while (this.towerqueue.length < 5) {
+			const index = this.getRandomNumber(0, towerData.data.length - 1);
+			const img = await loadImage(this.towerImages[index].idle[0]);
+
+			this.towerqueue.push({
+				image: img,
+				name: towerData.data[index].name,
+				type: towerData.data[index].type,
+				cost: towerData.data[index].cost,
+			});
+		}
+		return this.towerqueue;
 	}
 
 	drawqueue(ctx, canvas, monsterLevel) {
@@ -70,7 +65,7 @@ export class TowerControl {
 		// 인벤토리 영역 설정
 		const queueHeight = 200; // 인벤토리 높이
 		const queueY = canvas.height - queueHeight; // 인벤토리 위치
-		ctx.fillStyle = 'rgba(255, 182, 249, 0.7)';
+		ctx.fillStyle = '#F0BB78';
 		ctx.fillRect(0, queueY - 15, canvas.width, queueHeight);
 
 		const imageWidth = 220 / 1.5;
@@ -113,14 +108,15 @@ export class TowerControl {
 		const towerName = this.towerqueue[queueIndex].name;
 		const index = towerData.data.findIndex((data) => data.name === towerName);
 
-		const image = this.towerImages[index];
+		// const image = this.towerImages[index];
+		const imageSet = this.towerImages[index];
 		const damage = towerData.data[index].damage;
 		const range = towerData.data[index].range;
 		const cooldown = towerData.data[index].cooldown;
 		const cost = towerData.data[index].cost;
 		const type = towerData.data[index].type;
 		const id = this.id;
-		const newTower = new Tower(this.ctx, x, y, damage, range, cooldown, cost, image, type, id);
+		const newTower = new Tower(this.ctx, x, y, damage, range, cooldown, cost, imageSet, type, id);
 
 		this.id++;
 
@@ -167,4 +163,14 @@ export class TowerControl {
 			});
 		});
 	}
+}
+
+// 이미지 로딩 함수
+function loadImage(src) {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+		img.onload = () => resolve(img);
+		img.onerror = (err) => reject(err);
+		img.src = src;
+	});
 }

@@ -13,9 +13,9 @@ export const getTower = (uuid) => {
 };
 
 //타워 추가
-export const setTower = (uuid, type, x, y, level, timestamp) => {
+export const setTower = (uuid, type, x, y, level, damage, range, cooldown, cost, timestamp) => {
 	//여기서, 공속, 사거리, 그런걸 확인해야함.피버타입인걸 확인해야 겠는데.
-	return towers[uuid].push({ type, x, y, level, timestamp });
+	return towers[uuid].push({ type, x, y, level, damage, range, cooldown, cost, timestamp });
 };
 
 //타워 판매
@@ -37,6 +37,8 @@ export const upTower = (uuid, x, y, level) => {
 		if (towers[uuid][index].level + 1 === level);
 		{
 			towers[uuid][index].level += 1;
+			towers[uuid][index].damage *=1.2;
+			towers[uuid][index].range *=1.2;
 			return true;
 		}
 	}
@@ -72,7 +74,7 @@ export const removeTowerQueue = (uuid, index) => {
 	return false;
 };
 
-//때린 기록 빈 객체 생성
+//때린 기록 빈 객체 생성 겸사겸사 초기화용으로도 사용.
 export const createTowerAttackSheet = (uuid) => {
 	attackSheets[uuid] = [];
 };
@@ -82,22 +84,22 @@ export const getowerAttackSheet = (uuid) => {
 	return attackSheets[uuid];
 };
 
-
-export const getTowerRange = (towerdata, type, level) => {
-
-	const index = towerdata.data.findIndex((tower) => tower.type === type);
-
-	towerdata.data[index].range*(1.2)^level
-
-	
-	const towerRange = 0;
-	return towerRange;
+//때린 기록 저장.
+export const setowerAttackSheet = (uuid, atteckerX, atteckerY, hitEntity, damage, timestemp) => {
+	return attackSheets[uuid].push({ atteckerX, atteckerY, hitEntity, damage, timestemp });
 };
 
 
 
-// 타워를 돌려서 타워의  공격 범위 안에 있는지 확인. 이건 클라랑 상의해 보기.
-export const canRangeTower = (towerX, towerY, targetX, targetY, length) => {
+// 타워를 돌려서 타워의  공격 범위 안에 있는지 확인.
+export const canRangeTower = (towerX, towerY, targetX, targetY, range) => {
 
+	const deltaX = targetX - towerX; 
+	const deltaY = targetY - towerY; 
 	
+	if(Math.sqrt(deltaX ** 2 + deltaY ** 2) > range){
+		return false ;
+	}
+
+	return true;
 };

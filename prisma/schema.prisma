@@ -15,15 +15,14 @@ model Users {
   nickName  String   @unique @map("nickName")
 
   highScores HighScores?
-
   @@map("Users")
 }
 
 model HighScores {
   id        Int      @id @default(autoincrement()) @map("id")
   userId    Int      @unique @map("userId")
-  highScore Int      @map("highScore")
-  elapsed   Int      @map("elapsed")
+  highScore Int      @default(0) @map("highScore")
+  elapsed   Int
   createdAt DateTime @default(now()) @map("createdAt")
 
   users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
