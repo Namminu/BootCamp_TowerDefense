@@ -35,8 +35,8 @@ export const buyTower = (userId, payload, socket) => {
 		}
 	}
 
-	const towerWidth = 220 / 1.5;
-	const towerHeight = 270 / 1.5;
+	const towerWidth = 100 / 1.5;
+	const towerHeight = 100 / 1.5;
 	const newTowerCenterX = payload.x + towerWidth / 2;
 	const newTowerCenterY = payload.y + towerHeight / 2;
 
@@ -141,7 +141,7 @@ export const upgradeTower = (userId, payload, socket) => {
 	return { status: 'success', message: '업그레이드 성공' };
 };
 
-// {atteckerX ,atteckerY, hitEntity, x, y, timestemp} //피버 타임에 대해 고민하기.
+// {atteckerX ,atteckerY, hitEntity, x, y, timestemp} //피버 타임에 대해 고민하기.//여기는 맞은 위치x,y.
 export const atteckTower = (userId, payload, socket) => {
 	const currentTowers = getTower(userId);
 

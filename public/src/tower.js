@@ -198,12 +198,12 @@ export class Tower {
 		tower.level += 1; // 타워 레벨 증가
 
 		// 업그레이드에 사용된 포탑 2개 제거
-		for (let i = 0; i < 2; i++) {
-			towerControl.towerqueue.splice(
-				towerControl.towerqueue.findIndex((t) => t.type === tower.type),
-				1,
-			);
-		}
+		//for (let i = 0; i < 2; i++) {
+		//	towerControl.towerqueue.splice(
+		//		towerControl.towerqueue.findIndex((t) => t.type === tower.type),
+		//		1,
+		//	);
+		//}
 
 		return upgradeCost;
 	}
