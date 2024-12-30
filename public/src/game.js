@@ -261,6 +261,7 @@ export function spawnMonster() {
 	// monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
+let monsterGoldText = [];
 let previousTime = null;
 let isRoundExpired = false;
 async function gameLoop(frameTime) {
@@ -302,6 +303,7 @@ async function gameLoop(frameTime) {
 	for (let i = monsters.length - 1; i >= 0; i--) {
 		const monster = monsters[i];
 		if (monster.isDead) {
+			monsterGoldText.push({gold:monster.gold, x:monster.x+monster.width/2, y:monster.y, timer:1500});
 			monsters.splice(i, 1); // 이미 죽은 몬스터 제거
 			continue;
 		}
@@ -318,7 +320,7 @@ async function gameLoop(frameTime) {
 				// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
 				stopGame();
 			}
-			monster.draw(ctx);
+			monster.draw(ctx, deltaTime2);
 		} else {
 			/* 몬스터가 죽었을 때 */
 			monster.dead();
@@ -370,6 +372,19 @@ async function gameLoop(frameTime) {
 		}
 		tower.draw();
 		tower.updateCooldown();
+
+		ctx.font = '30px Times New Roman';
+		ctx.strokeStyle = 'black';
+		ctx.fillStyle = '#eeee11';
+		ctx.textAlign = "center";
+		monsterGoldText.forEach(text => {
+			const x = text.x;
+			const y = text.y + text.timer/150;
+			ctx.strokeText(`+${text.gold}🪙`, x, y);
+			ctx.fillText(`+${text.gold}🪙`, x, y);
+			text.timer -= deltaTime2;
+		})
+		monsterGoldText = monsterGoldText.filter(text=>text.timer>0);
 	});
 
 	// 타워 자세히 보기창 그리기

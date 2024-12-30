@@ -2,6 +2,8 @@
 // 현재 하드코딩 되어 있는 부분들 (이동 속도, 공격력, 체력 등) 변경
 
 export class Monster {
+	damageText = [];
+
 	constructor(path, level, monsterConfig) {
 		// 생성자 안에서 몬스터의 속성을 정의한다고 생각하시면 됩니다!
 		if (!path || path.length <= 0) {
@@ -75,11 +77,36 @@ export class Monster {
 		}
 	}
 
-	draw(ctx) {
+	draw(ctx, deltaTime) {
 		ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 		ctx.font = '12px Arial';
 		ctx.fillStyle = 'white';
 		ctx.fillText(`(레벨 ${this.level}) ${this.hp}/${this.maxHp}`, this.x, this.y - 5);
+		
+		ctx.font = 'bolder italic 30px Times New Roman';
+		ctx.strokeStyle = '#ffffff';
+		ctx.fillStyle = '#ff1177';
+		ctx.textAlign = "center";
+		this.damageText.forEach(text => {
+			const x = this.x+this.width/2 + text.x;
+			const y = this.y + this.height*0.2 + text.timer/100;
+			ctx.strokeText(text.damage, x, y);
+			ctx.fillText(text.damage, x, y);
+			text.timer -= deltaTime;
+		})
+		this.damageText = this.damageText.filter(text=>text.timer>0);
+	}
+
+	hit(damage){
+		const rand = Math.round(Math.random()*20);
+		damage = damage -10 + rand;
+		this.hp -= damage;
+		if(this.hp<0){
+			this.hp = 0;
+			this.dead();
+		}
+
+		this.damageText.push({damage, timer:1500, x:(Math.random()*100-50), y:this.y })
 	}
 
 	dead() {
