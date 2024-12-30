@@ -62,7 +62,18 @@ export const buyTower = (userId, payload, socket) => {
 
 	setUserGold(userId, currentUserData.gold);
 	setTowerQueue(userId, tower);
-	setTower(userId, payload.type, payload.x, payload.y, 1, selectedTower.damage, selectedTower.range, selectedTower.cooldown, selectedTower.cost, payload.timestamp);
+	setTower(
+		userId,
+		payload.type,
+		payload.x,
+		payload.y,
+		1,
+		selectedTower.damage,
+		selectedTower.range,
+		selectedTower.cooldown,
+		selectedTower.cost,
+		payload.timestamp,
+	);
 	return { status: 'success', message: '타워 배치 성공적.' };
 };
 
@@ -112,9 +123,9 @@ export const upgradeTower = (userId, payload, socket) => {
 		.map((tower, i) => (tower.towerDataIndex === index ? i : -1)) // 조건을 만족하는 인덱스 반환, 아니면 -1
 		.filter((i) => i !== -1); // 유효한 인덱스만 필터링
 
-	console.log("currentTowersQueue",currentTowersQueue);	
+	console.log('currentTowersQueue', currentTowersQueue);
 	console.log('matchingTowerQueueIndex', matchingTowerQueueIndex);
-	
+
 	if (matchingTowerQueueIndex.length < 2) {
 		return { status: 'fail', message: '타워가 인벤토리에 없음.' };
 	}
@@ -155,56 +166,98 @@ export const atteckTower = (userId, payload, socket) => {
 		return { status: 'fail', message: '어캐 때림? 이거 뜨면 꼭 알려주셈.' };
 	}
 	if (payload.feverTriggered) {
-		matchingTower.range *=1.2;
-		matchingTower.damage *=1.5;
+		matchingTower.range *= 1.2;
+		matchingTower.damage *= 1.5;
 	}
-	
-	const isatteck = canRangeTower(matchingTower.x ,matchingTower.y ,payload.x ,payload.y , matchingTower.range);
 
-	if(!isatteck){
+	const isatteck = canRangeTower(
+		matchingTower.x,
+		matchingTower.y,
+		payload.x,
+		payload.y,
+		matchingTower.range,
+	);
+
+	if (!isatteck) {
 		return { status: 'fail', message: '고무고무 먹지마라' };
 	}
 
-	setowerAttackSheet( userId, payload.atteckerX, payload.atteckerY, payload.hitEntity, matchingTower.damage, payload.timestemp);
+	setowerAttackSheet(
+		userId,
+		payload.atteckerX,
+		payload.atteckerY,
+		payload.hitEntity,
+		matchingTower.damage,
+		payload.timestemp,
+	);
 
 	return { status: 'success', message: '때릴 수 있는 놈이군.' };
 };
 
-
 //킬 목록을 가져온다. 목록은 [{ killer{killer ,killerX, killerY}, dethEntity{id,hp,speed,gold,timestemp}, x, y,},...] 나는 x,y(죽은위치) 안쓰지만 베이스랑 라운드에서 쓰기 때문.
 export const killTower = (userId, daethSheets) => {
+	if (getUserData(userId).round === 1 && !daethSheets) {
+		//가장 처음에 한번 부르는 용.
+		return true;
+	}
 
-	// daethSheets = daethSheets.filter(item => item.killer === 'killtower');
-	// const currentTowers = getTower(userId);
-	// const damageSheet = getowerAttackSheet(userId);
+	daethSheets = daethSheets.filter((item) => item.killer === 'killtower');
+	const currentTowers = getTower(userId);
+	const damageSheet = getowerAttackSheet(userId);
 
-	// // daethSheets.forEach(sheet => {
-	// // 	const matchingTower = currentTowers.find(
-	// // 		tower => tower.x === sheet.x && tower.y === sheet.y
-	// // 	);
+	const isValid = daethSheets.every((sheet) => {
+		//막타친 타워가 있는지 확인합니다.
+		const matchingTower = currentTowers.find((tower) => tower.x === sheet.x && tower.y === sheet.y);
+
+		if (!matchingTower) {
+			console.log('없는 타워가 때림');
+			return false;
+		}
+
+		//데미지 시트를 확인해 데미지를 준게 맞는지 확인합니다.
+		const relatedDamage = damageSheet.filter((damage) => damage.hitEntity === sheet.monsterId);
+		// damage 값의 합계 계산
+		const totalDamage = relatedDamage.reduce((sum, damage) => sum + damage.damage, 0);
+
+		if (totalDamage < sheet.monsterHp) {
+			console.log('타워 데미지 이상');
+			return false;
+		}
+		return true;
+	});
+
 	
-	// // 	if (matchingTower) {
-	// // 		console.log("Matching tower found:", matchingTower);
-	// // 	} else {
-	// // 		console.log("No matching tower for daethSheet:", sheet);
-	// // 	}
-	// // });
-	// // const matchingTower = currentTowers.find(
-	// // 	(tower) => tower.x === daethSheets.x && tower.y === daethSheets.y,
-	// // );
-	
-	
 
-	//폴문으로 dethEntity 와 같은 hitEntity 의 데미지 시트만 가져와서 데미지를 전부 더한게 최대 체력보다 높은지 검증, 마지막 때린놈이 죽인놈이 맞는지 검증.
+	if (!isValid) {
+		return false;
+	}
 
 
+	const isValid2 = currentTowers.every((tower) => {
+		const currentDamageSheet = damageSheet.filter((sheet) => tower.x === sheet.atteckerX && tower.y === sheet.atteckerY);
+		let previousTimestamp = null;
+    	const isValid3 =currentDamageSheet.every((sheet) => {
+        if (previousTimestamp !== null) {
+            const timeDifference = sheet.timestemp - previousTimestamp;
+			if(timeDifference < tower.cooldown*5){ //8.3 언저리긴 함. 정확하게 하려면 8배 하기.
+				console.log("timeDifference",timeDifference);
+				console.log("tower.cooldown",tower.cooldown*5);
+				return false;
+			}
+        }
+        previousTimestamp = sheet.timestemp;
+		return true;
+    });
 
-	//두번째 폴문으로. 어택 시트에서 타워끼리 모아서, 타워 스템프의 차이가 공속보다 빠른지 확인하기. 피버타입까지 고려해서 2배까지는 허용.
+	if (!isValid3) {
+		return false;
+	}
+		return true;
+	});
 
+	if (!isValid2) {
+		return false;
+	}
 
-
-
-	//타워가 있는지 확인, 사거리가 되는지 확인,체력이 공격을 맞아 알맞게 피가 까였는지, 전부 가져와서 공격 속도가 되는지 확인, 성공시 다음으로.
-	//애는 리스트를 받고, 그 리스트에 있는 타워를 한번에 가져온뒤, 공격 속도 확인.
 	return true;
 };
