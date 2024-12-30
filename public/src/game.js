@@ -169,6 +169,8 @@ export function spawnMonster() {
 	const currentRound = userData.round;
 	const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
 
+	console.log(currentRound, roundUnlock);
+
 	if (!roundUnlock) {
 		console.error('현재 라운드에 출현 가능한 몬스터가 없습니다.');
 		return;
@@ -201,6 +203,7 @@ async function gameLoop(frameTime) {
 	const currentTime = Date.now();
 	const deltaTime2 = currentTime - previousTime;
 	previousTime = currentTime;
+
 	if (!isRoundExpired) {
 		round_timer -= deltaTime2;
 		if (round_timer <= 0) {
@@ -788,9 +791,6 @@ let round_timer = 0;
 let roundUnlock = null;
 
 export function setRound(roundInfo, unlockMonsters) {
-	console.log('라운드 세팅');
-	console.log(roundInfo);
-
 	round = roundInfo.round;
 	monsterSpawnInterval = roundInfo.duration;
 	spawn_count = roundInfo.count;
