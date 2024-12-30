@@ -505,7 +505,7 @@ export function resetGame() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	// 게임 재시작
-	initGame(true);
+	initGame(userData, true);
 }
 
 // 게임 스탑
