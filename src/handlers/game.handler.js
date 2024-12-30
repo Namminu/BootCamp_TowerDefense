@@ -23,7 +23,7 @@ export const gameStart = (userId, payload, socket) => {
 	createUserData(userId);
 	createTower(userId);
 	createTowerQueue(userId);
-	setUserData(userId, 1, Date.now(), 800);
+	setUserData(userId, 1, Date.now(), 1000);
 	setTowerQueue(userId, tower);
 	const user = getUserData(userId);
 	console.log('user', user);
