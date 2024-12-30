@@ -79,7 +79,7 @@ export class Tower {
 
 		if (this.isAttacking) {
 			// 공격 상태일 때 애니메이션 처리
-			//console.log(accumulatedTime);
+			// console.log(accumulatedTime);
 			const frameIndex = Math.floor(accumulatedTime) % 2;
 			currentImage = this.imageSet.attacking[upgradeCount][frameIndex];
 		} else {
@@ -120,6 +120,9 @@ export class Tower {
 		if (this.cooldown <= 0) {
 			this.isAttacking = true;
 			monster.hp -= this.damage;
+			// 데미지 텍스트 추가
+			monster.addDamageText(this.damage);
+
 			this.cooldown = this.originalCooldown; // 3초 쿨타임 (초당 60프레임)
 			this.beamDuration = 30; // 광선 지속 시간 (0.5초)
 			this.target = monster; // 광선의 목표 설정
