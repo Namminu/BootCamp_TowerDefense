@@ -1,4 +1,4 @@
-import { gameStart, spawnMonster } from './game.js';
+import { gameStart, setRound, spawnMonster } from './game.js';
 
 let somewhere = localStorage.getItem('authToken');
 
@@ -31,8 +31,8 @@ socket.on('connection', (data) => {
 		gameData.userData = data.userData;
 	}
 
-  gameStart();
   setRound(data.initRoundInfo, data.unlockMonsters);
+  gameStart();
 });
 
 // gameData 사용을 위한 getter 함수들

@@ -18,7 +18,7 @@ export const moveRoundHandler = (userId, payload, socket) => {
 			const roundStartTime = getUserData(userId).timestamp; // 현재 라운드 시작 시간
 			const roundClearTime = payload.timestamp; // 현재 라운드 종료 시간
 			const elapsedTime = (roundClearTime - roundStartTime) / 1000;
-			const roundTime = getRoundInfo(payload.currentRound).time;
+			const roundTime = getRoundInfo(payload.currentRound).time / 1000;
 			if (elapsedTime < roundTime - 10 || elapsedTime > roundTime + 10) {
 				return { status: 'fail', message: 'elapsedTime out of scope' };
 			}

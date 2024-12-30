@@ -6,6 +6,7 @@ import handlerMappings from './handlerMapping.js';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { gameStart } from './game.handler.js';
+import { moveRoundHandler } from './round.handler.js';
 
 dotenv.config();
 
