@@ -783,3 +783,17 @@ canvas.addEventListener('click', (event) => {
 		});
 	}
 });
+
+let round = 0;
+let spawn_count = 0;
+let round_timer = 0;
+let roundUnlock = null;
+
+export function setRound(roundInfo, unlockMonsters) {
+	round = roundInfo.round;
+	monsterSpawnInterval = roundInfo.duration;
+	spawn_count = roundInfo.count;
+	round_timer = roundInfo.time;
+	roundUnlock = unlockMonsters;
+	isRoundExpired = false;
+}
