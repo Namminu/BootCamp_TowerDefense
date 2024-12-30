@@ -7,6 +7,7 @@ import { TowerControl } from './towerControl.js';
 import { getUserData, sendEvent } from './socket.js';
 import { drawGrid } from './grid.js';
 import { drawGridAndPath, generatePath } from './path.js';
+import { initModal, showModal } from './modals/gameOverModal.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -281,27 +282,27 @@ async function gameLoop(frameTime) {
 			continue;
 		}
 
-    if (monster.hp > 0) {
-      const isDestroyed = monster.move(base);
-      if (isDestroyed) {
-        const testRound = 1;
-        /* 게임 오버 */
-        // 게임 종료 시 서버로 gameOver 이벤트 전송
-        const response = await sendEvent(3, { currentRound: testRound /*currentRound*/ });
-        //const { message, userName, highScore } = response;
-        //showModal(message, userName, highScore/*, currentRound*/);
+		if (monster.hp > 0) {
+			const isDestroyed = monster.move(base);
+			if (isDestroyed) {
+				const testRound = 1;
+				/* 게임 오버 */
+				// 게임 종료 시 서버로 gameOver 이벤트 전송
+				const response = await sendEvent(3, { currentRound: testRound /*currentRound*/ });
+				//const { message, userName, highScore } = response;
+				//showModal(message, userName, highScore/*, currentRound*/);
 
-        /* 테스트용 */
-        showModal("테스트 기록!", "테스트입니다", 1500, 1200);
-        //gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
-      }
-      monster.draw(ctx);
-    } else {
-      /* 몬스터가 죽었을 때 */
-      monster.dead();
-      monsters.splice(i, 1);
-    }
-  }
+				/* 테스트용 */
+				showModal('테스트 기록!', '테스트입니다', 1500, 1200);
+				//gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
+			}
+			monster.draw(ctx);
+		} else {
+			/* 몬스터가 죽었을 때 */
+			monster.dead();
+			monsters.splice(i, 1);
+		}
+	}
 
 	// towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
 	towerControl.sortTowers();
@@ -319,7 +320,6 @@ async function gameLoop(frameTime) {
 				// 몬스터가 있는 그리드의 좌표 구하기
 
 				tower.attack(monster);
-				
 
 				if (monster.hp <= 0) {
 					monster.dead();
@@ -461,9 +461,9 @@ async function gameLoop(frameTime) {
 }
 
 async function initGame() {
-  if (isInitGame) {
-    return; // 이미 초기화된 경우 방지
-  }
+	if (isInitGame) {
+		return; // 이미 초기화된 경우 방지
+	}
 
 	console.log('monsterPath: ', path);
 
