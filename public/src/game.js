@@ -5,14 +5,27 @@ import monsterData from '../assets/monster.json' with { type: 'json' };
 import monsterUnlockData from '../assets/monster_unlock.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
 import { getUserData, sendEvent } from './socket.js';
-import { initModal, showModal } from './modals/gameOverModal.js';
+import { drawGrid } from './grid.js';
+import { drawGridAndPath, generatePath } from './path.js';
+import { } from './modals/gameOverModal.js'
+
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const cellSize = { WIDTH: 280 / 2.5, HEIGHT: 320 / 2.5 };
+
+const startPoint = { x: 0, y: 0 };
+const endPoint = { x: 16, y: 4 };
+const path = generatePath(startPoint, endPoint);
 
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
 let baseHp = 10; // 기지 체력
+
+// 시간 변수
+let deltaTime = 0;
+let lastFrameTime = 0;
+export let accumulatedTime = 0;
 
 // 타워 관련 변수
 let towerCost; // 타워 구입 비용
@@ -43,15 +56,15 @@ const MONSTER_UNLOCK_CONFIG = monsterUnlockData.data;
 
 // 경로를 저장할 배열
 let paths = [];
+// 몬스터의 죽음을 기록할 배열. 라운드마다 보네주고 초기화.
+const daethSheets = [];
 
 // 이미지 로딩 파트
 const backgroundImage = new Image();
 backgroundImage.src = './images/bg.webp';
 
 const towerImages = TOWER_CONFIG.map((tower) => {
-	const image = new Image();
-	image.src = tower.image;
-	return { image, id: tower.id };
+	return { imageSet: tower.imageSet, id: tower.id };
 });
 
 const baseImage = new Image();
@@ -68,7 +81,7 @@ const maxRage = 20;
 let gageBarWidth = maxRage * gageBarWidthCoeff;
 
 const gageBar = {
-	x: 300,
+	x: 20,
 	y: 20,
 	maxWidth: maxRage * gageBarWidthCoeff,
 	width: maxRage * gageBarWidthCoeff,
@@ -109,40 +122,53 @@ function processQueue() {
 
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
-function generateRandomMonsterPath() {
-	//몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
-	const path = [];
-	let currentX = 0;
-	let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
+// function generateRandomMonsterPath() {
+// 	//몬스터 경로이동 함수. 경로를 만드는것. 이걸 정하고 나중에 길 생성하는것.
+// 	const path = [];
+// 	let currentX = 0;
+// 	let currentY = Math.floor(Math.random() * 21) + 400; // 400 ~ 420 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
 
-	path.push({ x: currentX, y: currentY });
+// 	path.push({ x: currentX, y: currentY });
 
-	while (currentX < 1800) {
-		// 마지막 x가 1600이 될 때까지 진행
-		currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
-		if (currentX > 1800) {
-			currentX = 1800; // 마지막 x는 1600
-		}
+// 	while (currentX < 1800) {
+// 		// 마지막 x가 1600이 될 때까지 진행
+// 		currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
+// 		if (currentX > 1800) {
+// 			currentX = 1800; // 마지막 x는 1600
+// 		}
 
-		currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
-		// y 좌표에 대한 clamp 처리
-		if (currentY < 100) {
-			currentY = 100;
-		}
-		if (currentY > 900) {
-			currentY = 900;
-		}
+// 		currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
+// 		// y 좌표에 대한 clamp 처리
+// 		if (currentY < 100) {
+// 			currentY = 100;
+// 		}
+// 		if (currentY > 900) {
+// 			currentY = 900;
+// 		}
 
-		path.push({ x: currentX, y: currentY });
+// 		path.push({ x: currentX, y: currentY });
+// 	}
+
+// 	// 마지막 경로의 y를 시작 y와 동일하게 설정
+// 	path[path.length - 1].y = path[0].y;
+
+// 	// 경로 정렬 (x 기준으로 오름차순 정렬)
+// 	path.sort((a, b) => a.x - b.x);
+
+// 	return path;
+function setMonsterPathFromGeneratedPath() {
+	// generatePath 결과를 기반으로 몬스터 경로 설정
+	const generatedPath = path;
+	if (!generatedPath || generatedPath.length === 0) {
+		console.error('Path generation failed or empty.');
+		return [];
 	}
 
-	// 마지막 경로의 y를 시작 y와 동일하게 설정
-	path[path.length - 1].y = path[0].y;
-
-	// 경로 정렬 (x 기준으로 오름차순 정렬)
-	path.sort((a, b) => a.x - b.x);
-
-	return path;
+	// 캔버스 좌표로 변환
+	return generatedPath.map((point) => ({
+		x: point.x * cellSize.WIDTH,
+		y: point.y * cellSize.HEIGHT,
+	}));
 }
 
 function initMap() {
@@ -191,9 +217,13 @@ function drawRotatedImage(image, x, y, width, height, angle) {
 
 function placeBase() {
 	//플레이어 베이스를 만드는 함수.
-	const lastPoint = monsterPath[monsterPath.length - 1];
-	base = new Base(lastPoint.x, lastPoint.y, baseHp);
-	base.draw(ctx, baseImage);
+	const lastPoint = path[path.length - 1];
+	if (lastPoint) {
+		base = new Base(lastPoint.x * cellSize.WIDTH, lastPoint.y * cellSize.HEIGHT, baseHp);
+		base.draw(ctx, baseImage);
+	} else {
+		console.log('path is not defined');
+	}
 }
 
 // 스테이지를 서버로 전달
@@ -220,7 +250,7 @@ export function spawnMonster() {
 
 let previousTime = null;
 
-async function gameLoop() {
+async function gameLoop(frameTime) {
 	const currentTime = performance.now();
 	const deltaTime = currentTime - previousTime;
 	previousTime = currentTime;
@@ -230,9 +260,7 @@ async function gameLoop() {
 	}
 
 	//게임 반복.
-	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
-	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
-	drawPath(monsterPath); // 경로 다시 그리기
+	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	ctx.font = '40px Times New Roman';
 	ctx.strokeStyle = '#ffff11';
@@ -248,6 +276,19 @@ async function gameLoop() {
 	ctx.fillText(`골드: ${userGold}`, 100, 150); // 골드 표시
 	ctx.fillStyle = 'black';
 	ctx.fillText(`현재 레벨: ${monsterLevel}`, 100, 200); // 최고 기록 표시
+	// 게임 시간 설정
+	// frameTime - lastFrameTime : 1프레임당 걸리는 시간(밀리초)
+	// ((frameTime - lastFrameTime) / 1000): 1프레임당 걸린 시간을 초 단위로 변환(처음 시작할 땐 0으로 설정)
+	deltaTime = (frameTime - lastFrameTime) / 1000 || 0;
+	// 마지막으로 기록된 frameTime(직전 frameTime)
+	lastFrameTime = frameTime;
+	// 총 누적 시간
+	accumulatedTime += deltaTime;
+
+	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
+	// // 그리드 생성 및 호출
+	drawGridAndPath(ctx, cellSize, path);
+	// drawGrid(ctx, cellSize);
 
 	// 몬스터 그리기
 	for (let i = monsters.length - 1; i >= 0; i--) {
@@ -293,10 +334,15 @@ async function gameLoop() {
 				Math.pow(tower.x - monster.x, 2) + Math.pow(tower.y - monster.y, 2),
 			);
 			if (distance < tower.range) {
-				//여기서 뭔갈 해야함.(몬스터 뭐 스택 올리는거나. 그런거.)
+				// 몬스터가 있는 그리드의 좌표 구하기
+
 				tower.attack(monster);
+				
+
 				if (monster.hp <= 0) {
 					monster.dead();
+					//daethSheets.push({killer:tower:{x:tower.x,y:tower.y}, daethEntity:monster, timestamp:Date.now()});
+					//일단 여기서 넣는데, 죽인놈(타워,라운드,베이스중 하나.타워라면, 이곳에 위치정보들어가기.),죽인몬스터(id,hp,speed,gold,timestemp),죽인시간 넣어서 보네기.
 					score += monsterLevel;
 					userGold += 10 * monsterLevel;
 
@@ -409,6 +455,19 @@ async function gameLoop() {
 	// 인벤토리 그리기
 	towerControl.drawqueue(ctx, canvas, monsterLevel);
 
+	// 유저 UI창
+	// ctx.fillStyle = 'white';
+	// ctx.fillRect(canvas.width - 250, canvas.height - 180, 200, 100);
+	ctx.font = '25px Times New Roman';
+	ctx.fillStyle = '#074799';
+	ctx.fillText(`최고 기록: ${highScore}`, canvas.width - 250, canvas.height - 30); // 최고 기록 표시
+	ctx.fillStyle = 'white';
+	ctx.fillText(`점수: ${score}`, canvas.width - 250, canvas.height - 80); // 현재 스코어 표시
+	ctx.fillStyle = 'yellow';
+	ctx.fillText(`골드: ${userGold}`, canvas.width - 250, canvas.height - 110); // 골드 표시
+	ctx.fillStyle = 'black';
+	ctx.fillText(`현재 레벨: ${monsterLevel}`, canvas.width - 250, canvas.height - 160); // 최고 기록 표시
+
 	// 피버 게이지바 그리기
 	gageBar.drawBG();
 	gageBar.draw();
@@ -424,15 +483,23 @@ async function initGame() {
 		return; // 이미 초기화된 경우 방지
 	}
 
+	console.log('monsterPath: ', path);
+
 	isInitGame = true;
 	userGold = 800; // 초기 골드 설정
 	score = 0;
 	monsterLevel = 1;
 	//monsterSpawnInterval = 2000;
+  
+	//monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
+	monsterPath = setMonsterPathFromGeneratedPath();
+	//await initModal();
 
-	monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
-
-	await initModal(); // 게임오버 모달창 초기 로드
+	if (monsterPath.length === 0) {
+		console.error('monsterPath is not defined');
+		return;
+	}
+  
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
 	// placeInitialTowers(); // 초기 타워 배치
 	placeBase(); // 기지 배치
@@ -462,45 +529,42 @@ Promise.all([
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
+	// 타워 설치 중이 아니라면 return false
 	if (!isPlacingTower || !previewTower) {
 		return false;
 	}
 
-	const towerWidth = previewTower ? previewTower.width : 0;
-	const towerHeight = previewTower ? previewTower.height : 0;
+	// 몬스터 공격로에 설치하려고 하면 return false
+	const isOnPath = path.some((pathCell) => pathCell.x === x && pathCell.y === y);
+	previewTower.isInvalidPlacement = isOnPath;
+	if (previewTower.isInvalidPlacement) {
+		console.log('Cannot place tower: on path.');
+		return false;
+	}
 
-	const newTowerCenterX = x + towerWidth / 2;
-	const newTowerCenterY = y + towerHeight / 2;
-
-	for (const tower of towerControl.towers) {
-		if (Math.abs(tower.x - x) < 1 && Math.abs(tower.y - y) < 1) {
-			tower.isInvalidPlacement = true;
-			console.log('Cannot place tower: duplicate position.');
-
-			return false;
-		}
-
-		const towerCenterX = tower.x + tower.width / 2;
-		const towerCenterY = tower.y + tower.height / 2;
-
-		const distance = Math.sqrt(
-			Math.pow(towerCenterX - newTowerCenterX, 2) + Math.pow(towerCenterY - newTowerCenterY, 2),
-		).toFixed(2); // 소수점 둘째 자리까지 반올림
-
-		console.log('Distance between towers:', distance);
-
-		// 두 타워의 중심 간 거리가 타워 너비 이상이어야 설치 가능
-		if (distance < 250) {
-			tower.isInvalidPlacement = true;
-			console.log('Cannot place tower: overlaps with another tower.');
-
-			return false;
-		}
+	// 이미 타워가 설치된 곳에 설치하려고 하면 return false
+	const isOnExistingTower = towerControl.towers.some((tower) => {
+		const towerCellX = Math.floor(tower.x / cellSize.WIDTH);
+		const towerCellY = Math.floor(tower.y / cellSize.HEIGHT);
+		return towerCellX === x && towerCellY === y;
+	});
+	previewTower.isInvalidPlacement = isOnExistingTower;
+	if (previewTower.isInvalidPlacement) {
+		console.log('Cannot place tower: position occupied by another tower.');
+		return false;
 	}
 
 	// 경계 확인
+	const towerWidth = previewTower.width;
+	const towerHeight = previewTower.height;
+	const cellWidth = canvas.width / cellSize.WIDTH;
+	const cellHeight = canvas.height / cellSize.HEIGHT;
+
 	const withinBounds =
-		x >= 0 && y >= 0 && x + towerWidth <= canvas.width && y + towerHeight <= canvas.height;
+		x >= 0 &&
+		y >= 0 &&
+		x + towerWidth / cellWidth <= cellSize.WIDTH &&
+		y + towerHeight / cellHeight <= cellSize.HEIGHT;
 
 	if (!withinBounds) {
 		console.log('Cannot place tower: out of bounds.');
@@ -531,10 +595,15 @@ canvas.addEventListener('click', (event) => {
 		const mouseX = event.clientX - rect.left;
 		const mouseY = event.clientY - rect.top;
 
-		if (canPlaceTower(mouseX, mouseY)) {
-			// 타워 설치
-			previewTower.x = mouseX - previewTower.width / 2;
-			previewTower.y = mouseY - previewTower.height / 2;
+		// 클릭된 셀의 행과 열 계산
+		const cellX = Math.floor(mouseX / cellSize.WIDTH);
+		const cellY = Math.floor(mouseY / cellSize.HEIGHT);
+		console.log(`클릭된 셀: (${cellX}, ${cellY})`);
+
+		// 타워 설치가 가능할 때
+		if (canPlaceTower(cellX, cellY)) {
+			previewTower.x = cellSize.WIDTH * cellX;
+			previewTower.y = cellSize.HEIGHT * cellY;
 			towerControl.towers.push(previewTower);
 			//타워 구매 - sendEvent
 			queueEvent(5, {
