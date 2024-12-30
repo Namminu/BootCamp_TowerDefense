@@ -1,4 +1,4 @@
-import { spawnMonster } from './game.js';
+import { gameStart, spawnMonster } from './game.js';
 
 let somewhere = localStorage.getItem('authToken');
 

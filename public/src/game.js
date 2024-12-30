@@ -511,9 +511,11 @@ async function initGame() {
 	gameLoop(); // 게임 루프 시작
 } //이게 시작이네.
 
-if (!isInitGame) {
-	// queueEvent(2, { timestamp: Date.now() });
-	initGame();
+export function gameStart() {
+	if (!isInitGame) {
+		// queueEvent(2, { timestamp: Date.now() });
+		initGame();
+	}
 }
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
