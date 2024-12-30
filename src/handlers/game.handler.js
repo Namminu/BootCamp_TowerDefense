@@ -12,6 +12,7 @@ import {
 	getUserData,
 	setUserGold,
 	setUserRound,
+	setUserData,
 } from '../models/userData.model.js';
 import { getRoundInfo } from '../models/roundInfo.model.js';
 

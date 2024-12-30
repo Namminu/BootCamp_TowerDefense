@@ -22,3 +22,7 @@ export const setUserRound = (uuid, round, timestamp) => {
 export const setUserGold = (uuid, gold) => {
 	userData[uuid].gold = gold;
 };
+
+export const setUserData = (userId, round, timestamp, gold) => {
+	// userData 설정 로직
+};
