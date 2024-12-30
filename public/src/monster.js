@@ -38,6 +38,12 @@ export class Monster {
 
 		this.damageTexts = []; // 데미지 텍스트 배열
 
+		// 유니크 ID 생성 (라운드번호_몬스터번호_타임스탬프)
+		this.uniqueId = `${level}_${this.monsterNumber}_${Date.now()}`;
+
+		// 생성 시간 기록
+		this.createdAt = Date.now();
+
 		// 따로 정보를 보내줘야 한다.
 		// class round
 		// Gold
@@ -87,7 +93,11 @@ export class Monster {
 		// HP 텍스트 그리기
 		ctx.font = '12px Arial';
 		ctx.fillStyle = 'white';
-		ctx.fillText(`Lv. ${this.level} ${Math.floor(this.hp)}/${Math.floor(this.maxHp)}`, this.x + 5, this.y - 5);
+		ctx.fillText(
+			`Lv. ${this.level} ${Math.floor(this.hp)}/${Math.floor(this.maxHp)}`,
+			this.x + 5,
+			this.y - 5,
+		);
 
 		// 데미지 텍스트 그리기
 		const currentTime = performance.now();
