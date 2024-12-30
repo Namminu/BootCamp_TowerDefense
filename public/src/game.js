@@ -272,16 +272,13 @@ async function gameLoop(frameTime) {
 		if (monster.hp > 0) {
 			const isDestroyed = monster.move(base);
 			if (isDestroyed) {
-				const testRound = 1;
 				/* 게임 오버 */
-				// 게임 종료 시 서버로 gameOver 이벤트 전송
-				const response = await sendEvent(3, { currentRound: testRound /*currentRound*/ });
-				//const { message, userName, highScore } = response;
-				//showModal(message, userName, highScore/*, currentRound*/);
+				const response = await sendEvent(3, { currentRound: round, timestamp: currentTime });
+				const { message, userName, highScore, time } = response;
+				showModal(message, userName, highScore, 1, time);
 
-				/* 테스트용 */
-				showModal('테스트 기록!', '테스트입니다', 1500, 1200);
-				//gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
+				// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기
+				stopGame();
 			}
 			monster.draw(ctx);
 		} else {
