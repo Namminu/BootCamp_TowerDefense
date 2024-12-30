@@ -385,10 +385,11 @@ async function gameLoop(frameTime) {
 			userGold >= tower.cost * 1.2 &&
 			towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2
 		) {
-			const upgradePrice = tower.upgradeTower(tower, userGold);
+			const upgradePrice = tower.upgradeTower(tower, userGold); //업그레이드.
 			userGold -= upgradePrice; // 업그레이드 비용 차감
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
+			towerControl.getTowerqueue(monsterLevel);
 		} else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
 			console.log('Not enough gold to upgrade the tower.');
 			printMessage = true;
@@ -458,6 +459,10 @@ async function gameLoop(frameTime) {
 	//base.selfHeal(currentTime);
 
 	// 인벤토리 그리기
+	if (towerControl.towerqueue.length < 5) {
+        await towerControl.getTowerqueue(monsterLevel);
+    }
+
 	towerControl.drawqueue(ctx, canvas, monsterLevel);
 
 	// 유저 UI창
@@ -643,7 +648,7 @@ canvas.addEventListener('mousemove', (event) => {
 });
 
 // 타워 미리보기 상태일 때 마우스 클릭 이벤트 처리
-canvas.addEventListener('click', (event) => {
+canvas.addEventListener('click', async (event) => {
 	if (isPlacingTower && previewTower) {
 		const rect = canvas.getBoundingClientRect();
 		const mouseX = event.clientX - rect.left;
@@ -659,14 +664,18 @@ canvas.addEventListener('click', (event) => {
 			previewTower.x = cellSize.WIDTH * cellX;
 			previewTower.y = cellSize.HEIGHT * cellY;
 			towerControl.towers.push(previewTower);
+			
+
 			//타워 구매 - sendEvent
-			queueEvent(5, {
+			await sendEvent(5, {
 				type: previewTower.type,
 				x: previewTower.x,
 				y: previewTower.y,
 				timestamp: Date.now(),
 				index: towerIndex,
 			});
+
+			towerControl.getTowerqueue(monsterLevel);
 			console.log('Tower placed at:', previewTower.x, previewTower.y);
 			console.log('All towers:', towerControl.towers);
 
