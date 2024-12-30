@@ -251,7 +251,7 @@ export const killTower = (userId, daethSheets) => {
 				adjustedCooldown = tower.cooldown / 2;
 			}
 
-			if(timeDifference < adjustedCooldown*5){ //8.3 언저리긴 함. 정확하게 하려면 8배 하기.
+			if(timeDifference < adjustedCooldown*3){ //8.3 언저리긴 함. 정확하게 하려면 8배 하기.
 				console.log("timeDifference",timeDifference);
 				console.log("tower.cooldown",tower.cooldown*5);
 				return false;
