@@ -25,7 +25,7 @@ export const handleConnection = (socket, uuid) => {
 	gameStart(uuid, socket);
 
 	// 현재 시간으로 라운드 시작
-	const response = moveRoundHandler(uuid, { currentRound: 0, timestamp: Date.now() })
+	const response = moveRoundHandler(uuid, { currentRound: 0, timestamp: Date.now() });
 	const initRoundInfo = response.nextRoundInfo;
 	const unlockMonsters = response.unlockMonsters;
 
@@ -46,6 +46,7 @@ export const handlerEvent = async (io, socket, data) => {
 	}
 
 	const response = await handler(userId, data.payload, socket);
+	console.log('handlerId : ', data.handlerId);
 	console.log('response : ', response);
 
 	if (response.broadcast) {

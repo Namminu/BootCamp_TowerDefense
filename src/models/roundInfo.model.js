@@ -7,7 +7,7 @@ const default_duration = 3000;
 const default_count = 5;
 
 // 기본 라운드 진행시간
-const default_time = 10000;
+const default_time = 20000;
 
 /*
 {
@@ -24,7 +24,7 @@ const default_time = 10000;
 export const createRoundInfo = (id) => {
 	const round = id;
 	roundInfo[round] = {
-		round : id,
+		round: id,
 		duration: default_duration - Math.floor(round / 10),
 		count: default_count,
 		time: default_time,

@@ -2,12 +2,19 @@ import { getGameAssets } from '../init/assets.js';
 import { updateHighScore } from '../models/rank.model.js';
 import {
 	createTower,
+	createTowerAttackSheet,
 	createTowerQueue,
 	getTower,
 	getTowerQueue,
 	setTowerQueue,
 } from '../models/tower.model.js';
-import { createUserData, getUserData, setUserGold, setUserRound } from '../models/userData.model.js';
+import {
+	createUserData,
+	getUserData,
+	setUserGold,
+	setUserRound,
+	setUserData,
+} from '../models/userData.model.js';
 import { getRoundInfo } from '../models/roundInfo.model.js';
 
 export const gameStart = (userId, payload, socket) => {
@@ -17,11 +24,10 @@ export const gameStart = (userId, payload, socket) => {
 	createUserData(userId);
 	createTower(userId);
 	createTowerQueue(userId);
-	setUserRound(userId, 1, Date.now());
-	setUserGold(userId, 1000);
+	createTowerAttackSheet(userId);
+	setUserData(userId, 1, Date.now(), 1000);
 	setTowerQueue(userId, tower);
-	const user = getUserData(userId);
-	console.log("user", user);
+	
 
 	return { status: 'success' };
 };
@@ -48,7 +54,21 @@ export const gameOver = async (userId, payload, socket) => {
 		message: result.updated ? '최고 기록 갱신!' : '게임 오버',
 		userName: result.userName,
 		highScore: result.currentHighScore,
-		time: result.elapsedTime
+		time: result.elapsedTime,
 	};
 	return data;
-}
+};
+
+export const updateUserGold = (userId, payload, socket) => {
+	if (!userId || !payload) return { status: 'fail', message: '필수 값이 없습니다.' };
+
+	const userData = getUserData(userId);
+	const newGold = userData.gold + payload.gold;
+	setUserGold(userId, newGold);
+
+	console.log('서버에 들어온 골드', payload.gold);
+
+	console.log('서버 userData: ', userData);
+
+	return { status: 'success', message: newGold };
+};

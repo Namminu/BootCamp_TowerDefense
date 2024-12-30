@@ -1,4 +1,5 @@
 import { queueEvent, towerControl, accumulatedTime } from './game.js';
+import { sendEvent } from './socket.js';
 
 export class Tower {
 	constructor(ctx, x, y, damage, range, cooldown, cost, imageSet, type, id, level = 1) {
@@ -78,7 +79,7 @@ export class Tower {
 
 		if (this.isAttacking) {
 			// 공격 상태일 때 애니메이션 처리
-			console.log(accumulatedTime);
+			// console.log(accumulatedTime);
 			const frameIndex = Math.floor(accumulatedTime) % 2;
 			currentImage = this.imageSet.attacking[upgradeCount][frameIndex];
 		} else {
@@ -119,13 +120,17 @@ export class Tower {
 		if (this.cooldown <= 0) {
 			this.isAttacking = true;
 			monster.hp -= this.damage;
+			// 데미지 텍스트 추가
+			monster.addDamageText(this.damage);
+
 			this.cooldown = this.originalCooldown; // 3초 쿨타임 (초당 60프레임)
 			this.beamDuration = 30; // 광선 지속 시간 (0.5초)
 			this.target = monster; // 광선의 목표 설정
-
+			sendEvent(14,{atteckerX: this.x ,atteckerY: this.y , hitEntity: monster.uniqueId, x : monster.x, y: monster.y, timestemp : Date.now(), feverTriggered : this.feverMode});
 			if (this.feverMode) {
 				this.cooldown = this.originalCooldown / 2;
 			}
+			
 		}
 	}
 
@@ -161,10 +166,12 @@ export class Tower {
 
 		this.ctx.fillStyle = '#FACF5A';
 		this.ctx.font = 'bold 14px Arial';
+		this.ctx.textAlign = 'left';
+
 		this.ctx.fillText(`타워 ID: ${this.id}`, infoX + 10, infoY + 20);
-		this.ctx.fillText(`Level: ${Math.floor(this.level)}`, infoX + 10, infoY + 80);
-		this.ctx.fillText(`Damage: ${Math.floor(this.damage)}`, infoX + 10, infoY + 40);
-		this.ctx.fillText(`Range: ${Math.floor(this.range)}`, infoX + 10, infoY + 60);
+		this.ctx.fillText(`Level: ${Math.floor(this.level)}`, infoX + 10, infoY + 40);
+		this.ctx.fillText(`Damage: ${Math.floor(this.damage)}`, infoX + 10, infoY + 60);
+		this.ctx.fillText(`Range: ${Math.floor(this.range)}`, infoX + 10, infoY + 80);
 
 		// 업그레이드 버튼
 		this.ctx.fillStyle = 'rgb(255, 255, 255)';
@@ -188,7 +195,7 @@ export class Tower {
 			return 0; // 골드 부족
 		}
 
-		queueEvent(7,{ x:this.x, y:this.y, type:this.type, level:this.level+1});
+		sendEvent(7, { x: this.x, y: this.y, type: this.type, level: this.level + 1 });
 		tower.damage *= 1.2; // 공격력 1.2배 증가
 		tower.originalDamage *= 1.2; // 공격력 1.2배 증가
 		// tower.range *= 1.5; // 사정거리 1.2배 증가
@@ -198,12 +205,6 @@ export class Tower {
 		tower.level += 1; // 타워 레벨 증가
 
 		// 업그레이드에 사용된 포탑 2개 제거
-		//for (let i = 0; i < 2; i++) {
-		//	towerControl.towerqueue.splice(
-		//		towerControl.towerqueue.findIndex((t) => t.type === tower.type),
-		//		1,
-		//	);
-		//}
 
 		return upgradeCost;
 	}
