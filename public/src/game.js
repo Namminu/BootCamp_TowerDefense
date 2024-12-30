@@ -195,11 +195,15 @@ let isRoundExpired = false;
 
 async function gameLoop(frameTime) {
 	if (!isGameRun) return;
+	// 캔버스 새로 그리기
+	ctx.textAlign = 'left';
+	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
+	setMonsterPathFromGeneratedPath(); // 경로 다시 그리기
+
 	if (previousTime === null) {
 		previousTime = Date.now();
 		requestAnimationFrame(gameLoop);
 	}
-	ctx.textAlign = 'left';
 	const currentTime = Date.now();
 	const deltaTime2 = currentTime - previousTime;
 	previousTime = currentTime;
@@ -210,8 +214,6 @@ async function gameLoop(frameTime) {
 			sendEvent(11, { currentRound: round, timestamp: Date.now() });
 		}
 	}
-	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
-	setMonsterPathFromGeneratedPath(); // 경로 다시 그리기
 	//게임 반복.
 	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -440,7 +442,7 @@ async function gameLoop(frameTime) {
 	gameLoopId = requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-export async function initGame(receivedUserData) {
+export async function initGame(receivedUserData, getReset = false) {
 	if ((isInitGame && !getReset) || !receivedUserData) {
 		return; // 이미 초기화된 경우 방지
 	}
@@ -477,13 +479,6 @@ export async function initGame(receivedUserData) {
 
 	await initModal(); // 게임오버 모달창 초기 로드
 } //이게 시작이네.
-
-export function gameStart() {
-	if (!isInitGame) {
-		// queueEvent(2, { timestamp: Date.now() });
-		initGame();
-	}
-}
 
 // 게임 리셋
 export function resetGame() {

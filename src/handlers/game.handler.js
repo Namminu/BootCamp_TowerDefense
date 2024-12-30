@@ -68,4 +68,6 @@ export const updateUserGold = (userId, payload, socket) => {
 	console.log('서버에 들어온 골드', payload.gold);
 
 	console.log('서버 userData: ', userData);
+
+	return { status: 'success', message: newGold };
 };
