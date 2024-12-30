@@ -261,7 +261,7 @@ export function spawnMonster() {
 	// monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
-async function gameLoop() {
+async function gameLoop(frameTime) {
 	if (!isGameRun) return;
 
 	const currentTime = Date.now();
@@ -528,7 +528,7 @@ export function resetGame() {
 	feverTriggered = false;
 
 	// 몬스터 스폰 초기화
-	sendEvent(14, {});
+	sendEvent(12, {});
 	eventQueue.length = 0;
 
 	// 캔버스 초기화
