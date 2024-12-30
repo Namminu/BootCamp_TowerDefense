@@ -4,16 +4,21 @@
         <style>
             /* 모달 콘텐츠 스타일 */
             .modal-content {
-                position: fixed;
-                width: 300px;
-                margin: auto;
+                display: none; /* 기본적으로 숨김 */
+                position: fixed; /* 화면 고정 위치 */
+                top: 50%; /* 화면 높이의 50% */
+                left: 50%; /* 화면 너비의 50% */
+                transform: translate(-50%, -50%); /* 가운데 정렬 */
+                z-index: 1000; /* 다른 요소 위에 표시 */
+                background-color: #FFD700; /* 배경색 */
                 padding: 20px;
-                background-color: #FFD700; /* 배경색: 노란색 */
                 border-radius: 10px;
                 text-align: center;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
             }
-
+            .modal-content.show{
+                display: flex;
+            }
             /* 닫기 버튼 스타일 */
             .close {
                 position: absolute;

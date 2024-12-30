@@ -6,6 +6,10 @@ export async function loadModal(modalFile) {
 
         const modalContainer = document.createElement('div');
         modalContainer.innerHTML = modalHtml;
+
+        const modalElement = modalContainer.firstElementChild;
+        modalElement.style.display = 'none';
+
         document.body.appendChild(modalContainer);
     } catch (err) {
         console.error(err);
@@ -25,3 +29,16 @@ export function showRegisterModal() {
     modal.style.display = 'flex';
     modal.classList.add('show');
 }
+
+export function setOffModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+}
+
+// document.getElementById('closeLogin').addEventListener('click', () => {
+//     setOffModal('loginModal');
+// });
+// document.getElementById('closeRegister').addEventListener('click', () => {
+//     setOffModal('registerModal');
+// });

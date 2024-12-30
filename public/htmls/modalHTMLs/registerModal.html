@@ -4,6 +4,7 @@
         <style>
             /* 모달 콘텐츠 스타일 */
             .modal-content {
+                display:none;
                 width: 300px;
                 margin: auto;
                 padding: 20px;
@@ -11,8 +12,15 @@
                 border-radius: 10px;
                 text-align: center;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                opacity: 0; /* 기본적으로 투명 */
+                transform: translate(-50%, -45%); /* 약간 아래로 위치 */
+                transition: opacity 0.3s ease, transform 0.3s ease;
             }
-
+            .modal-content.show{
+                display: flex;
+                opacity : 1;
+                pointer-events: auto;
+            }
             /* 닫기 버튼 스타일 */
             .close {
                 position: absolute;
