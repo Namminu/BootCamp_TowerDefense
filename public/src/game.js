@@ -261,14 +261,28 @@ export function spawnMonster() {
 	// monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
+let previousTime = null;
+let isRoundExpired = false;
 async function gameLoop(frameTime) {
 	if (!isGameRun) return;
-
+	if (previousTime === null) {
+		previousTime = Date.now();
+		requestAnimationFrame(gameLoop);
+	}
 	const currentTime = Date.now();
-	// 게임 반복.
-	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
+	const deltaTime2 = currentTime - previousTime;
+	previousTime = currentTime;
+	if (!isRoundExpired) {
+		round_timer -= deltaTime2;
+		if (round_timer <= 0) {
+			isRoundExpired = true;
+			sendEvent(11, { currentRound: round, timestamp: Date.now() });
+		}
+	}
 	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
 	drawPath(monsterPath); // 경로 다시 그리기
+	//게임 반복.
+	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	// 게임 시간 설정
 	// frameTime - lastFrameTime : 1프레임당 걸리는 시간(밀리초)
@@ -464,6 +478,13 @@ async function gameLoop(frameTime) {
 	gageBar.drawBG();
 	gageBar.draw();
 
+	ctx.font = '40px Times New Roman';
+	ctx.strokeStyle = '#000000';
+	ctx.fillStyle = '#ffffff';
+	ctx.textAlign = "center";
+	ctx.strokeText(`${round}라운드     남은 시간: ${Math.round(round_timer / 1000)}`, canvas.width / 2, 50);
+	ctx.fillText(`${round}라운드     남은 시간: ${Math.round(round_timer / 1000)}`, canvas.width / 2, 50);
+
 	// TO DO : 피버타임 때?
 	// 캔버스 한 번 지워주기
 
@@ -504,9 +525,11 @@ async function initGame(getReset = false) {
 	await initModal();  // 게임오버 모달창 초기 로드
 } //이게 시작이네.
 
-if (!isInitGame) {
-	// queueEvent(2, { timestamp: Date.now() });
-	initGame();
+export function gameStart() {
+	if (!isInitGame) {
+		// queueEvent(2, { timestamp: Date.now() });
+		initGame();
+	}
 }
 
 // 게임 리셋
@@ -814,3 +837,20 @@ canvas.addEventListener('click', (event) => {
 		});
 	}
 });
+
+let round = 0;
+let spawn_count = 0;
+let round_timer = 0;
+let roundUnlock = null;
+
+export function setRound(roundInfo, unlockMonsters) {
+	console.log('라운드 세팅');
+	console.log(roundInfo);
+
+	round = roundInfo.round;
+	monsterSpawnInterval = roundInfo.duration;
+	spawn_count = roundInfo.count;
+	round_timer = roundInfo.time;
+	roundUnlock = unlockMonsters;
+	isRoundExpired = false;
+}
