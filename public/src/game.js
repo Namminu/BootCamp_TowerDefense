@@ -6,7 +6,6 @@ import monsterUnlockData from '../assets/monster_unlock.json' with { type: 'json
 import { TowerControl } from './towerControl.js';
 import { sendEvent } from './socket.js';
 import { initModal, showModal } from './webpages/modals/gameOverModal.js';
-import { drawGrid } from './grid.js';
 import { drawGridAndPath, generatePath } from './path.js';
 // import {} from './modals/gameOverModal.js';
 
@@ -65,18 +64,12 @@ let paths = [];
 const daethSheets = [];
 
 // 이미지 로딩 파트
-const backgroundImage = new Image();
-backgroundImage.src = './images/bg.webp';
-
 const towerImages = TOWER_CONFIG.map((tower) => {
 	return { imageSet: tower.imageSet, id: tower.id };
 });
 
 const baseImage = new Image();
 baseImage.src = './images/base.png';
-
-const pathImage = new Image();
-pathImage.src = './images/path.png';
 
 export const towerControl = new TowerControl(ctx, towerImages);
 
@@ -144,46 +137,8 @@ function setMonsterPathFromGeneratedPath() {
 
 function initMap() {
 	// 배경 이미지 그리기
-	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-	for (let i = 0; i < 3; i++) {
-		paths[i] = drawPath();
-	}
-}
-
-function drawPath() {
-	//경로에 따라 길을 그리는것.
-	const segmentLength = 20; // 몬스터 경로 세그먼트 길이
-	const imageWidth = 60; // 몬스터 경로 이미지 너비
-	const imageHeight = 60; // 몬스터 경로 이미지 높이
-	const gap = 5; // 몬스터 경로 이미지 겹침 방지를 위한 간격
-
-	for (let i = 0; i < monsterPath.length - 1; i++) {
-		const startX = monsterPath[i].x;
-		const startY = monsterPath[i].y;
-		const endX = monsterPath[i + 1].x;
-		const endY = monsterPath[i + 1].y;
-
-		const deltaX = endX - startX;
-		const deltaY = endY - startY;
-		const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY); // 피타고라스 정리로 두 점 사이의 거리를 구함 (유클리드 거리)
-		const angle = Math.atan2(deltaY, deltaX); // 두 점 사이의 각도는 tan-1(y/x)로 구해야 함 (자세한 것은 역삼각함수 참고): 삼각함수는 변의 비율! 역삼각함수는 각도를 구하는 것!
-
-		for (let j = gap; j < distance - gap; j += segmentLength) {
-			// 사실 이거는 삼각함수에 대한 기본적인 이해도가 있으면 충분히 이해하실 수 있습니다.
-			// 자세한 것은 https://thirdspacelearning.com/gcse-maths/geometry-and-measure/sin-cos-tan-graphs/ 참고 부탁해요!
-			const x = startX + Math.cos(angle) * j; // 다음 이미지 x좌표 계산(각도의 코사인 값은 x축 방향의 단위 벡터 * j를 곱하여 경로를 따라 이동한 x축 좌표를 구함)
-			const y = startY + Math.sin(angle) * j; // 다음 이미지 y좌표 계산(각도의 사인 값은 y축 방향의 단위 벡터 * j를 곱하여 경로를 따라 이동한 y축 좌표를 구함)
-			drawRotatedImage(pathImage, x, y, imageWidth, imageHeight, angle);
-		}
-	}
-}
-
-function drawRotatedImage(image, x, y, width, height, angle) {
-	ctx.save();
-	ctx.translate(x + width / 2, y + height / 2);
-	ctx.rotate(angle);
-	ctx.drawImage(image, -width / 2, -height / 2, width, height);
-	ctx.restore();
+	paths = setMonsterPathFromGeneratedPath();
+	drawGridAndPath(ctx, cellSize, paths);
 }
 
 function placeBase() {
@@ -229,8 +184,14 @@ export function spawnMonster() {
 
 let previousTime = null;
 let isRoundExpired = false;
+
 async function gameLoop(frameTime) {
 	if (!isGameRun) return;
+	// 캔버스 새로 그리기
+	ctx.textAlign = 'left';
+	drawGridAndPath(ctx, cellSize, paths);
+	setMonsterPathFromGeneratedPath(); // 경로 다시 그리기
+
 	if (previousTime === null) {
 		previousTime = Date.now();
 		requestAnimationFrame(gameLoop);
@@ -245,8 +206,6 @@ async function gameLoop(frameTime) {
 			sendEvent(11, { currentRound: round, timestamp: Date.now() });
 		}
 	}
-	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
-	drawPath(monsterPath); // 경로 다시 그리기
 	//게임 반복.
 	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -259,7 +218,6 @@ async function gameLoop(frameTime) {
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
 	// // 그리드 생성 및 호출
 	drawGridAndPath(ctx, cellSize, path);
-	// drawGrid(ctx, cellSize);
 
 	// 몬스터 그리기
 	for (let i = monsters.length - 1; i >= 0; i--) {
@@ -275,6 +233,16 @@ async function gameLoop(frameTime) {
 				/* 게임 오버 */
 				const response = await sendEvent(3, { currentRound: round, timestamp: currentTime });
 				const { message, userName, highScore, time } = response;
+				console.log(
+					'message : ',
+					message,
+					'userName : ',
+					userName,
+					'highScore : ',
+					highScore,
+					'time : ',
+					time,
+				);
 				showModal(message, userName, highScore, 1, time);
 
 				// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기
@@ -466,12 +434,12 @@ async function gameLoop(frameTime) {
 	gameLoopId = requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-export async function initGame(receivedUserData) {
-	if (isInitGame || !receivedUserData) {
+export async function initGame(receivedUserData, getReset = false) {
+	if ((isInitGame && !getReset) || !receivedUserData) {
 		return; // 이미 초기화된 경우 방지
 	}
 
-	// console.log('monsterPath: ', path);
+	if (getReset) isInitGame = false; // resetGame으로 강제 초기화
 
 	userData = receivedUserData;
 	isInitGame = true;
@@ -503,13 +471,6 @@ export async function initGame(receivedUserData) {
 
 	await initModal(); // 게임오버 모달창 초기 로드
 } //이게 시작이네.
-
-export function gameStart() {
-	if (!isInitGame) {
-		// queueEvent(2, { timestamp: Date.now() });
-		initGame();
-	}
-}
 
 // 게임 리셋
 export function resetGame() {
@@ -552,10 +513,8 @@ function stopGame() {
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
 Promise.all([
-	new Promise((resolve) => (backgroundImage.onload = resolve)),
 	new Promise((resolve) => (towerImages.onload = resolve)),
 	new Promise((resolve) => (baseImage.onload = resolve)),
-	new Promise((resolve) => (pathImage.onload = resolve)),
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),

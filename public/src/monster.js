@@ -87,7 +87,7 @@ export class Monster {
 		// HP 텍스트 그리기
 		ctx.font = '12px Arial';
 		ctx.fillStyle = 'white';
-		ctx.fillText(`Lv. ${this.level} ${this.hp}/${this.maxHp}`, this.x + 5, this.y - 5);
+		ctx.fillText(`Lv. ${this.level} ${Math.floor(this.hp)}/${Math.floor(this.maxHp)}`, this.x + 5, this.y - 5);
 
 		// 데미지 텍스트 그리기
 		const currentTime = performance.now();

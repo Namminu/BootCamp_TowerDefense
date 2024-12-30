@@ -165,10 +165,12 @@ export class Tower {
 
 		this.ctx.fillStyle = '#FACF5A';
 		this.ctx.font = 'bold 14px Arial';
+		this.ctx.textAlign = 'left';
+
 		this.ctx.fillText(`타워 ID: ${this.id}`, infoX + 10, infoY + 20);
-		this.ctx.fillText(`Level: ${Math.floor(this.level)}`, infoX + 10, infoY + 80);
-		this.ctx.fillText(`Damage: ${Math.floor(this.damage)}`, infoX + 10, infoY + 40);
-		this.ctx.fillText(`Range: ${Math.floor(this.range)}`, infoX + 10, infoY + 60);
+		this.ctx.fillText(`Level: ${Math.floor(this.level)}`, infoX + 10, infoY + 40);
+		this.ctx.fillText(`Damage: ${Math.floor(this.damage)}`, infoX + 10, infoY + 60);
+		this.ctx.fillText(`Range: ${Math.floor(this.range)}`, infoX + 10, infoY + 80);
 
 		// 업그레이드 버튼
 		this.ctx.fillStyle = 'rgb(255, 255, 255)';
@@ -192,7 +194,7 @@ export class Tower {
 			return 0; // 골드 부족
 		}
 
-		queueEvent(7, { x: this.x, y: this.y, type: this.type, level: this.level + 1 });
+		sendEvent(7, { x: this.x, y: this.y, type: this.type, level: this.level + 1 });
 		tower.damage *= 1.2; // 공격력 1.2배 증가
 		tower.originalDamage *= 1.2; // 공격력 1.2배 증가
 		// tower.range *= 1.5; // 사정거리 1.2배 증가
