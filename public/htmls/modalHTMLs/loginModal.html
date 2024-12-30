@@ -4,7 +4,6 @@
         <style>
             /* 모달 콘텐츠 스타일 */
             .modal-content {
-                display: none; /* 기본적으로 숨김 */
                 position: fixed; /* 화면 고정 위치 */
                 top: 50%; /* 화면 높이의 50% */
                 left: 50%; /* 화면 너비의 50% */
@@ -83,12 +82,11 @@
             <span id="closeLogin" class="close">&times;</span>
             <h2>로그인</h2>
             <form>
-                <input type="text" id="username" name="username" placeholder="ID" required>
+                <input type="text" id="userId" name="userId" placeholder="ID" required>
                 <input type="password" id="password" name="password" placeholder="비밀번호" required>
-                <button type="submit">로그인</button>
+                <button type="submit" id="modal_LoginButton">로그인</button>
             </form>
-            <a href="#">아이디가 없으신가요?</a>
+            <a href="#" id="registerLink">아이디가 없으신가요?</a>
         </div>
-        <script src="../../src/webpages/modals/registerAndloginModal.js" defer></script>
     </body>
 </html>

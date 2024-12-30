@@ -1,7 +1,8 @@
+const token = localStorage.getItem('authToken');
 // 모달 HTML 파일 로드
-export async function loadModal(modalFile) {
+export async function loadRegisterModal() {
     try {
-        const response = await fetch(`htmls/modalHTMLs/${modalFile}.html`);
+        const response = await fetch(`htmls/modalHTMLs/registerModal.html`);
         const modalHtml = await response.text();
 
         const modalContainer = document.createElement('div');
@@ -16,13 +17,6 @@ export async function loadModal(modalFile) {
     }
 }
 
-export function showLogInModal() {
-    const modal = document.getElementById('loginModal');
-
-    modal.style.display = 'flex';
-    modal.classList.add('show');
-}
-
 export function showRegisterModal() {
     const modal = document.getElementById('registerModal');
 
@@ -30,15 +24,13 @@ export function showRegisterModal() {
     modal.classList.add('show');
 }
 
-export function setOffModal(modalId) {
-    const modal = document.getElementById(modalId);
+export function setOffRegisterModal() {
+    const modal = document.getElementById('registerModal');
     modal.style.display = 'none';
     modal.classList.remove('show');
 }
 
-// document.getElementById('closeLogin').addEventListener('click', () => {
-//     setOffModal('loginModal');
-// });
+
 // document.getElementById('closeRegister').addEventListener('click', () => {
 //     setOffModal('registerModal');
 // });

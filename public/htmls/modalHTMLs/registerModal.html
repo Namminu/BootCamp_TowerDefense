@@ -4,17 +4,16 @@
         <style>
             /* 모달 콘텐츠 스타일 */
             .modal-content {
-                display:none;
-                width: 300px;
-                margin: auto;
+                position: fixed; /* 화면 고정 위치 */
+                top: 50%; /* 화면 높이의 50% */
+                left: 50%; /* 화면 너비의 50% */
+                transform: translate(-50%, -50%); /* 가운데 정렬 */
+                z-index: 1000; /* 다른 요소 위에 표시 */
+                background-color: #FFD700; /* 배경색 */
                 padding: 20px;
-                background-color: #FFD700; /* 배경색: 노란색 */
                 border-radius: 10px;
                 text-align: center;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                opacity: 0; /* 기본적으로 투명 */
-                transform: translate(-50%, -45%); /* 약간 아래로 위치 */
-                transition: opacity 0.3s ease, transform 0.3s ease;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
             }
             .modal-content.show{
                 display: flex;
@@ -80,6 +79,8 @@
                 <button type="submit">확인</button>
             </form>
         </div>
-        <script src="../../src/webpages/modals/registerAndloginModal.js" defer></script>
+        <script>
+            const token = localStorage.getItem('authToken');
+        </script>
     </body>
 </html>

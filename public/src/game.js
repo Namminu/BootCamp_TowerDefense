@@ -312,7 +312,6 @@ async function gameLoop(frameTime) {
 				/* 게임 오버 */
 				const response = await sendEvent(3, { currentRound: round, timestamp: currentTime });
 				const { message, userName, highScore, time } = response;
-				console.log('message : ', message, 'userName : ', userName, 'highScore : ', highScore, 'time : ', time);
 				showModal(message, userName, highScore, 1, time);
 
 				// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
