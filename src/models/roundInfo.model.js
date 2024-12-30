@@ -7,16 +7,16 @@ const default_duration = 3000;
 const default_count = 5;
 
 // 기본 라운드 진행시간
-const default_time = 60000;
+const default_time = 10000;
 
 /*
 {
-    1 : { duration, count, time },
-    2 : { duration, count, time },
-    3 : { duration, count, time },
-    4 : { duration, count, time },
-    5 : { duration, count, time },
-    6 : { duration, count, time }
+    1 : { round:1, duration, count, time },
+    2 : { round:2, duration, count, time },
+    3 : { round:3, duration, count, time },
+    4 : { round:4, duration, count, time },
+    5 : { round:5, duration, count, time },
+    6 : { round:6, duration, count, time }
 }
 */
 
@@ -24,6 +24,7 @@ const default_time = 60000;
 export const createRoundInfo = (id) => {
 	const level = id;
 	roundInfo[id] = {
+		round: id,
 		duration: default_duration - level / 10,
 		count: default_count + Math.floor(level / 2),
 		time: default_time,

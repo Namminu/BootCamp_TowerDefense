@@ -1,4 +1,4 @@
-import { spawnMonster } from './game.js';
+import { gameStart, setRound, spawnMonster } from './game.js';
 
 let somewhere = localStorage.getItem('authToken');
 
@@ -15,6 +15,8 @@ let gameData = {
 
 socket.on('response', (data) => {
 	console.log('response : ', data);
+  if(data.handlerId===11)
+    setRound(data.nextRoundInfo, data.unlockMonsters);
 });
 
 socket.on('connection', (data) => {
@@ -28,6 +30,10 @@ socket.on('connection', (data) => {
 	if (data.userData) {
 		gameData.userData = data.userData;
 	}
+
+  gameStart();
+  // initRoundInfo, unlockMonsters
+  setRound(data.initRoundInfo, data.unlockMonsters);
 });
 
 // gameData 사용을 위한 getter 함수들
@@ -74,5 +80,6 @@ socket.on("spawnMonster", (data) => {
 	console.log("서버로부터 몬스터 생성 명령 수신", data);
 	spawnMonster(); // 클라이언트의 spawnMonster 함수 호출
 });
+
 
 export { sendEvent, loadTowerQueue };

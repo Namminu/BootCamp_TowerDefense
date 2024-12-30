@@ -36,10 +36,14 @@ export const gameOver = async (userId, payload, socket) => {
 	if (!userId || !currentRound)
 		return { status: 'fail', message: `${!userId ? 'userId' : 'currentRound'} missing error` };
 
-	//최고 기록보다 현재 기록이 높다면 DB 갱신
-	const result = await updateHighScore(userId, currentRound);
-	if (!result) return { status: 'fail', message: 'update High Score Error' };
-	console.log(result);
+    try {
+        //최고 기록보다 현재 기록이 높다면 DB 갱신
+        const result = await updateHighScore(userId, currentRound);
+        if (!result) return { status: 'fail', message: 'update High Score Error' };
+        console.log(result);
+    } catch (error) {
+        return { status:'fail', message:'gameOver 핸들러에서 highScore 구현 필요' };
+    }
 
 	const data = {
 		status: 'success',

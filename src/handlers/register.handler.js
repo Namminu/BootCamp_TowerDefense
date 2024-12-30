@@ -3,6 +3,7 @@ import { addUser } from '../models/user.model.js';
 import { handleConnection, handleDisconnect, handlerEvent } from './helper.js';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import { moveRoundHandler } from './round.handler.js';
 
 dotenv.config();
 
@@ -20,6 +21,11 @@ const registerHandler = (io) => {
 		socket.on('requestTowerQueue', () => {
 			const towerQueueTyep = getTowerQueue(userId);
 			socket.emit('TowerQueueData', towerQueueTyep);
+		});
+
+		socket.on('moveRoundHandler', (payload) => {
+			const response = moveRoundHandler(userId, payload);
+			socket.emit('moveRoundHandler', response);
 		});
 
 		handleConnection(socket, userId);

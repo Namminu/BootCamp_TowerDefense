@@ -201,37 +201,43 @@ function placeBase() {
 //실질적인 몬스터 소환 함수
 export function spawnMonster() {
 	console.log('몬스터가 생성되었습니다!');
-	const userData = getUserData();
-
-	if (!userData) {
-		console.error('유저 데이터를 찾을 수 없습니다.');
-		return;
-	}
+	//const userData = getUserData();
 
 	// 현재 라운드 체크 및 몬스터 출현 가능 여부 체크
-	const currentRound = userData.round;
-	const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
+	const currentRound = round;
+	//const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
 
-	if (!roundUnlock) {
+	if (roundUnlock === null) {
 		console.error('현재 라운드에 출현 가능한 몬스터가 없습니다.');
 		return;
 	}
 
-	// 현재 라운드에 출현 가능한 몬스터 필터링
-	const availableMonsters = MONSTER_CONFIG.filter((monster) =>
-		roundUnlock.monster_id.includes(monster.id),
-	);
-
-	monsters.push(new Monster(monsterPath, currentRound, availableMonsters));
+	const rand = Math.floor(Math.random() * roundUnlock.length);
+	const monsterData = roundUnlock[rand];
+	monsters.push(new Monster(monsterPath, currentRound, monsterData));
 	// monsters.push(new Monster(monsterPath, monsterLevel, MONSTER_CONFIG));
 }
 
+let previousTime = null;
+
 async function gameLoop() {
 	const currentTime = performance.now();
+	const deltaTime = currentTime - previousTime;
+	previousTime = currentTime;
+	round_timer -= deltaTime;
+	if(round_timer<=0){
+		sendEvent(11, {currentRound:round, timestamp:Date.now()} );
+	}
+
 	//게임 반복.
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
 	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
 	drawPath(monsterPath); // 경로 다시 그리기
+
+	ctx.font = '40px Times New Roman';
+	ctx.strokeStyle = '#ffff11';
+	ctx.textAlign = "center";
+	ctx.strokeText(`${round}라운드     남은 시간: ${Math.round(round_timer/1000)}`, canvas.width/2, 50); // 최고 기록 표시
 
 	ctx.font = '25px Times New Roman';
 	ctx.fillStyle = 'skyblue';
@@ -251,27 +257,28 @@ async function gameLoop() {
 			continue;
 		}
 
-    if (monster.hp > 0) {
-      const isDestroyed = monster.move(base);
-      if (isDestroyed) {
-        const testRound = 1;
-        /* 게임 오버 */
-        // 게임 종료 시 서버로 gameOver 이벤트 전송
-        const response = await sendEvent(3, { currentRound: testRound /*currentRound*/ });
-        //const { message, userName, highScore } = response;
-        //showModal(message, userName, highScore/*, currentRound*/);
+		if (monster.hp > 0) {
+			const isDestroyed = monster.move(base);
+			if (isDestroyed) {
+				const testRound = 1;
+				/* 게임 오버 */
+				// 게임 종료 시 서버로 gameOver 이벤트 전송
+				//const response = await sendEvent(3, { currentRound: testRound /*currentRound*/ });
+				const response = await sendEvent(3, { currentRound: round, timestamp:Date.now()});
+				//const { message, userName, highScore } = response;
+				//showModal(message, userName, highScore/*, currentRound*/);
 
-        /* 테스트용 */
-        showModal("테스트 기록!", "테스트입니다", 1500, 1200);
-        //gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
-      }
-      monster.draw(ctx);
-    } else {
-      /* 몬스터가 죽었을 때 */
-      monster.dead();
-      monsters.splice(i, 1);
-    }
-  }
+				/* 테스트용 */
+				showModal('테스트 기록!', '테스트입니다', 1500, 1200);
+				//gameStop();  // 게임 오버 시 몬스터/타워 등 로직 멈추게 하기 위함
+			}
+			monster.draw(ctx);
+		} else {
+			/* 몬스터가 죽었을 때 */
+			monster.dead();
+			monsters.splice(i, 1);
+		}
+	}
 
 	// towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
 	towerControl.sortTowers();
@@ -413,9 +420,9 @@ async function gameLoop() {
 }
 
 async function initGame() {
-  if (isInitGame) {
-    return; // 이미 초기화된 경우 방지
-  }
+	if (isInitGame) {
+		return; // 이미 초기화된 경우 방지
+	}
 
 	isInitGame = true;
 	userGold = 800; // 초기 골드 설정
@@ -424,8 +431,8 @@ async function initGame() {
 	//monsterSpawnInterval = 2000;
 
 	monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
-	
-	await initModal();  // 게임오버 모달창 초기 로드
+
+	await initModal(); // 게임오버 모달창 초기 로드
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
 	// placeInitialTowers(); // 초기 타워 배치
 	placeBase(); // 기지 배치
@@ -435,9 +442,11 @@ async function initGame() {
 	gameLoop(); // 게임 루프 시작
 } //이게 시작이네.
 
-if (!isInitGame) {
-	// queueEvent(2, { timestamp: Date.now() });
-	initGame();
+export function gameStart() {
+	if (!isInitGame) {
+		// queueEvent(2, { timestamp: Date.now() });
+		initGame();
+	}
 }
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
@@ -705,3 +714,20 @@ canvas.addEventListener('click', (event) => {
 		});
 	}
 });
+
+let round = 0;
+let spawn_count = 0;
+let round_timer = 0;
+let roundUnlock = null;
+
+export function setRound(roundInfo, unlockMonsters) {
+	round = roundInfo.round;
+	// duration, count, time, unlockMonsters
+
+	monsterSpawnInterval = roundInfo.duration;
+	spawn_count = roundInfo.count;
+	round_timer = roundInfo.time;
+	roundUnlock = unlockMonsters;
+	console.log('라운드 세팅');
+	console.log(roundInfo, unlockMonsters);
+}
