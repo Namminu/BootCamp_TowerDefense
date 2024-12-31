@@ -264,7 +264,7 @@ export const killTower = (userId, deathSheets) => {
 				adjustedCooldown = tower.cooldown / 2;
 			}
 
-			if(timeDifference < adjustedCooldown*3){ //8.3 언저리긴 함. 정확하게 하려면 8배 하기.
+			if(timeDifference < adjustedCooldown*3){ 
 				console.log("timeDifference",timeDifference);
 				console.log("tower.cooldown",tower.cooldown*3);
 				console.log("타워 공속 이상");
