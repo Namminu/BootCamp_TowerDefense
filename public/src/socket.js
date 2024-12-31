@@ -2,6 +2,7 @@ import { setRound, initGame, setMonsters, setPath } from './game.js';
 
 let somewhere = localStorage.getItem('authToken');
 
+
 const socket = io('http://localhost:8080', {
 	query: {
 		token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!

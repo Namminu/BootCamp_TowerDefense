@@ -24,19 +24,36 @@ export class Monster {
 		this.height = monsterData.height; // 몬스터 이미지 세로 길이
 		this.level = level; // 몬스터 레벨
 
-		// 이미지 로드
-		this.image = new Image();
-		this.image.src = monsterData.image;
+		// 몬스터 이미지 로드
+		// this.image = new Image();
+		// this.image.src = monsterData.image;
 
 		// monster.json 데이터 기반으로 초기화
-		this.maxHp = monsterData.hp + level * 10; // 테스트용
+		this.maxHp = monsterData.hp + level * 20;
 		this.hp = this.maxHp;
-		this.attackPower = monsterData.damage + level * 10; //테스트용
+		this.attackPower = monsterData.damage + level * 20;
 		this.speed = monsterData.speed;
 		this.gold = monsterData.gold;
 		this.isDead = false; // 몬스터가 죽었는지 여부
 
 		this.damageTexts = []; // 데미지 텍스트 배열
+
+		// 유니크 ID 생성 (라운드번호_몬스터번호_타임스탬프)
+		this.uniqueId = `${level}_${this.monsterNumber}_${Date.now()}`;
+
+		// 생성 시간 기록
+		this.createdAt = Date.now();
+
+		// 애니메이션 관련
+		this.imageSet = monsterData.imageSet;
+		this.currentFrame = 0;
+		this.isHit = false;
+		this.hitDuration = 0;
+		this.animationSpeed = 0.05; // 프레임 전환 속도
+
+		// 방향 상태
+		// true면 왼쪽, false면 오른쪽
+		this.isFlipped = false;
 
 		// 따로 정보를 보내줘야 한다.
 		// class round
@@ -46,12 +63,6 @@ export class Monster {
 
 		// this.speed = 2; // 몬스터의 이동 속도
 	}
-	//생성 시간 추가해서 경로와 속도를 계산 살아있어야 할 시간보다 오래살아 있다면 ..버그를 쓴거겠지.
-	// init(level) {
-	//   this.maxHp = 100 + 10 * level; // 몬스터의 현재 HP
-	//   this.hp = this.maxHp; // 몬스터의 현재 HP
-	//   this.attackPower = 200 + 1 * level; // 몬스터의 공격력 (기지에 가해지는 데미지)
-	// }
 
 	move(base) {
 		if (this.currentIndex < this.path.length - 1) {
@@ -60,6 +71,9 @@ export class Monster {
 			const deltaY = nextPoint.y - this.y;
 			// 2차원 좌표계에서 두 점 사이의 거리를 구할 땐 피타고라스 정리를 활용하면 됩니다! a^2 = b^2 + c^2니까 루트를 씌워주면 되죠!
 			const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+			// 이동 방향에 따라 이미지 방향 설정
+			this.isFlipped = deltaX < 0; // x 좌표가 감소하면 왼쪽으로 이동
 
 			if (distance < this.speed) {
 				// 거리가 속도보다 작으면 다음 지점으로 이동시켜주면 됩니다!
@@ -71,6 +85,7 @@ export class Monster {
 			}
 			return false;
 		} else {
+			// 이부분에서 몬스터가 베이스에 도착을 했을 때 데미지를 주는 부분 이부분에서 deathSheet에 killBase를 넣어서 확인
 			const isDestroyed = base.takeDamage(this.attackPower); // 기지에 도달하면 기지에 데미지를 입힙니다!
 			this.hp = 0; // 몬스터는 이제 기지를 공격했으므로 자연스럽게 소멸해야 합니다.
 			return isDestroyed;
@@ -78,7 +93,36 @@ export class Monster {
 	}
 
 	draw(ctx) {
-		ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+		let currentImage = new Image();
+
+		if (this.isHit && this.hitDuration > 0) {
+			// 피격 상태일 때
+			currentImage.src = this.imageSet.hit;
+			this.hitDuration--;
+			if (this.hitDuration <= 0) {
+				this.isHit = false;
+			}
+		} else {
+			// 일반 상태일 때 (idle 애니메이션)
+			const frameIndex = Math.floor(this.currentFrame) % this.imageSet.idle.length;
+			currentImage.src = this.imageSet.idle[frameIndex];
+			this.currentFrame += this.animationSpeed;
+		}
+
+		// 이미지 반전을 위한 설정
+		ctx.save(); // 현재 컨텍스트 상태 저장
+
+		if (this.isFlipped) {
+			// 왼쪽을 볼 때 이미지 반전
+			ctx.translate(this.x + this.width, this.y);
+			ctx.scale(-1, 1);
+			ctx.drawImage(currentImage, 0, 0, this.width, this.height);
+		} else {
+			// 오른쪽을 볼 때 정상 방향
+			ctx.drawImage(currentImage, this.x, this.y, this.width, this.height);
+		}
+
+		ctx.restore(); // 컨텍스트 상태 복원
 
 		// 배경 그리기
 		ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
@@ -87,7 +131,11 @@ export class Monster {
 		// HP 텍스트 그리기
 		ctx.font = '12px Arial';
 		ctx.fillStyle = 'white';
-		ctx.fillText(`Lv. ${this.level} ${Math.floor(this.hp)}/${Math.floor(this.maxHp)}`, this.x + 5, this.y - 5);
+		ctx.fillText(
+			`Lv. ${this.level} ${Math.floor(this.hp)}/${Math.floor(this.maxHp)}`,
+			this.x + 5,
+			this.y - 5,
+		);
 
 		// 데미지 텍스트 그리기
 		const currentTime = performance.now();
@@ -116,7 +164,15 @@ export class Monster {
 		this.isDead = true; // 몬스터를 죽음 상태로 표시
 	}
 
+	// 피격 효과를 위한 메서드
+	onHit() {
+		this.isHit = true;
+		this.hitDuration = 50; // 피격 지속 시간 (프레임 수)
+	}
+
 	addDamageText(damage) {
+		this.onHit();
+
 		this.damageTexts.push({
 			value: damage,
 			offsetX: this.width / 2 - 15, // 몬스터 중앙에서의 X 오프셋

@@ -50,10 +50,6 @@ export const handlerEvent = async (io, socket, data) => {
 	}
 
 	const response = await handler(userId, data.payload, socket);
-  if(data.handlerId!==42){
-    console.log('handlerId : ', data.handlerId);
-    console.log('response : ', response);
-  }
 
 	if (response.broadcast) {
 		io.emit('response', response);

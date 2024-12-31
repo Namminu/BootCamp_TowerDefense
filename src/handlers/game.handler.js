@@ -2,6 +2,7 @@ import { getGameAssets } from '../init/assets.js';
 import { updateHighScore } from '../models/rank.model.js';
 import {
 	createTower,
+	createTowerAttackSheet,
 	createTowerQueue,
 	getTower,
 	getTowerQueue,
@@ -12,6 +13,7 @@ import {
 	getUserData,
 	setUserGold,
 	setUserRound,
+	setUserData,
 } from '../models/userData.model.js';
 import { getRoundInfo } from '../models/roundInfo.model.js';
 
@@ -22,11 +24,10 @@ export const gameStart = (userId, payload, socket) => {
 	createUserData(userId);
 	createTower(userId);
 	createTowerQueue(userId);
-	setUserRound(userId, 1, Date.now());
-	setUserGold(userId, 1000);
+	createTowerAttackSheet(userId);
+	setUserData(userId, 1, Date.now(), 1000);
 	setTowerQueue(userId, tower);
-	const user = getUserData(userId);
-	console.log('user', user);
+	
 
 	return { status: 'success' };
 };

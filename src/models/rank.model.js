@@ -24,7 +24,7 @@ export const updateHighScore = async (userId, currentRound, elapsedTime) => {
                 elapsed: elapsedTime
             }
         });
-        return { updated: true, userName, currentHighScore: userHighScore, elapsedTime };
+        return { updated: true, userName, currentHighScore: currentRound, elapsedTime };
     }
 
     const userHighScore_round = userHighScore.highScore;

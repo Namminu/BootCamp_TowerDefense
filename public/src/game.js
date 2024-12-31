@@ -25,6 +25,8 @@ let userGold = 0; // 유저 골드
 let base; // 기지 객체
 let baseHp = 10; // 기지 체력
 
+//베이스의 체력 | 라운드 별 증가량 
+
 // 시간 변수
 let deltaTime = 0;
 let lastFrameTime = 0;
@@ -34,24 +36,28 @@ export let accumulatedTime = 0;
 let towerCost; // 타워 구입 비용
 let towerImage; // 타워 이미지
 let towerIndex; // 타워 인덱스
-let numOfInitialTowers = 3; // 초기 타워 개수
 let isPlacingTower = false; // 현재 타워를 배치 중인지 확인하는 플래그
 let previewTower = null; // 미리보기를 위한 타워 객체
 
 // 메시지 출력 플래그
 let printMessage = false;
+let printMessage2 = false;
 
 let monsters = [];
 let ableToMoveRound = false; // 라운드 이동 가능 여부
 let monsterLevel = 1; // 몬스터 레벨
-let monsterSpawnInterval = 1000; // 몬스터 생성 주기 ms
 let killCount = 0; // 몬스터 처치 수
+let monsterSpawnInterval = 500; // 몬스터 생성 주기 ms
 let feverTriggered = false; // 피버 모드 실행 여부를 확인하는 플래그
 
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
 let userData = null;
+
+// 베이스 위치 관련 변수
+let basePointX = 0;
+let basePointY = 0;
 
 // 상수 정의
 const TOWER_CONFIG = towerData.data;
@@ -61,7 +67,7 @@ const MONSTER_UNLOCK_CONFIG = monsterUnlockData.data;
 // 경로를 저장할 배열
 let paths = [];
 // 몬스터의 죽음을 기록할 배열. 라운드마다 보네주고 초기화.
-const daethSheets = [];
+let deathSheets = [];
 
 // 이미지 로딩 파트
 const towerImages = TOWER_CONFIG.map((tower) => {
@@ -120,6 +126,12 @@ function processQueue() {
 
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
+export function addDeathSheet(data) {
+    deathSheets.push(data);
+};
+
+
+
 function setMonsterPathFromGeneratedPath() {
 	// generatePath 결과를 기반으로 몬스터 경로 설정
 	const generatedPath = path;
@@ -145,7 +157,9 @@ function placeBase() {
 	//플레이어 베이스를 만드는 함수.
 	const lastPoint = path[path.length - 1];
 	if (lastPoint) {
-		base = new Base(lastPoint.x * cellSize.WIDTH, lastPoint.y * cellSize.HEIGHT, baseHp);
+		basePointX = lastPoint.x * cellSize.WIDTH;
+		basePointY = lastPoint.y * cellSize.HEIGHT;
+		base = new Base(basePointX, basePointY, baseHp);
 		base.draw(ctx, baseImage);
 	} else {
 		console.log('path is not defined');
@@ -223,11 +237,13 @@ async function gameLoop(frameTime) {
 	}
 	sendEvent(42, {});
 	previousTime = currentTime;
+
 	if (!isRoundExpired) {
 		round_timer -= deltaTime2;
 		if (round_timer <= 0) {
 			isRoundExpired = true;
-			sendEvent(11, { currentRound: round, timestamp: Date.now() });
+			await sendEvent(11, { currentRound: round, timestamp: Date.now(), deathSheets });
+			deathSheets = [];
 		}
 	}
 	//게임 반복.
@@ -267,12 +283,44 @@ async function gameLoop(frameTime) {
 		// 		);
 		// 		showModal(message, userName, highScore, 1, time);
 
+		// 몬스터 이동 관련 
+		// if (monster.hp > 0) {
+		// 	const isDestroyed = monster.move(base);
+		// 	if (isDestroyed) {
+		// 		/* 게임 오버 */
+		// 		const response = await sendEvent(3, { currentRound: round, timestamp: currentTime });
+		// 		const { message, userName, highScore, time } = response;
+		// 		console.log(
+		// 			'message : ',
+		// 			message,
+		// 			'userName : ',
+		// 			userName,
+		// 			'highScore : ',
+		// 			highScore,
+		// 			'time : ',
+		// 			time,
+		// 		);
+		// 		showModal(message, userName, highScore, 1, time);
+
 		// 		// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기
 		// 		stopGame();
 		// 	}
 		// 	monster.draw(ctx);
 		// } else {
-		// 	/* 몬스터가 죽었을 때 */
+		// 	/* 몬스터가 베이스에 부딪혀 죽었을 때 */
+		// 	addDeathSheet({ 
+		// 		killer: 'killbase', 
+		// 		x: monster.x, 
+		// 		y: monster.y, 
+		// 		monsterId: monster.uniqueId, 
+		// 		monsterHp: monster.maxHp, 
+		// 		monsterGold: monster.gold, 
+		// 		monsterX: monster.x, 
+		// 		monsterY: monster.y,
+		// 		baseX: basePointX,
+		// 		baseY: basePointY, 
+		// 		monsterTimestemp: Date.now() 
+		// 	});
 		// 	monster.dead();
 		// 	monsters.splice(i, 1);
 		// }
@@ -296,13 +344,23 @@ async function gameLoop(frameTime) {
 				tower.attack(monster);
 
 				if (monster.hp <= 0) {
+					addDeathSheet({
+						killer: 'killtower',
+						x: tower.x,
+						y: tower.y,
+						monsterId: monster.uniqueId,
+						monsterHp: monster.maxHp,
+						monsterGold: monster.gold,
+						monsterX: monster.x,
+						monsterY: monster.y,
+						monsterTimestemp: Date.now(),
+					});
 					monster.dead();
-
 					score += monsterLevel;
 					userGold += monster.gold;
 
 					console.log(`${monster.gold}골드를 획득했습니다.`);
-					sendEvent(8, { gold: monster.gold });
+					queueEvent(8, { gold: monster.gold });
 
 					if (!tower.feverMode && !feverTriggered) {
 						killCount += 1;
@@ -343,20 +401,42 @@ async function gameLoop(frameTime) {
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
 			towerControl.getTowerqueue(monsterLevel);
-		} else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
+		} else if (tower.isClicked && tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
 			console.log('Not enough gold to upgrade the tower.');
 			printMessage = true;
+			tower.upgradeBtnClicked = false;
+			tower.isClicked = false;
+		} else if (
+			tower.isClicked &&
+			tower.upgradeBtnClicked &&
+			userGold >= tower.cost * 1.2 &&
+			towerControl.towerqueue.filter((t) => t.type === tower.type).length < 2
+		) {
+			printMessage2 = true;
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
 		}
 
 		if (printMessage) {
-			ctx.fillStyle = '#D91656';
-			ctx.font = 'bold 20px Arial';
+			ctx.font = 'bold 25px Arial';
+			ctx.fillStyle = '#FF2929';
 			ctx.fillText('돈이 모자라요!', tower.x, tower.y);
+			// ctx.strokeStyle = '#1B1833';
+			// ctx.strokeText('돈이 모자라요!', tower.x, tower.y);
 
 			setTimeout(() => {
 				printMessage = false;
+			}, 1500);
+		}
+		if (printMessage2) {
+			ctx.font = 'bold 25px Arial';
+			ctx.fillStyle = '#FF2929';
+			ctx.fillText('재료가 부족해요!', tower.x, tower.y - 10);
+			// ctx.strokeStyle = '#1B1833';
+			// ctx.strokeText('재료가 부족해요!', tower.x, tower.y - 10);
+
+			setTimeout(() => {
+				printMessage2 = false;
 			}, 1500);
 		}
 
@@ -470,7 +550,6 @@ export async function initGame(receivedUserData, getReset = false) {
 	userGold = 800; // 초기 골드 설정
 	score = 0;
 	monsterLevel = 1;
-	//monsterSpawnInterval = 2000;
 
 	console.log('userData: ', userData);
 
@@ -486,8 +565,7 @@ export async function initGame(receivedUserData, getReset = false) {
 	//initMap(); // 맵 초기화 (배경, 경로 그리기)
 	// placeInitialTowers(); // 초기 타워 배치
 	placeBase(); // 기지 배치
-	//setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
-	// 서버에 몬스터 스폰 주기와 타이밍 동기화
+	// 서버에 몬스터 스폰 주기와 타이밍 동기화 -> 라운드 정보를 가져와서 초기화해야함 -> 0으로 초기화된거 너무 짜친다다
 	queueEvent(13, { round: 0, timestamp: Date.now() });
 	gameLoop(); // 게임 루프 시작
 
@@ -511,7 +589,6 @@ export function resetGame() {
 	killCount = 0;
 	monsterLevel = 1;
 	feverTriggered = false;
-	//sendEvent(4, {0, timestamp:Date.now()});
 
 	// 몬스터 스폰 초기화
 	eventQueue.length = 0;
@@ -520,7 +597,7 @@ export function resetGame() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	// 게임 재시작
-	initGame(true);
+	initGame(userData, true);
 }
 
 // 게임 스탑
@@ -807,11 +884,8 @@ let round_timer = 0;
 let roundUnlock = null;
 
 export function setRound(roundInfo, unlockMonsters) {
-	console.log('라운드 세팅');
-	console.log(roundInfo);
-
 	round = roundInfo.round;
-	monsterSpawnInterval = roundInfo.duration;
+	//monsterSpawnInterval = roundInfo.duration;
 	spawn_count = roundInfo.count;
 	round_timer = roundInfo.time;
 	roundUnlock = unlockMonsters;
