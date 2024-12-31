@@ -1,86 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
-    <head>
-        <style>
-            /* 모달 콘텐츠 스타일 */
-            .modal-content {
-                position: fixed; /* 화면 고정 위치 */
-                top: 50%; /* 화면 높이의 50% */
-                left: 50%; /* 화면 너비의 50% */
-                transform: translate(-50%, -50%); /* 가운데 정렬 */
-                z-index: 1000; /* 다른 요소 위에 표시 */
-                background-color: #FFD700; /* 배경색 */
-                padding: 20px;
-                border-radius: 10px;
-                text-align: center;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
-            }
-            .modal-content.show{
-                display: flex;
-                opacity : 1;
-                pointer-events: auto;
-            }
-            /* 닫기 버튼 스타일 */
-            .close {
-                position: absolute;
-                right: 15px;
-                top: 10px;
-                font-size: 20px;
-                cursor: pointer;
-            }
-
-            /* 제목 스타일 */
-            .modal-content h2 {
-                margin-bottom: 20px;
-                font-size: 24px;
-                color: black;
-                font-weight: bold;
-            }
-
-            /* 입력 필드 스타일 */
-            .modal-content input[type="text"],
-            .modal-content input[type="password"],
-            .modal-content input[type="nickName"] {
-                width: 90%;
-                padding: 10px;
-                margin: 10px 0;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                box-sizing: border-box;
-            }
-
-            /* 확인 버튼 스타일 */
-            .modal-content button {
-                width: 100%;
-                padding: 10px;
-                background-color: orange;
-                border: none;
-                border-radius: 5px;
-                color: white;
-                font-size: 16px;
-                cursor: pointer;
-                margin-top: 10px;
-            }
-
-            .modal-content button:hover {
-                background-color: darkorange;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="registerModal" class="modal-content">
-            <span class="close" id="closeRegister">&times;</span>
-            <h2>회원가입</h2>
-            <form>
-                <input type="text" id="registerUsername" name="username" placeholder="ID" required>
-                <input type="password" id="registerPassword" name="password" placeholder="비밀번호" required>
-                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="비밀번호 확인" required>
-                <input type="nickName" id="nickName" name="nickName" placeholder="닉네임" required>
-                <button type="submit">확인</button>
-            </form>
-        </div>
-        <script>
-            const token = localStorage.getItem('authToken');
-        </script>
-    </body>
+	<head>
+		<link rel="stylesheet" href="../styles/modal.css" />
+	</head>
+	<body>
+		<div class="modal-overlay" id="registerOverlay">
+			<div id="registerModal" class="modal-content">
+				<span class="close" id="closeRegister">&times;</span>
+				<h2>회원가입</h2>
+				<form>
+					<input type="text" id="registerUsername" name="username" placeholder="아이디" required />
+					<input
+						type="password"
+						id="registerPassword"
+						name="password"
+						placeholder="비밀번호"
+						required />
+					<input
+						type="password"
+						id="confirmPassword"
+						name="confirmPassword"
+						placeholder="비밀번호 확인"
+						required />
+					<input type="text" id="nickName" name="nickName" placeholder="닉네임" required />
+					<button type="submit">가입하기</button>
+				</form>
+			</div>
+		</div>
+	</body>
 </html>
