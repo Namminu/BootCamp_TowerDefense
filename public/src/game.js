@@ -41,6 +41,7 @@ let previewTower = null; // 미리보기를 위한 타워 객체
 
 // 메시지 출력 플래그
 let printMessage = false;
+let printMessage2 = false;
 
 const monsters = [];
 let ableToMoveRound = false; // 라운드 이동 가능 여부
@@ -65,7 +66,7 @@ const MONSTER_UNLOCK_CONFIG = monsterUnlockData.data;
 // 경로를 저장할 배열
 let paths = [];
 // 몬스터의 죽음을 기록할 배열. 라운드마다 보네주고 초기화.
-let daethSheets = [];
+let deathSheets = [];
 
 // 이미지 로딩 파트
 const towerImages = TOWER_CONFIG.map((tower) => {
@@ -124,6 +125,12 @@ function processQueue() {
 
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
+export function addDeathSheet(data) {
+    deathSheets.push(data);
+};
+
+
+
 function setMonsterPathFromGeneratedPath() {
 	// generatePath 결과를 기반으로 몬스터 경로 설정
 	const generatedPath = path;
@@ -163,31 +170,32 @@ function placeBase() {
 export function spawnMonster() {
 	if (!isGameRun) return; // 게임 정지 상태일 때는 return
 
-	console.log('몬스터가 생성되었습니다!');
-	console.log('스폰몬스터', userData);
-
 	if (!userData) {
 		console.error('유저 데이터를 찾을 수 없습니다.');
 		return;
 	}
 
 	// userData.round 대신 전역 round 변수 사용
-	const currentRound = round; // 전역 round 변수 사용
-	const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
+	const currentRound = round;
+	let availableMonsters;
 
-	console.log('------------');
-	console.log(currentRound, roundUnlock);
-	console.log('------------');
+	if (currentRound >= 6) {
+		// 6라운드 이상이면 모든 몬스터 타입 춣현
+		availableMonsters = MONSTER_CONFIG;
+	} else {
+		// 6라운드 미만이면 현재 라운드에 맞는 몬스터만 출현
+		const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
 
-	if (!roundUnlock) {
-		console.error('현재 라운드에 출현 가능한 몬스터가 없습니다.');
-		return;
+		if (!roundUnlock) {
+			console.error('현재 라운드에 출현 가능한 몬스터가 없습니다.');
+			return;
+		}
+
+		// 현재 라운드에 출현 가능한 몬스터 필터링
+		availableMonsters = MONSTER_CONFIG.filter((monster) =>
+			roundUnlock.monster_id.includes(monster.id),
+		);
 	}
-
-	// 현재 라운드에 출현 가능한 몬스터 필터링
-	const availableMonsters = MONSTER_CONFIG.filter((monster) =>
-		roundUnlock.monster_id.includes(monster.id),
-	);
 
 	monsters.push(new Monster(monsterPath, currentRound, availableMonsters));
 }
@@ -214,8 +222,8 @@ async function gameLoop(frameTime) {
 		round_timer -= deltaTime2;
 		if (round_timer <= 0) {
 			isRoundExpired = true;
-			await sendEvent(11, { currentRound: round, timestamp: Date.now(), daethSheets });
-			daethSheets = [];
+			await sendEvent(11, { currentRound: round, timestamp: Date.now(), deathSheets });
+			deathSheets = [];
 		}
 	}
 	//게임 반복.
@@ -266,7 +274,7 @@ async function gameLoop(frameTime) {
 			/* 몬스터가 죽었을 때 */
 			// 아래 콘솔은 지금 베이스에 부딪히고 사망해야 올라오는 콘솔같음
 			console.log("xxx몬스터 사망");
-			daethSheets.push({ 
+			addDeathSheet({ 
 				killer: 'killbase', 
 				x: monster.x, 
 				y: monster.y, 
@@ -281,7 +289,7 @@ async function gameLoop(frameTime) {
 			});
 			console.log("현재 베이스 위치 ", basePointX, basePointY);
 			console.log("베이스에 부딪힌 쥐 위치 ", monster.x, monster.y);
-			console.log("데스 시트", daethSheets);
+			console.log("데스 시트", deathSheets);
 			monster.dead();
 			monsters.splice(i, 1);
 		}
@@ -304,18 +312,17 @@ async function gameLoop(frameTime) {
 
 				tower.attack(monster);
 
-
 				if (monster.hp <= 0) {
-					daethSheets.push({ 
-						killer: 'killtower', 
-						x: tower.x, 
-						y: tower.y, 
-						monsterId: monster.uniqueId, 
-						monsterHp: monster.maxHp, 
-						monsterGold: monster.gold, 
-						monsterX: monster.x, 
-						monsterY: monster.y, 
-						monsterTimestemp: Date.now() 
+					addDeathSheet({
+						killer: 'killtower',
+						x: tower.x,
+						y: tower.y,
+						monsterId: monster.uniqueId,
+						monsterHp: monster.maxHp,
+						monsterGold: monster.gold,
+						monsterX: monster.x,
+						monsterY: monster.y,
+						monsterTimestemp: Date.now(),
 					});
 					monster.dead();
 					score += monsterLevel;
@@ -363,20 +370,42 @@ async function gameLoop(frameTime) {
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
 			towerControl.getTowerqueue(monsterLevel);
-		} else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
+		} else if (tower.isClicked && tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
 			console.log('Not enough gold to upgrade the tower.');
 			printMessage = true;
+			tower.upgradeBtnClicked = false;
+			tower.isClicked = false;
+		} else if (
+			tower.isClicked &&
+			tower.upgradeBtnClicked &&
+			userGold >= tower.cost * 1.2 &&
+			towerControl.towerqueue.filter((t) => t.type === tower.type).length < 2
+		) {
+			printMessage2 = true;
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
 		}
 
 		if (printMessage) {
-			ctx.fillStyle = '#D91656';
-			ctx.font = 'bold 20px Arial';
+			ctx.font = 'bold 25px Arial';
+			ctx.fillStyle = '#FF2929';
 			ctx.fillText('돈이 모자라요!', tower.x, tower.y);
+			// ctx.strokeStyle = '#1B1833';
+			// ctx.strokeText('돈이 모자라요!', tower.x, tower.y);
 
 			setTimeout(() => {
 				printMessage = false;
+			}, 1500);
+		}
+		if (printMessage2) {
+			ctx.font = 'bold 25px Arial';
+			ctx.fillStyle = '#FF2929';
+			ctx.fillText('재료가 부족해요!', tower.x, tower.y - 10);
+			// ctx.strokeStyle = '#1B1833';
+			// ctx.strokeText('재료가 부족해요!', tower.x, tower.y - 10);
+
+			setTimeout(() => {
+				printMessage2 = false;
 			}, 1500);
 		}
 
@@ -556,7 +585,7 @@ Promise.all([
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),
-]).then(() => { });
+]).then(() => {});
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
