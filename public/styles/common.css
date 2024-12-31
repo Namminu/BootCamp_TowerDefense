@@ -1,0 +1,78 @@
+/* Common Colors */
+:root {
+	/* 메인 컬러 */
+	--primary: #f2a918;
+	--secondary: #b0e0e6;
+	--accent: #da7e15;
+
+	/* 그외 컬러 */
+	--white: #ffffff;
+	--black: #000000;
+	--softgray: #e5e5e5;
+
+	/* 텍스트 컬러 */
+	--text-primary: #333333;
+	--text-secondary: #6c757d;
+}
+
+/* Viewport Settings */
+html,
+body {
+	width: 100%;
+	max-width: 100vw;
+	overflow-x: hidden;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul {
+	margin: 0;
+	padding: 0;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+* {
+	box-sizing: inherit;
+}
+
+/* Common Text Styles */
+.text-bold {
+	font-weight: bold;
+}
+
+.text-center {
+	text-align: center;
+}
+
+/* Font Sizes */
+.text-sm {
+	font-size: 0.875rem; /* 14px */
+}
+
+.text-md {
+	font-size: 1rem; /* 16px */
+}
+
+.text-lg {
+	font-size: 1.25rem; /* 20px */
+}
+
+.text-xl {
+	font-size: 1.5625rem; /* 25px */
+}
+
+.text-2xl {
+	font-size: 2.5rem; /* 40px */
+}
