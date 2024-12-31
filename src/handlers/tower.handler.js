@@ -227,14 +227,6 @@ export const killTower = (userId, deathSheets) => {
 
 
 	const isValid = deathSheets.every((sheet) => {
-		//막타친 타워가 있는지 확인합니다.
-		const matchingTower = currentTowers.find((tower) => tower.x === sheet.x && tower.y === sheet.y);
-
-		if (!matchingTower) {
-			console.log('없는 타워가 때림');
-			return false;
-		}
-
 		//데미지 시트를 확인해 데미지를 준게 맞는지 확인합니다.
 		const relatedDamage = damageSheet.filter((damage) => damage.hitEntity === sheet.monsterId);
 		// damage 값의 합계 계산
