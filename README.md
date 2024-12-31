@@ -57,9 +57,10 @@ client| public/src/webpages/pages/mainPage.js
 회원가입과 로그인 기능 관리하는 js
 
 2. 유저 별 게임 데이터 관리
+server| src/models/userData.model.js
 
 3. 클라이언트가 서버로부터 수신하는 이벤트 종류 정의 및 코드 구현
-4. 클라리언트가 서버로 송신하는 이벤트 종류 정의 및 코드 구현
+4. 클라이언트가 서버로 송신하는 이벤트 종류 정의 및 코드 구현
 client| public/src/socket.js
 server| src/register.handler.js
 
