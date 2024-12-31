@@ -11,24 +11,22 @@
 		<header id="header">
 			<div class="container header">
 				<div class="header-left">
-					<!-- 로고 -->
-					<img
-						class="header-logo"
-						src="https://profiles.greetinghr.com/group/45f1fba4-e463-4b1b-922f-c243dacfad8b"
-						alt="SPARTA 로고" />
-
-					<!-- 페이지 타이틀 -->
-					<h1 class="header-title">♧ † 내배캠 타워디펜스£ ¢</h1>
+					<a href="/" class="header-logo-link">
+						<img
+							class="header-logo"
+							src="https://profiles.greetinghr.com/group/45f1fba4-e463-4b1b-922f-c243dacfad8b"
+							alt="SPARTA 로고" />
+					</a>
+					<a href="/" class="header-title-link">
+						<h1 class="header-title">♧ † 내배캠 타워디펜스£ ¢</h1>
+					</a>
 				</div>
-
-				<!-- 네비게이션 -->
 				<div class="header-right">
 					<nav class="text-md">
-						<a href="#" id="introduceHeader">게임 소개</a>
+						<a href="/htmls/introduce.html" id="introduceHeader">게임 소개</a>
 						<a href="#" id="rankingHeader">랭킹 조회</a>
 						<a href="#" id="boardHeader">게시판</a>
 					</nav>
-
 					<div>
 						<button class="nav-button" id="loginButton">로그인</button>
 						<button class="nav-button" id="registerButton">회원가입</button>
@@ -200,6 +198,9 @@
 		<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
 		<script type="module">
 			import '/src/webpages/pages/mainPage.js';
+		</script>
+		<script type="module">
+			import '/src/webpages/pages/common.js';
 		</script>
 	</body>
 </html>

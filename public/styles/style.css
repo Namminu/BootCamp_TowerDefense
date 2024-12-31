@@ -37,7 +37,11 @@ header {
 	gap: 2rem;
 }
 
-.header-left > img {
+.header-logo-link {
+	height: inherit;
+}
+
+.header-logo-link > img {
 	height: 90%;
 	width: auto;
 	object-fit: contain;
@@ -121,7 +125,7 @@ header {
 	font-weight: bold;
 	color: var(--text-primary);
 	background-color: var(--white);
-	border: none;
+	border: 1px solid var(--accent);
 	border-radius: 8px;
 	cursor: pointer;
 	transition: all 0.3s ease;
