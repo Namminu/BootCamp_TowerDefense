@@ -50,6 +50,10 @@ document.getElementById('loginButton').addEventListener('click', async () => {
                             localStorage.setItem('authToken', token);
                             alert(result.message || '로그인 성공!');
                             loginModal.style.display = 'none';
+
+                            // login, register 버튼 바꾸기
+                            const userName = result.userName;
+                            await setUserNameInPage(userName);
                         } else alert('로그인에 성공했지만 토큰을 받을 수 없습니다.');
                     } else alert(result.message || '로그인에 실패했습니다.');
                 } catch (error) {
@@ -151,4 +155,17 @@ async function openRegisterModal() {
     } catch (err) {
         console.error("Register Modal Load Fail", err);
     }
+}
+
+async function setUserNameInPage(userName) {
+    document.getElementById('loginButton').style.display = 'none';
+    document.getElementById('registerButton').style.display = 'none';
+
+    const nav = document.querySelector('nav');
+    const userInfo = document.createElement('span');
+    userInfo.id = 'userInfo';
+    userInfo.textContent = `안녕하세요, ${userName}!`;
+    userInfo.style.marginLeft = '30px';
+    userInfo.style.fontSize = '16px';
+    nav.appendChild(userInfo);
 }

@@ -52,7 +52,7 @@ router.post('/sign-up', async (req, res) => {
 router.post('/sign-in', async (req, res) => {
 	try {
 		const { userId, password } = req.body;
-		// 유저 데이터에서 입력된 username으로 유저 검색
+		// 유저 데이터에서 입력된 userId로 유저 검색
 		const user = await prisma.users.findUnique({
 			where: {
 				userId: userId,
@@ -82,6 +82,7 @@ router.post('/sign-in', async (req, res) => {
 
 		return res.status(200).json({
 			message: '로그인 되었습니다',
+			userName: user.nickName,
 		});
 	} catch (error) {
 		console.error(error); // 에러를 콘솔에 출력
