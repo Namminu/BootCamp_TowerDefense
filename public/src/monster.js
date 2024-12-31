@@ -24,10 +24,6 @@ export class Monster {
 		this.height = monsterData.height; // 몬스터 이미지 세로 길이
 		this.level = level; // 몬스터 레벨
 
-		// 몬스터 이미지 로드
-		// this.image = new Image();
-		// this.image.src = monsterData.image;
-
 		// monster.json 데이터 기반으로 초기화
 		this.maxHp = monsterData.hp + level * 20;
 		this.hp = this.maxHp;
@@ -54,14 +50,6 @@ export class Monster {
 		// 방향 상태
 		// true면 왼쪽, false면 오른쪽
 		this.isFlipped = false;
-
-		// 따로 정보를 보내줘야 한다.
-		// class round
-		// Gold
-		// const deadMonsterData  = { id: "monsterId", coordinate: {x,y} ,"상태이상 걸린 정보": { slow: "timestamp 형식" } ,"태어난 시간": "timestamp 형식"}
-		// basehp
-
-		// this.speed = 2; // 몬스터의 이동 속도
 	}
 
 	move(base) {

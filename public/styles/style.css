@@ -1,0 +1,195 @@
+/* Container */
+.container {
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0;
+}
+
+/* header styles */
+header {
+	background-color: var(--primary);
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	height: 5rem;
+}
+
+.header-left {
+	height: inherit;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 2rem;
+}
+
+.header-left > img {
+	height: 90%;
+	width: auto;
+	object-fit: contain;
+}
+
+.header-right {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1.5rem;
+}
+
+.header-right > nav {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+}
+
+.header-right > div {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+}
+
+.header-right > div > button {
+	padding: 0.5rem 1rem;
+	font-size: 1rem;
+	font-weight: bold;
+	color: var(--text-primary);
+	background-color: var(--white);
+	border: 2px solid var(--accent);
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.header-right > div > button:hover {
+	background-color: var(--accent);
+	color: var(--white);
+}
+
+/* banner styles */
+.banner {
+	margin-top: 7rem;
+
+	width: 100%;
+	height: 400px;
+
+	background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+		url('https://cdn.dailycnc.com/news/photo/202205/211604_216794_5031.jpg');
+
+	border-radius: 2rem;
+
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.banner > div {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+@keyframes bounce {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
+}
+
+#playButton {
+	padding: 1rem 2rem;
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: var(--text-primary);
+	background-color: var(--white);
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	position: relative;
+	z-index: 1;
+}
+
+#playButton:hover {
+	animation: bounce 0.8s infinite;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* content styles */
+.content {
+	margin-top: 2rem;
+	margin-bottom: 2rem;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	gap: 2rem;
+}
+
+.content > div {
+	border: 1px solid var(--accent);
+	border-radius: 1rem;
+
+	width: 100%;
+
+	box-sizing: border-box;
+	padding: 1rem;
+}
+
+.content > div > div {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.cotent > div > div > h3 {
+	font-size: 1.2rem;
+	font-weight: bold;
+}
+
+.content > div > div > a {
+	font-size: 0.8rem;
+	font-weight: bold;
+	color: var(--text-secondary);
+}
+
+.content ul {
+	list-style: none;
+	padding: 0;
+	margin-top: 1rem;
+}
+
+.content li {
+	padding: 0.7rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid var(--softgray);
+}
+
+/* 마지막 아이템은 밑줄 제거 */
+.content li:last-child {
+	border-bottom: none;
+}
+
+/* 호버 효과 */
+.content li:hover {
+	background-color: var(--bg-secondary);
+	transition: background-color 0.2s ease;
+}
