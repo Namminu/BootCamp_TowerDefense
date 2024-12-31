@@ -36,10 +36,6 @@ export const handleConnection = (socket, uuid) => {
 	// userData.model.js의 userData 불러오기
 	const userData = getUserData(uuid);
 
-  console.log('-----------------------');
-  console.log('path:', getPath(uuid));
-  console.log('monster path:', getMonsterPath(uuid));
-
 	socket.emit('connection', { uuid, initRoundInfo, unlockMonsters, userData, path:getPath(uuid), monsterPath:getMonsterPath(uuid) });
 };
 

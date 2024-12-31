@@ -22,7 +22,6 @@ function setMonsterPathFromGeneratedPath(path) {
 	// generatePath 결과를 기반으로 몬스터 경로 설정
 	const generatedPath = path;
 	if (!generatedPath || generatedPath.length === 0) {
-		console.error('Path generation failed or empty.');
 		return [];
 	}
 
