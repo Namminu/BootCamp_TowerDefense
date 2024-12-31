@@ -40,6 +40,7 @@ let previewTower = null; // 미리보기를 위한 타워 객체
 
 // 메시지 출력 플래그
 let printMessage = false;
+let printMessage2 = false;
 
 const monsters = [];
 let ableToMoveRound = false; // 라운드 이동 가능 여부
@@ -278,9 +279,18 @@ async function gameLoop(frameTime) {
 
 				tower.attack(monster);
 
-
 				if (monster.hp <= 0) {
-					daethSheets.push({ killer: 'killtower', x: tower.x, y: tower.y, monsterId: monster.uniqueId, monsterHp: monster.maxHp, monsterGold: monster.gold, monsterX: monster.x, monsterY: monster.y, monsterTimestemp: Date.now() });
+					daethSheets.push({
+						killer: 'killtower',
+						x: tower.x,
+						y: tower.y,
+						monsterId: monster.uniqueId,
+						monsterHp: monster.maxHp,
+						monsterGold: monster.gold,
+						monsterX: monster.x,
+						monsterY: monster.y,
+						monsterTimestemp: Date.now(),
+					});
 					monster.dead();
 					score += monsterLevel;
 					userGold += monster.gold;
@@ -327,20 +337,42 @@ async function gameLoop(frameTime) {
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
 			towerControl.getTowerqueue(monsterLevel);
-		} else if (tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
+		} else if (tower.isClicked && tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
 			console.log('Not enough gold to upgrade the tower.');
 			printMessage = true;
+			tower.upgradeBtnClicked = false;
+			tower.isClicked = false;
+		} else if (
+			tower.isClicked &&
+			tower.upgradeBtnClicked &&
+			userGold >= tower.cost * 1.2 &&
+			towerControl.towerqueue.filter((t) => t.type === tower.type).length < 2
+		) {
+			printMessage2 = true;
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
 		}
 
 		if (printMessage) {
-			ctx.fillStyle = '#D91656';
-			ctx.font = 'bold 20px Arial';
+			ctx.font = 'bold 25px Arial';
+			ctx.fillStyle = '#FF2929';
 			ctx.fillText('돈이 모자라요!', tower.x, tower.y);
+			// ctx.strokeStyle = '#1B1833';
+			// ctx.strokeText('돈이 모자라요!', tower.x, tower.y);
 
 			setTimeout(() => {
 				printMessage = false;
+			}, 1500);
+		}
+		if (printMessage2) {
+			ctx.font = 'bold 25px Arial';
+			ctx.fillStyle = '#FF2929';
+			ctx.fillText('재료가 부족해요!', tower.x, tower.y - 10);
+			// ctx.strokeStyle = '#1B1833';
+			// ctx.strokeText('재료가 부족해요!', tower.x, tower.y - 10);
+
+			setTimeout(() => {
+				printMessage2 = false;
 			}, 1500);
 		}
 
@@ -523,7 +555,7 @@ Promise.all([
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),
-]).then(() => { });
+]).then(() => {});
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
