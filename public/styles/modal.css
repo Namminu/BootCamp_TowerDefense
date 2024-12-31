@@ -1,0 +1,116 @@
+/* 모달 기본 스타일 */
+.modal-content {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 10000;
+	background-color: var(--white);
+	padding: 2rem;
+	border-radius: 1rem;
+	text-align: center;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	width: 400px;
+	border: 2px solid var(--accent);
+	opacity: 0;
+	pointer-events: none;
+}
+
+.modal-content.show {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	opacity: 1;
+	transform: translate(-50%, -50%);
+	pointer-events: auto;
+}
+
+/* 닫기 버튼 */
+.close {
+	position: absolute;
+	right: 1rem;
+	top: 1rem;
+	font-size: 1.5rem;
+	cursor: pointer;
+	color: var(--text-secondary);
+}
+
+.close:hover {
+	color: var(--accent);
+}
+
+/* 모달 제목 */
+.modal-content h2 {
+	margin-bottom: 1.5rem;
+	font-size: 1.5rem;
+	color: var(--text-primary);
+	font-weight: bold;
+}
+
+/* 입력 필드 */
+.modal-content input {
+	width: 100%;
+	padding: 0.8rem;
+	margin: 0.5rem 0;
+	border: 1px solid var(--softgray);
+	border-radius: 0.5rem;
+	box-sizing: border-box;
+	font-size: 1rem;
+	transition: border-color 0.3s ease;
+}
+
+.modal-content input:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+
+/* 버튼 */
+.modal-content button {
+	width: 100%;
+	padding: 0.8rem;
+	background-color: var(--primary);
+	border: none;
+	border-radius: 0.5rem;
+	color: var(--white);
+	font-size: 1rem;
+	font-weight: bold;
+	cursor: pointer;
+	margin-top: 1rem;
+	transition: background-color 0.3s ease;
+}
+
+.modal-content button:hover {
+	background-color: var(--accent);
+}
+
+/* 링크 */
+.modal-content a {
+	display: block;
+	margin-top: 1rem;
+	font-size: 0.9rem;
+	color: var(--text-secondary);
+	text-decoration: none;
+	transition: color 0.3s ease;
+}
+
+.modal-content a:hover {
+	color: var(--accent);
+}
+
+/* 모달 배경 오버레이 */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	display: none;
+	justify-content: center;
+	align-items: center;
+	z-index: 9999;
+}
+
+.modal-overlay.show {
+	display: flex;
+}
