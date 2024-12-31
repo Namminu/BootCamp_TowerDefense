@@ -226,9 +226,6 @@ export const killTower = (userId, daethSheets) => {
 	const targetRound = currentRound - 1;
 
 
-
-	console.log("damageSheet",damageSheet);
-
 	const isValid = daethSheets.every((sheet) => {
 		//막타친 타워가 있는지 확인합니다.
 		const matchingTower = currentTowers.find((tower) => tower.x === sheet.x && tower.y === sheet.y);

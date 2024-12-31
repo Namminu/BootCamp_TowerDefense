@@ -46,8 +46,8 @@ export const handlerEvent = async (io, socket, data) => {
 	}
 
 	const response = await handler(userId, data.payload, socket);
-	console.log('handlerId : ', data.handlerId);
-	console.log('response : ', response);
+	// console.log('handlerId : ', data.handlerId);
+	// console.log('response : ', response);
 
 	if (response.broadcast) {
 		io.emit('response', response);
