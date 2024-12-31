@@ -24,6 +24,11 @@ header {
 	height: 5rem;
 }
 
+.header-title {
+	font-size: 2rem;
+	font-family: 'Ownglyph_ParkDaHyun';
+}
+
 .header-left {
 	height: inherit;
 	display: flex;
@@ -113,7 +118,6 @@ header {
 
 #playButton {
 	padding: 1rem 2rem;
-	font-size: 1.5rem;
 	font-weight: bold;
 	color: var(--text-primary);
 	background-color: var(--white);
@@ -123,73 +127,131 @@ header {
 	transition: all 0.3s ease;
 	position: relative;
 	z-index: 1;
+
+	font-family: 'Ownglyph_ParkDaHyun';
+	font-size: 2rem;
 }
 
 #playButton:hover {
 	animation: bounce 0.8s infinite;
 	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+	color: var(--white);
+	background-color: var(--accent);
 }
 
 /* content styles */
 .content {
 	margin-top: 2rem;
 	margin-bottom: 2rem;
-
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
-
+	align-items: flex-start;
 	gap: 2rem;
 }
 
 .content > div {
 	border: 1px solid var(--accent);
 	border-radius: 1rem;
-
 	width: 100%;
-
 	box-sizing: border-box;
-	padding: 1rem;
+	padding: 1.5rem;
 }
 
+/* 제목 영역 스타일 */
 .content > div > div {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	margin-bottom: 1rem;
 }
 
-.cotent > div > div > h3 {
+.content > div > div > h3 {
 	font-size: 1.2rem;
 	font-weight: bold;
+	margin: 0;
 }
 
 .content > div > div > a {
 	font-size: 0.8rem;
 	font-weight: bold;
 	color: var(--text-secondary);
+	text-decoration: none;
 }
 
+/* 리스트 스타일 */
 .content ul {
 	list-style: none;
 	padding: 0;
-	margin-top: 1rem;
+	margin: 0;
 }
 
-.content li {
-	padding: 0.7rem;
+/* 랭킹/게시판 리스트 아이템 공통 */
+.ranking li,
+.board li {
 	display: flex;
-	justify-content: space-between;
 	align-items: center;
+	padding: 0.7rem;
 	border-bottom: 1px solid var(--softgray);
 }
 
-/* 마지막 아이템은 밑줄 제거 */
+/* 각 칼럼 스타일 */
+.content li span {
+	white-space: nowrap;
+}
+
+/* 랭킹 리스트 아이템 비율 */
+.ranking li span:nth-child(1) {
+	flex: 0 0 15%;
+	text-align: left;
+} /* 순위 */
+.ranking li span:nth-child(2) {
+	flex: 0 0 30%;
+} /* 라운드/시간 */
+.ranking li span:nth-child(3) {
+	flex: 0 0 20%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+} /* 닉네임 */
+.ranking li span:nth-child(4) {
+	flex: 0 0 35%;
+	text-align: right;
+} /* 날짜 */
+
+/* 게시판 리스트 아이템 비율 */
+.board li span:nth-child(1) {
+	flex: 0 0 7%;
+	text-align: left;
+} /* 번호 */
+.board li span:nth-child(2) {
+	flex: 0 0 45%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+} /* 제목 */
+.board li span:nth-child(3) {
+	flex: 0 0 24%;
+} /* 작성자 */
+.board li span:nth-child(4) {
+	flex: 0 0 20%;
+	text-align: right;
+} /* 날짜 */
+
+/* 순위/번호 스타일 */
+.content li span:first-child {
+	font-weight: bold;
+}
+
+/* 날짜 스타일 */
+.content li span:last-child {
+	color: var(--text-secondary);
+}
+
+/* 마지막 아이템 밑줄 제거 */
 .content li:last-child {
 	border-bottom: none;
 }
 
 /* 호버 효과 */
 .content li:hover {
-	background-color: var(--bg-secondary);
+	background-color: var(--softprimary);
 	transition: background-color 0.2s ease;
 }
