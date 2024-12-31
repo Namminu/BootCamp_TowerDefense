@@ -31,7 +31,8 @@ export function showModal(message, userName, highScore, currentRound, time) {
     document.getElementById('restartButton').addEventListener('click', () => {
         console.log('재시작 버튼 클릭');
         closeModal();
-        resetGame(); // 게임 재시작
+        //resetGame(); // 게임 재시작
+        location.reload(); // 임시 코드. 재시작 기능 구현 완료 후 수정 필요
     });
 
     document.getElementById('mainButton').addEventListener('click', () => {
