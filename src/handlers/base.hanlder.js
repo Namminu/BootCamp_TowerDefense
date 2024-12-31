@@ -15,7 +15,7 @@ export const baseHitEnemyCheck = (userId, deathSheets) => {
     }
 
     // 오차 범위 
-    const tolerance = 10;
+    const tolerance = 100;
 
     for (const hit of baseHits) {
         const dx = Math.abs(hit.monsterX - hit.baseX);
