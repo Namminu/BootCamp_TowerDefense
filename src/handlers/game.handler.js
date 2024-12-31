@@ -16,6 +16,7 @@ import {
 	setUserData,
 } from '../models/userData.model.js';
 import { getRoundInfo } from '../models/roundInfo.model.js';
+import { moveRoundHandler } from './round.handler.js';
 
 export const gameStart = (userId, payload, socket) => {
 	const { tower } = getGameAssets(); //타워 에셋 가져오기.
@@ -27,9 +28,13 @@ export const gameStart = (userId, payload, socket) => {
 	createTowerAttackSheet(userId);
 	setUserData(userId, 1, Date.now(), 1000);
 	setTowerQueue(userId, tower);
-	
 
-	return { status: 'success' };
+	// 현재 시간으로 라운드 시작
+	const response = moveRoundHandler(userId, { currentRound: 0, timestamp: Date.now() });
+	const initRoundInfo = response.nextRoundInfo;
+	const unlockMonsters = response.unlockMonsters;
+
+	return { handlerId:2, status: 'success', initRoundInfo, unlockMonsters };
 };
 
 // Base의 Hp <= 0 일 시 호출되는 이벤트

@@ -12,6 +12,7 @@ const socket = io('http://localhost:8080', {
 socket.on('response', (data) => {
 	console.log('response : ', data);
 	if (data.handlerId === 11) setRound(data.nextRoundInfo, data.unlockMonsters);
+	if (data.handlerId === 2) setRound(data.initRoundInfo, data.unlockMonsters);
 });
 
 socket.on('connection', (data) => {
@@ -26,7 +27,7 @@ socket.on('connection', (data) => {
 		initGame(data.userData);
 	}
 
-	setRound(data.initRoundInfo, data.unlockMonsters);
+	sendEvent(2);
 });
 
 const loadTowerQueue = () => {
