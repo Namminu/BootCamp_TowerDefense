@@ -156,31 +156,32 @@ function placeBase() {
 export function spawnMonster() {
 	if (!isGameRun) return; // 게임 정지 상태일 때는 return
 
-	console.log('몬스터가 생성되었습니다!');
-	console.log('스폰몬스터', userData);
-
 	if (!userData) {
 		console.error('유저 데이터를 찾을 수 없습니다.');
 		return;
 	}
 
 	// userData.round 대신 전역 round 변수 사용
-	const currentRound = round; // 전역 round 변수 사용
-	const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
+	const currentRound = round;
+	let availableMonsters;
 
-	console.log('------------');
-	console.log(currentRound, roundUnlock);
-	console.log('------------');
+	if (currentRound >= 6) {
+		// 6라운드 이상이면 모든 몬스터 타입 춣현
+		availableMonsters = MONSTER_CONFIG;
+	} else {
+		// 6라운드 미만이면 현재 라운드에 맞는 몬스터만 출현
+		const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
 
-	if (!roundUnlock) {
-		console.error('현재 라운드에 출현 가능한 몬스터가 없습니다.');
-		return;
+		if (!roundUnlock) {
+			console.error('현재 라운드에 출현 가능한 몬스터가 없습니다.');
+			return;
+		}
+
+		// 현재 라운드에 출현 가능한 몬스터 필터링
+		availableMonsters = MONSTER_CONFIG.filter((monster) =>
+			roundUnlock.monster_id.includes(monster.id),
+		);
 	}
-
-	// 현재 라운드에 출현 가능한 몬스터 필터링
-	const availableMonsters = MONSTER_CONFIG.filter((monster) =>
-		roundUnlock.monster_id.includes(monster.id),
-	);
 
 	monsters.push(new Monster(monsterPath, currentRound, availableMonsters));
 }
@@ -278,9 +279,18 @@ async function gameLoop(frameTime) {
 
 				tower.attack(monster);
 
-
 				if (monster.hp <= 0) {
-					daethSheets.push({ killer: 'killtower', x: tower.x, y: tower.y, monsterId: monster.uniqueId, monsterHp: monster.maxHp, monsterGold: monster.gold, monsterX: monster.x, monsterY: monster.y, monsterTimestemp: Date.now() });
+					daethSheets.push({
+						killer: 'killtower',
+						x: tower.x,
+						y: tower.y,
+						monsterId: monster.uniqueId,
+						monsterHp: monster.maxHp,
+						monsterGold: monster.gold,
+						monsterX: monster.x,
+						monsterY: monster.y,
+						monsterTimestemp: Date.now(),
+					});
 					monster.dead();
 					score += monsterLevel;
 					userGold += monster.gold;
@@ -523,7 +533,7 @@ Promise.all([
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),
-]).then(() => { });
+]).then(() => {});
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {
