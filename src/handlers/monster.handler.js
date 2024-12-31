@@ -7,6 +7,8 @@ let spawnInterval;
 export const monsterCreate = (userId, payload, socket) => {
 	console.log('getMonsterCreateHandler', payload);
 
+	// payload에 isFever가 담겨져 온다면 그것을 이용해서 count를 /2 해준다.
+
 	const round = payload.round;
 	createRoundInfo(round);
 	const roundInfo = getRoundInfo(round);
@@ -31,3 +33,14 @@ export const stopCreateMonster = (userId, payload, socket) => {
 	clearInterval(spawnInterval);
 	return { status: 'success', message: `Monster Spawn Stop}` };
 }
+
+// // sendEvent(41, payload : {})
+// export const spawnMonster = (userId) => {
+// 	addMonster(userId);
+// 	return { handlerId: 41, status: 'success', message: 'monster added to Pool'};
+// }
+
+// // sendEvent(42, payload : {})
+// export const updateMonster = (userId) => {
+// 	return { handlerId: 42, status: 'success', monsters : updateMonsters(userId)};
+// }
