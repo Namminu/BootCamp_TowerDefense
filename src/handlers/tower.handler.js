@@ -196,9 +196,26 @@ export const atteckTower = (userId, payload, socket) => {
 	return { status: 'success', message: '때릴 수 있는 놈이군.' };
 };
 
+
+//배열을 자르는 함수로, 너무 길어지지 않게 잘라줍니다.
+function removeOldRoundDamage(damageSheet, targetRound) {
+	for (let i = damageSheet.length - 1; i >= 0; i--) {
+        const round = parseInt(damageSheet[i].hitEntity.split('_')[0]); // hitEntity의 앞 숫자 추출
+        if (round === targetRound) {
+            damageSheet.splice(i, 1); // 조건에 맞으면 배열에서 제거
+        }
+    }
+
+}
+
+
+
 //킬 목록을 가져온다. 목록은 [{ killer{killer ,killerX, killerY}, dethEntity{id,hp,speed,gold,timestemp}, x, y,},...] 나는 x,y(죽은위치) 안쓰지만 베이스랑 라운드에서 쓰기 때문.
 export const killTower = (userId, daethSheets) => {
-	if (getUserData(userId).round === 1 && !daethSheets) {
+
+	const currentRound = getUserData(userId).round;
+	
+	if (currentRound === 1 && !daethSheets) {
 		//가장 처음에 한번 부르는 용.
 		return true;
 	}
@@ -206,6 +223,11 @@ export const killTower = (userId, daethSheets) => {
 	daethSheets = daethSheets.filter((item) => item.killer === 'killtower');
 	const currentTowers = getTower(userId);
 	const damageSheet = getowerAttackSheet(userId);
+	const targetRound = currentRound - 1;
+
+
+
+	console.log("damageSheet",damageSheet);
 
 	const isValid = daethSheets.every((sheet) => {
 		//막타친 타워가 있는지 확인합니다.
@@ -227,6 +249,7 @@ export const killTower = (userId, daethSheets) => {
 			console.log("totalDamage",totalDamage);
 			console.log("sheet.monsterHp",sheet.monsterHp);
 
+			
 			console.log('타워 데미지 이상');
 			return false;
 		}
@@ -236,6 +259,7 @@ export const killTower = (userId, daethSheets) => {
 	
 
 	if (!isValid) {
+		removeOldRoundDamage(damageSheet, targetRound);
 		return false;
 	}
 
@@ -268,9 +292,14 @@ export const killTower = (userId, daethSheets) => {
 	});
 
 	if (!isValid2) {
+		removeOldRoundDamage(damageSheet, targetRound);
 		return false;
 	}
 
+
+
 	
+
+	removeOldRoundDamage(damageSheet, targetRound);
 	return true;
 };
