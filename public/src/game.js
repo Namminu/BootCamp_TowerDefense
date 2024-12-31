@@ -120,6 +120,12 @@ function processQueue() {
 
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
+export function addDeathSheet(data) {
+    daethSheets.push(data);
+};
+
+
+
 function setMonsterPathFromGeneratedPath() {
 	// generatePath 결과를 기반으로 몬스터 경로 설정
 	const generatedPath = path;
@@ -280,7 +286,7 @@ async function gameLoop(frameTime) {
 				tower.attack(monster);
 
 				if (monster.hp <= 0) {
-					daethSheets.push({
+					addDeathSheet({
 						killer: 'killtower',
 						x: tower.x,
 						y: tower.y,
