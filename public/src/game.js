@@ -158,8 +158,7 @@ function placeBase() {
 	if (lastPoint) {
 		basePointX = lastPoint.x * cellSize.WIDTH;
 		basePointY = lastPoint.y * cellSize.HEIGHT;
-		console.log('베이스 위치 : ', lastPoint.x * cellSize.WIDTH, lastPoint.y * cellSize.HEIGHT)
-		base = new Base(lastPoint.x * cellSize.WIDTH, lastPoint.y * cellSize.HEIGHT, baseHp);
+		base = new Base(basePointX, basePointY, baseHp);
 		base.draw(ctx, baseImage);
 	} else {
 		console.log('path is not defined');
@@ -271,9 +270,7 @@ async function gameLoop(frameTime) {
 			}
 			monster.draw(ctx);
 		} else {
-			/* 몬스터가 죽었을 때 */
-			// 아래 콘솔은 지금 베이스에 부딪히고 사망해야 올라오는 콘솔같음
-			console.log("xxx몬스터 사망");
+			/* 몬스터가 베이스에 부딪혀 죽었을 때 */
 			addDeathSheet({ 
 				killer: 'killbase', 
 				x: monster.x, 
@@ -287,9 +284,6 @@ async function gameLoop(frameTime) {
 				baseY: basePointY, 
 				monsterTimestemp: Date.now() 
 			});
-			console.log("현재 베이스 위치 ", basePointX, basePointY);
-			console.log("베이스에 부딪힌 쥐 위치 ", monster.x, monster.y);
-			console.log("데스 시트", deathSheets);
 			monster.dead();
 			monsters.splice(i, 1);
 		}
