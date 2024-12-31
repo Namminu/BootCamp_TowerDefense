@@ -11,14 +11,21 @@ const router = express.Router();
 // ** 회원가입 API **
 router.post('/sign-up', async (req, res) => {
 	try {
-		const { userId, password, nickName } = req.body;
+		const { userId, password, confirmPassword, nickName } = req.body;
 
 		const existingUser = await prisma.users.findUnique({
 			where: { nickName },
 		});
+		// 닉네임 중복
 		if (existingUser) {
-			return res.status(400).json({
+			return res.status(409).json({
 				errorMessage: '닉네임이 이미 존재합니다.',
+			});
+		}
+		// 비밀번호 확인 불일치 
+		if (password !== confirmPassword) {
+			return res.status(400).json({
+				errorMessage: '비밀번호 확인이 일치하지 않습니다.',
 			});
 		}
 
