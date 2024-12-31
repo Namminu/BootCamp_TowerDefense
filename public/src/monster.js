@@ -78,6 +78,7 @@ export class Monster {
 			}
 			return false;
 		} else {
+			// 이부분에서 몬스터가 베이스에 도착을 했을 때 데미지를 주는 부분 이부분에서 deathSheet에 killBase를 넣어서 확인
 			const isDestroyed = base.takeDamage(this.attackPower); // 기지에 도달하면 기지에 데미지를 입힙니다!
 			this.hp = 0; // 몬스터는 이제 기지를 공격했으므로 자연스럽게 소멸해야 합니다.
 			return isDestroyed;

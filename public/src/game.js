@@ -2,6 +2,7 @@ import { Base } from './base.js';
 import { Monster } from './monster.js';
 import towerData from '../assets/tower.json' with { type: 'json' };
 import monsterData from '../assets/monster.json' with { type: 'json' };
+import monsterUnlockData from '../assets/monster_unlock.json' with { type: 'json' };
 import { TowerControl } from './towerControl.js';
 import { sendEvent } from './socket.js';
 import { initModal, showModal } from './webpages/modals/gameOverModal.js';
@@ -52,8 +53,14 @@ let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
 let userData = null;
 
+// 베이스 위치 관련 변수
+let basePointX = 0;
+let basePointY = 0;
+
+// 상수 정의
 const TOWER_CONFIG = towerData.data;
 const MONSTER_CONFIG = monsterData.data;
+const MONSTER_UNLOCK_CONFIG = monsterUnlockData.data;
 
 // 경로를 저장할 배열
 let paths = [];
@@ -142,6 +149,9 @@ function placeBase() {
 	//플레이어 베이스를 만드는 함수.
 	const lastPoint = path[path.length - 1];
 	if (lastPoint) {
+		basePointX = lastPoint.x * cellSize.WIDTH;
+		basePointY = lastPoint.y * cellSize.HEIGHT;
+		console.log('베이스 위치 : ', lastPoint.x * cellSize.WIDTH, lastPoint.y * cellSize.HEIGHT)
 		base = new Base(lastPoint.x * cellSize.WIDTH, lastPoint.y * cellSize.HEIGHT, baseHp);
 		base.draw(ctx, baseImage);
 	} else {
@@ -229,6 +239,7 @@ async function gameLoop(frameTime) {
 			continue;
 		}
 
+		// 몬스터 이동 관련 
 		if (monster.hp > 0) {
 			const isDestroyed = monster.move(base);
 			if (isDestroyed) {
@@ -253,6 +264,24 @@ async function gameLoop(frameTime) {
 			monster.draw(ctx);
 		} else {
 			/* 몬스터가 죽었을 때 */
+			// 아래 콘솔은 지금 베이스에 부딪히고 사망해야 올라오는 콘솔같음
+			console.log("xxx몬스터 사망");
+			daethSheets.push({ 
+				killer: 'killbase', 
+				x: monster.x, 
+				y: monster.y, 
+				monsterId: monster.uniqueId, 
+				monsterHp: monster.maxHp, 
+				monsterGold: monster.gold, 
+				monsterX: monster.x, 
+				monsterY: monster.y,
+				baseX: basePointX,
+				baseY: basePointY, 
+				monsterTimestemp: Date.now() 
+			});
+			console.log("현재 베이스 위치 ", basePointX, basePointY);
+			console.log("베이스에 부딪힌 쥐 위치 ", monster.x, monster.y);
+			console.log("데스 시트", daethSheets);
 			monster.dead();
 			monsters.splice(i, 1);
 		}
@@ -277,7 +306,17 @@ async function gameLoop(frameTime) {
 
 
 				if (monster.hp <= 0) {
-					daethSheets.push({ killer: 'killtower', x: tower.x, y: tower.y, monsterId: monster.uniqueId, monsterHp: monster.maxHp, monsterGold: monster.gold, monsterX: monster.x, monsterY: monster.y, monsterTimestemp: Date.now() });
+					daethSheets.push({ 
+						killer: 'killtower', 
+						x: tower.x, 
+						y: tower.y, 
+						monsterId: monster.uniqueId, 
+						monsterHp: monster.maxHp, 
+						monsterGold: monster.gold, 
+						monsterX: monster.x, 
+						monsterY: monster.y, 
+						monsterTimestemp: Date.now() 
+					});
 					monster.dead();
 					score += monsterLevel;
 					userGold += monster.gold;
@@ -465,7 +504,7 @@ export async function initGame(receivedUserData, getReset = false) {
 
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
 	placeBase(); // 기지 배치
-	// 서버에 몬스터 스폰 주기와 타이밍 동기화
+	// 서버에 몬스터 스폰 주기와 타이밍 동기화 -> 라운드 정보를 가져와서 초기화해야함 -> 0으로 초기화된거 너무 짜친다다
 	queueEvent(13, { round: 0, timestamp: Date.now() });
 	gameLoop(); // 게임 루프 시작
 
@@ -786,7 +825,7 @@ let roundUnlock = null;
 
 export function setRound(roundInfo, unlockMonsters) {
 	round = roundInfo.round;
-	monsterSpawnInterval = roundInfo.duration;
+	//monsterSpawnInterval = roundInfo.duration;
 	spawn_count = roundInfo.count;
 	round_timer = roundInfo.time;
 	roundUnlock = unlockMonsters;
