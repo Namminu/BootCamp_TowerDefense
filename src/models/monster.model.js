@@ -22,7 +22,9 @@ class Monster {
 		this.hp = this.maxHp;
 		this.speed = monsterJson.speed;
 		this.gold = monsterJson.gold;
-        this.image = monsterJson.image;
+        this.monsterIdelImageIndex = 0;
+        this.idleImage = monsterJson.imageSet.idle;
+        this.hitImage = monsterJson.imageSet.hit;
 		this.isDead = false;
         this.width = monsterJson.width;
         this.height = monsterJson.height;
@@ -75,9 +77,12 @@ export const updateMonsters = (uuid) => {
     for(let index = monsters.length-1; index>=0; index--){
         const monster = monsters[index];
         const destroyed = monster.move();
-
         if(destroyed) monsters.splice(index, 1);
+        
+        monster.monsterIdelImageIndex++;
+        if(monster.monsterIdelImageIndex>=60) monster.monsterIdelImageIndex = 0;
     }
+
     
     return monsters;
 }

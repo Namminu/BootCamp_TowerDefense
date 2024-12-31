@@ -233,7 +233,6 @@ async function gameLoop(frameTime) {
 		spawnWatingTime = 0;
 		sendEvent(41, {});
 		spawn_count--;
-		console.log('소환!', spawn_count);
 	}
 	sendEvent(42, {});
 	previousTime = currentTime;
@@ -263,7 +262,9 @@ async function gameLoop(frameTime) {
 	for (let i = monsters.length - 1; i >= 0; i--) {
 		const monster = monsters[i];
 		const img = new Image();
-		img.src = monster.image;
+		let imageIndex = Math.floor(monster.monsterIdelImageIndex/30);
+		if(imageIndex>1) imageIndex = 1;
+		img.src = monster.idleImage[imageIndex];
 		ctx.drawImage(img, monster.x, monster.y, monster.width, monster.height);
 		// if (monster.hp > 0) {
 		// 	const isDestroyed = monster.move(base);
@@ -566,7 +567,7 @@ export async function initGame(receivedUserData, getReset = false) {
 	// placeInitialTowers(); // 초기 타워 배치
 	placeBase(); // 기지 배치
 	// 서버에 몬스터 스폰 주기와 타이밍 동기화 -> 라운드 정보를 가져와서 초기화해야함 -> 0으로 초기화된거 너무 짜친다다
-	queueEvent(13, { round: 0, timestamp: Date.now() });
+	//queueEvent(13, { round: 0, timestamp: Date.now() });
 	gameLoop(); // 게임 루프 시작
 
 	await initModal(); // 게임오버 모달창 초기 로드

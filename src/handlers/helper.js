@@ -22,13 +22,13 @@ export const handleDisconnect = (socket, uuid) => {
 export const handleConnection = (socket, uuid) => {
 	console.log(`새 유저:${uuid}, 소켓아이디 ${socket.id}`);
 	console.log('현재 접속중인 유저:', getUser());
-
+  
   // 서버에서 유저 초기값 세팅
 	gameStart(uuid, socket);
   initMonsterPool(uuid);
   initPath(uuid);
 
-	// 클라에서 유저 초기값 세팅팅
+	// 클라에서 유저 초기값 세팅
 	const response = moveRoundHandler(uuid, { currentRound: 0, timestamp: Date.now() });
 	const initRoundInfo = response.nextRoundInfo;
 	const unlockMonsters = response.unlockMonsters;
@@ -40,9 +40,9 @@ export const handleConnection = (socket, uuid) => {
 };
 
 export const handlerEvent = async (io, socket, data) => {
-	//const { userId } = jwt.verify(data.token, process.env.JWT_KEY);
-  let userId = 'test';
-	const handler = handlerMappings[data.handlerId];
+	const { userId } = jwt.verify(data.token, process.env.JWT_KEY);
+  
+  const handler = handlerMappings[data.handlerId];
 	if (!handler) {
 		console.error(`헨들러가 존재하지 않습니다. handlerId: ${data.handlerId}`);
 		socket.emit('response', { status: 'fail', message: '헨들러가 없어용' });
