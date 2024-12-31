@@ -29,9 +29,9 @@ export class Monster {
 		// this.image.src = monsterData.image;
 
 		// monster.json 데이터 기반으로 초기화
-		this.maxHp = monsterData.hp + level * 10; // 테스트용
+		this.maxHp = monsterData.hp + level * 20;
 		this.hp = this.maxHp;
-		this.attackPower = monsterData.damage + level * 10; //테스트용
+		this.attackPower = monsterData.damage + level * 20;
 		this.speed = monsterData.speed;
 		this.gold = monsterData.gold;
 		this.isDead = false; // 몬스터가 죽었는지 여부
