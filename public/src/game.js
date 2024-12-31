@@ -61,7 +61,7 @@ const MONSTER_UNLOCK_CONFIG = monsterUnlockData.data;
 // 경로를 저장할 배열
 let paths = [];
 // 몬스터의 죽음을 기록할 배열. 라운드마다 보네주고 초기화.
-let daethSheets = [];
+let deathSheets = [];
 
 // 이미지 로딩 파트
 const towerImages = TOWER_CONFIG.map((tower) => {
@@ -121,7 +121,7 @@ function processQueue() {
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
 export function addDeathSheet(data) {
-    daethSheets.push(data);
+    deathSheets.push(data);
 };
 
 
@@ -214,8 +214,8 @@ async function gameLoop(frameTime) {
 		round_timer -= deltaTime2;
 		if (round_timer <= 0) {
 			isRoundExpired = true;
-			await sendEvent(11, { currentRound: round, timestamp: Date.now(), daethSheets });
-			daethSheets = [];
+			await sendEvent(11, { currentRound: round, timestamp: Date.now(), deathSheets });
+			deathSheets = [];
 		}
 	}
 	//게임 반복.

@@ -211,22 +211,22 @@ function removeOldRoundDamage(damageSheet, targetRound) {
 
 
 //킬 목록을 가져온다. 목록은 [{ killer{killer ,killerX, killerY}, dethEntity{id,hp,speed,gold,timestemp}, x, y,},...] 나는 x,y(죽은위치) 안쓰지만 베이스랑 라운드에서 쓰기 때문.
-export const killTower = (userId, daethSheets) => {
+export const killTower = (userId, deathSheets) => {
 
 	const currentRound = getUserData(userId).round;
 	
-	if (currentRound === 1 && !daethSheets) {
+	if (currentRound === 1 && !deathSheets) {
 		//가장 처음에 한번 부르는 용.
 		return true;
 	}
 
-	daethSheets = daethSheets.filter((item) => item.killer === 'killtower');
+	deathSheets = deathSheets.filter((item) => item.killer === 'killtower');
 	const currentTowers = getTower(userId);
 	const damageSheet = getowerAttackSheet(userId);
 	const targetRound = currentRound - 1;
 
 
-	const isValid = daethSheets.every((sheet) => {
+	const isValid = deathSheets.every((sheet) => {
 		//막타친 타워가 있는지 확인합니다.
 		const matchingTower = currentTowers.find((tower) => tower.x === sheet.x && tower.y === sheet.y);
 

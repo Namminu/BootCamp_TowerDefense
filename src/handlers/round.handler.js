@@ -28,7 +28,7 @@ export const moveRoundHandler = (userId, payload, socket) => {
 
 
 
-	const isKillTower= killTower(userId, payload.daethSheets);
+	const isKillTower= killTower(userId, payload.deathSheets);
 
 	if(!isKillTower) {
 		return { status: 'fail', message: '이새끼 핵씀.' };
