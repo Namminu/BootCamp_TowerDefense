@@ -545,6 +545,7 @@ export function resetGame() {
 	cancelAnimationFrame(gameLoopId);
 
 	// 게임 상태 초기화
+	deathSheets = [];
 	monsters.length = 0;
 	towerControl.towers.length = 0;
 	userGold = 0;
