@@ -1,11 +1,10 @@
 import { setRound, spawnMonster, initGame } from './game.js';
 
-let somewhere = localStorage.getItem('authToken');
-
+let token = sessionStorage.getItem('authToken');
 
 const socket = io('http://localhost:8080', {
 	query: {
-		token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
+		token: token,
 	},
 });
 
@@ -42,18 +41,10 @@ const loadTowerQueue = () => {
 	});
 };
 
-// const sendEvent = async (handlerId, payload) => {
-//   socket.emit('event', {
-//     token: somewhere,
-//     handlerId,
-//     payload,
-//   });
-// };
-
 const sendEvent = (handlerId, payload) => {
 	return new Promise((resolve, reject) => {
 		socket.emit('event', {
-			token: somewhere,
+			token,
 			handlerId,
 			payload,
 		});

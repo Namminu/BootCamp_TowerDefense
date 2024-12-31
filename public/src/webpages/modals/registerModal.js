@@ -1,4 +1,3 @@
-const token = localStorage.getItem('authToken');
 // 모달 HTML 파일 로드
 export async function loadRegisterModal() {
 	try {
