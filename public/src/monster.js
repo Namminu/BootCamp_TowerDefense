@@ -29,9 +29,9 @@ export class Monster {
 		// this.image.src = monsterData.image;
 
 		// monster.json 데이터 기반으로 초기화
-		this.maxHp = monsterData.hp + level * 10; // 테스트용
+		this.maxHp = monsterData.hp + level * 20;
 		this.hp = this.maxHp;
-		this.attackPower = monsterData.damage + level * 10; //테스트용
+		this.attackPower = monsterData.damage + level * 20;
 		this.speed = monsterData.speed;
 		this.gold = monsterData.gold;
 		this.isDead = false; // 몬스터가 죽었는지 여부
@@ -51,6 +51,10 @@ export class Monster {
 		this.hitDuration = 0;
 		this.animationSpeed = 0.05; // 프레임 전환 속도
 
+		// 방향 상태
+		// true면 왼쪽, false면 오른쪽
+		this.isFlipped = false;
+
 		// 따로 정보를 보내줘야 한다.
 		// class round
 		// Gold
@@ -67,6 +71,9 @@ export class Monster {
 			const deltaY = nextPoint.y - this.y;
 			// 2차원 좌표계에서 두 점 사이의 거리를 구할 땐 피타고라스 정리를 활용하면 됩니다! a^2 = b^2 + c^2니까 루트를 씌워주면 되죠!
 			const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+			// 이동 방향에 따라 이미지 방향 설정
+			this.isFlipped = deltaX < 0; // x 좌표가 감소하면 왼쪽으로 이동
 
 			if (distance < this.speed) {
 				// 거리가 속도보다 작으면 다음 지점으로 이동시켜주면 됩니다!
@@ -85,8 +92,6 @@ export class Monster {
 	}
 
 	draw(ctx) {
-		// ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-
 		let currentImage = new Image();
 
 		if (this.isHit && this.hitDuration > 0) {
@@ -103,7 +108,20 @@ export class Monster {
 			this.currentFrame += this.animationSpeed;
 		}
 
-		ctx.drawImage(currentImage, this.x, this.y, this.width, this.height);
+		// 이미지 반전을 위한 설정
+		ctx.save(); // 현재 컨텍스트 상태 저장
+
+		if (this.isFlipped) {
+			// 왼쪽을 볼 때 이미지 반전
+			ctx.translate(this.x + this.width, this.y);
+			ctx.scale(-1, 1);
+			ctx.drawImage(currentImage, 0, 0, this.width, this.height);
+		} else {
+			// 오른쪽을 볼 때 정상 방향
+			ctx.drawImage(currentImage, this.x, this.y, this.width, this.height);
+		}
+
+		ctx.restore(); // 컨텍스트 상태 복원
 
 		// 배경 그리기
 		ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
