@@ -558,7 +558,7 @@ export function resetGame() {
 	// 몬스터 스폰 초기화
 	sendEvent(12, {});
 	eventQueue.length = 0;
-
+	
 	// 캔버스 초기화
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 

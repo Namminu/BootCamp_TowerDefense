@@ -227,14 +227,6 @@ export const killTower = (userId, deathSheets) => {
 
 
 	const isValid = deathSheets.every((sheet) => {
-		//막타친 타워가 있는지 확인합니다.
-		const matchingTower = currentTowers.find((tower) => tower.x === sheet.x && tower.y === sheet.y);
-
-		if (!matchingTower) {
-			console.log('없는 타워가 때림');
-			return false;
-		}
-
 		//데미지 시트를 확인해 데미지를 준게 맞는지 확인합니다.
 		const relatedDamage = damageSheet.filter((damage) => damage.hitEntity === sheet.monsterId);
 		// damage 값의 합계 계산
@@ -272,9 +264,10 @@ export const killTower = (userId, deathSheets) => {
 				adjustedCooldown = tower.cooldown / 2;
 			}
 
-			if(timeDifference < adjustedCooldown*3){ //8.3 언저리긴 함. 정확하게 하려면 8배 하기.
+			if(timeDifference < adjustedCooldown*3){ 
 				console.log("timeDifference",timeDifference);
-				console.log("tower.cooldown",tower.cooldown*5);
+				console.log("tower.cooldown",tower.cooldown*3);
+				console.log("타워 공속 이상");
 				return false;
 			}
         }
