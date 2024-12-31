@@ -11,14 +11,21 @@ const router = express.Router();
 // ** 회원가입 API **
 router.post('/sign-up', async (req, res) => {
 	try {
-		const { userId, password, nickName } = req.body;
+		const { userId, password, confirmPassword, nickName } = req.body;
 
 		const existingUser = await prisma.users.findUnique({
 			where: { nickName },
 		});
+		// 닉네임 중복
 		if (existingUser) {
-			return res.status(400).json({
+			return res.status(409).json({
 				errorMessage: '닉네임이 이미 존재합니다.',
+			});
+		}
+		// 비밀번호 확인 불일치 
+		if (password !== confirmPassword) {
+			return res.status(400).json({
+				errorMessage: '비밀번호 확인이 일치하지 않습니다.',
 			});
 		}
 
@@ -45,7 +52,7 @@ router.post('/sign-up', async (req, res) => {
 router.post('/sign-in', async (req, res) => {
 	try {
 		const { userId, password } = req.body;
-		// 유저 데이터에서 입력된 username으로 유저 검색
+		// 유저 데이터에서 입력된 userId로 유저 검색
 		const user = await prisma.users.findUnique({
 			where: {
 				userId: userId,
@@ -75,6 +82,7 @@ router.post('/sign-in', async (req, res) => {
 
 		return res.status(200).json({
 			message: '로그인 되었습니다',
+			userName: user.nickName,
 		});
 	} catch (error) {
 		console.error(error); // 에러를 콘솔에 출력

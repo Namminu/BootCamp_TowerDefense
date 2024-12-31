@@ -2,6 +2,7 @@ import { getGameAssets } from '../init/assets.js';
 import { createRoundInfo, getRoundInfo } from '../models/roundInfo.model.js';
 import { getUserData, setUserRound, setUserTimestamp } from '../models/userData.model.js';
 import { killTower } from './tower.handler.js';
+import { baseHitEnemyCheck } from './base.hanlder.js';
 
 // sendEvent(11, payload : { currentRound, timestamp })
 export const moveRoundHandler = (userId, payload, socket) => {
@@ -34,7 +35,10 @@ export const moveRoundHandler = (userId, payload, socket) => {
 		return { status: 'fail', message: '이새끼 핵씀.' };
 	}
 
-
+	const isKillBase = baseHitEnemyCheck(userId, payload.deathSheets);
+	if(!isKillBase) {
+		return { status: 'fail', message: '이상한 결과' };
+	}
 
 	// 다음 라운드
 	const nextRound = payload.currentRound + 1;
