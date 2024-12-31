@@ -525,6 +525,8 @@ export async function initGame(receivedUserData, getReset = false) {
 		return;
 	}
 
+	sendEvent(2);
+
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
 	placeBase(); // 기지 배치
 	// 서버에 몬스터 스폰 주기와 타이밍 동기화 -> 라운드 정보를 가져와서 초기화해야함 -> 0으로 초기화된거 너무 짜친다다
