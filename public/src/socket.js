@@ -1,4 +1,4 @@
-import { setRound, spawnMonster, initGame } from './game.js';
+import { setRound, initGame, setMonsters, setPath } from './game.js';
 
 let somewhere = localStorage.getItem('authToken');
 
@@ -8,10 +8,9 @@ const socket = io('http://localhost:8080', {
 	},
 });
 
-socket.on('response', (data) => {
-	console.log('response : ', data);
-	if (data.handlerId === 11) setRound(data.nextRoundInfo, data.unlockMonsters);
-});
+// socket.on('response', (data) => {
+// 	console.log('response : ', data);
+// });
 
 socket.on('connection', (data) => {
 	console.log('connection: ', data);
@@ -26,6 +25,8 @@ socket.on('connection', (data) => {
 	}
 
 	setRound(data.initRoundInfo, data.unlockMonsters);
+	setPath(data.path, data.monsterPath);
+	console.log('경로', data.path);
 });
 
 const loadTowerQueue = () => {
@@ -64,9 +65,36 @@ const sendEvent = (handlerId, payload) => {
 };
 
 // 서버에게 생성주기가 완료되면 생성하라는 데이터를 받는다.
-socket.on('spawnMonster', (data) => {
-	console.log('서버로부터 몬스터 생성 명령 수신', data);
-	spawnMonster(); // 클라이언트의 spawnMonster 함수 호출
-});
+// socket.on('spawnMonster', (data) => {
+// 	console.log('서버로부터 몬스터 생성 명령 수신', data);
+// 	//spawnMonster(); // 클라이언트의 spawnMonster 함수 호출
+// });
 
 export { sendEvent, loadTowerQueue };
+
+
+
+socket.on('response', data => {
+	//console.log(data);
+	if (data.status === 'success') {
+		switch (data.handlerId) {
+			case 1: 
+				break;
+			case 2: //start game
+				break;
+			case 3: //end game
+				break;
+			case 11: //moveRound
+        setRound(data.nextRoundInfo, data.unlockMonsters);
+				break;
+      case 41: //createMonster
+        break;
+      case 42: //updateMonster
+			setMonsters(data.monsters);
+        break;
+			default:
+				break;
+		}
+	} else {
+	}
+});

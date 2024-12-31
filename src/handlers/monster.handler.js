@@ -1,3 +1,4 @@
+import { addMonster, updateMonsters } from '../models/monster.model.js';
 import { createRoundInfo, getRoundInfo } from '../models/roundInfo.model.js';
 
 // 몬스터 스폰 주기 변수
@@ -24,9 +25,9 @@ export const monsterCreate = (userId, payload, socket) => {
 
 	// 이후 주기적으로 몬스터 생성 이벤트 전송
 	//const spawnInterval =
-	spawnInterval = setInterval(() => {
-		socket.emit('spawnMonster', { message: '몬스터 생성하세요!', round, count });
-	}, duration);
+	// spawnInterval = setInterval(() => {
+	// 	socket.emit('spawnMonster', { message: '몬스터 생성하세요!', round, count });
+	// }, duration);
 
 	// setTimeout(() => {
 	//   clearInterval(spawnInterval);
@@ -39,4 +40,15 @@ export const monsterCreate = (userId, payload, socket) => {
 export const stopCreateMonster = (userId, payload, socket) => {
 	clearInterval(spawnInterval);
 	return { status: 'success', message: `Monster Spawn Stop}` };
+}
+
+// sendEvent(41, payload : {})
+export const spawnMonster = (userId) => {
+	addMonster(userId);
+	return { handlerId: 41, status: 'success', message: 'monster added to Pool'};
+}
+
+// sendEvent(42, payload : {})
+export const updateMonster = (userId) => {
+	return { handlerId: 42, status: 'success', monsters : updateMonsters(userId)};
 }

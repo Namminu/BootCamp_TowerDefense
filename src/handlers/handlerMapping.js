@@ -1,6 +1,6 @@
 import { gameOver, gameStart, updateUserGold } from './game.handler.js';
 import { atteckTower, buyTower, sellingTower, upgradeTower } from './tower.handler.js';
-import { monsterCreate, stopCreateMonster } from './monster.handler.js';
+import { monsterCreate, spawnMonster, stopCreateMonster, updateMonster } from './monster.handler.js';
 import { moveRoundHandler } from './round.handler.js';
 // import { moveStageHandler } from "./stage.handler.js";
 
@@ -12,9 +12,11 @@ const handlerMappings = {
 	7: upgradeTower, // 업그레이드 할때.
 	8: updateUserGold, // 유저 골드 업데이트
 	11: moveRoundHandler, // 라운드를 이동할때.
-	12: stopCreateMonster, // 몬스터 생성 중지 핸들러
-	13: monsterCreate, // 몬스터 생성 핸들러
+	//12: stopCreateMonster, // 몬스터 생성 중지 핸들러
+	//13: monsterCreate, // 몬스터 생성 핸들러
 	14: atteckTower,
+	41: spawnMonster,
+	42: updateMonster,
 	// 라운드 종료 핸들러?
 };
 

@@ -1,13 +1,13 @@
 const roundInfo = {};
 
 // 기본 몬스터 소환 주기
-const default_duration = 3000;
+const default_duration = 500;
 
 // 기본 몬스터 소환 수
-const default_count = 5;
+const default_count = 10;
 
 // 기본 라운드 진행시간
-const default_time = 10000;
+const default_time = 20000;
 
 /*
 {
@@ -25,8 +25,8 @@ export const createRoundInfo = (id) => {
 	const round = id;
 	roundInfo[round] = {
 		round : id,
-		duration: default_duration - Math.floor(round / 10),
-		count: default_count,
+		duration: default_duration,
+		count: default_count + round,
 		time: default_time,
 	};
 	return roundInfo[id];

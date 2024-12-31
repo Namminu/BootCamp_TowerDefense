@@ -7,6 +7,8 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { gameStart } from './game.handler.js';
 import { moveRoundHandler } from './round.handler.js';
+import { initMonsterPool, addMonster } from '../models/monster.model.js';
+import { getMonsterPath, getPath, initPath } from '../models/path.model.js';
 
 dotenv.config();
 
@@ -21,10 +23,12 @@ export const handleConnection = (socket, uuid) => {
 	console.log(`새 유저:${uuid}, 소켓아이디 ${socket.id}`);
 	console.log('현재 접속중인 유저:', getUser());
 
-	// 연결되면 바로 게임이 시작되므로 여기서 gameStart 호출 (클라에서 호출X)
+  // 서버에서 유저 초기값 세팅
 	gameStart(uuid, socket);
+  initMonsterPool(uuid);
+  initPath(uuid);
 
-	// 현재 시간으로 라운드 시작
+	// 클라에서 유저 초기값 세팅팅
 	const response = moveRoundHandler(uuid, { currentRound: 0, timestamp: Date.now() });
 	const initRoundInfo = response.nextRoundInfo;
 	const unlockMonsters = response.unlockMonsters;
@@ -32,12 +36,16 @@ export const handleConnection = (socket, uuid) => {
 	// userData.model.js의 userData 불러오기
 	const userData = getUserData(uuid);
 
-	socket.emit('connection', { uuid, initRoundInfo, unlockMonsters, userData });
+  console.log('-----------------------');
+  console.log('path:', getPath(uuid));
+  console.log('monster path:', getMonsterPath(uuid));
+
+	socket.emit('connection', { uuid, initRoundInfo, unlockMonsters, userData, path:getPath(uuid), monsterPath:getMonsterPath(uuid) });
 };
 
 export const handlerEvent = async (io, socket, data) => {
-	const { userId } = jwt.verify(data.token, process.env.JWT_KEY);
-
+	//const { userId } = jwt.verify(data.token, process.env.JWT_KEY);
+  let userId = 'test';
 	const handler = handlerMappings[data.handlerId];
 	if (!handler) {
 		console.error(`헨들러가 존재하지 않습니다. handlerId: ${data.handlerId}`);
@@ -46,8 +54,10 @@ export const handlerEvent = async (io, socket, data) => {
 	}
 
 	const response = await handler(userId, data.payload, socket);
-	console.log('handlerId : ', data.handlerId);
-	console.log('response : ', response);
+  if(data.handlerId!==42){
+    console.log('handlerId : ', data.handlerId);
+    console.log('response : ', response);
+  }
 
 	if (response.broadcast) {
 		io.emit('response', response);

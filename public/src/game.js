@@ -41,10 +41,10 @@ let previewTower = null; // 미리보기를 위한 타워 객체
 // 메시지 출력 플래그
 let printMessage = false;
 
-const monsters = [];
+let monsters = [];
 let ableToMoveRound = false; // 라운드 이동 가능 여부
 let monsterLevel = 1; // 몬스터 레벨
-let monsterSpawnInterval = 3; // 몬스터 생성 주기 ms
+let monsterSpawnInterval = 1000; // 몬스터 생성 주기 ms
 let killCount = 0; // 몬스터 처치 수
 let feverTriggered = false; // 피버 모드 실행 여부를 확인하는 플래그
 
@@ -138,7 +138,7 @@ function setMonsterPathFromGeneratedPath() {
 function initMap() {
 	// 배경 이미지 그리기
 	paths = setMonsterPathFromGeneratedPath();
-	drawGridAndPath(ctx, cellSize, paths);
+	drawGridAndPath(ctx, cellSize, pathFromServer);
 }
 
 function placeBase() {
@@ -153,44 +153,58 @@ function placeBase() {
 }
 
 //실질적인 몬스터 소환 함수
-export function spawnMonster() {
-	if (!isGameRun) return; // 게임 정지 상태일 때는 return
+// export function spawnMonster() {
+// 	if (!isGameRun) return; // 게임 정지 상태일 때는 return
 
-	console.log('몬스터가 생성되었습니다!');
-	// const userData = getUserData();
-	console.log('스폰몬스터', userData);
+// 	console.log('몬스터가 생성되었습니다!');
+// 	// const userData = getUserData();
+// 	console.log('스폰몬스터', userData);
 
-	if (!userData) {
-		console.error('유저 데이터를 찾을 수 없습니다.');
-		return;
-	}
+// 	if (!userData) {
+// 		console.error('유저 데이터를 찾을 수 없습니다.');
+// 		return;
+// 	}
 
-	// 현재 라운드 체크 및 몬스터 출현 가능 여부 체크
-	const currentRound = userData.round;
-	const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
+// 	// 현재 라운드 체크 및 몬스터 출현 가능 여부 체크
+// 	const currentRound = userData.round;
+// 	const roundUnlock = MONSTER_UNLOCK_CONFIG.find((data) => data.round_id === currentRound);
 
-	if (!roundUnlock) {
-		console.error('현재 라운드에 출현 가능한 몬스터가 없습니다.');
-		return;
-	}
+// 	if (!roundUnlock) {
+// 		console.error('현재 라운드에 출현 가능한 몬스터가 없습니다.');
+// 		return;
+// 	}
 
-	// 현재 라운드에 출현 가능한 몬스터 필터링
-	const availableMonsters = MONSTER_CONFIG.filter((monster) =>
-		roundUnlock.monster_id.includes(monster.id),
-	);
+// 	// 현재 라운드에 출현 가능한 몬스터 필터링
+// 	const availableMonsters = MONSTER_CONFIG.filter((monster) =>
+// 		roundUnlock.monster_id.includes(monster.id),
+// 	);
 
-	monsters.push(new Monster(monsterPath, currentRound, availableMonsters));
-}
+// 	monsters.push(new Monster(monsterPath, currentRound, availableMonsters));
+// }
 
 let previousTime = null;
 let isRoundExpired = false;
+
+let spawnWatingTime = 0;
+
+export function setMonsters(monstersFromServer){
+	monsters = monstersFromServer;
+}
+
+let pathFromServer = [];
+let monsterPathFromServer = [];
+export function setPath(path, monsterPath){
+	pathFromServer = path;
+	monsterPathFromServer = monsterPath;
+}
 
 async function gameLoop(frameTime) {
 	if (!isGameRun) return;
 	// 캔버스 새로 그리기
 	ctx.textAlign = 'left';
-	drawGridAndPath(ctx, cellSize, paths);
-	setMonsterPathFromGeneratedPath(); // 경로 다시 그리기
+	//drawGridAndPath(ctx, cellSize, paths);
+	//drawGridAndPath(ctx, cellSize, pathFromServer);
+	//setMonsterPathFromGeneratedPath(); // 경로 다시 그리기
 
 	if (previousTime === null) {
 		previousTime = Date.now();
@@ -198,6 +212,16 @@ async function gameLoop(frameTime) {
 	}
 	const currentTime = Date.now();
 	const deltaTime2 = currentTime - previousTime;
+	if(spawn_count>0){
+		spawnWatingTime += deltaTime2;
+	}
+	if(spawnWatingTime>monsterSpawnInterval){
+		spawnWatingTime = 0;
+		sendEvent(41, {});
+		spawn_count--;
+		console.log('소환!', spawn_count);
+	}
+	sendEvent(42, {});
 	previousTime = currentTime;
 	if (!isRoundExpired) {
 		round_timer -= deltaTime2;
@@ -217,43 +241,41 @@ async function gameLoop(frameTime) {
 
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
 	// // 그리드 생성 및 호출
-	drawGridAndPath(ctx, cellSize, path);
+	drawGridAndPath(ctx, cellSize, pathFromServer);
 
 	// 몬스터 그리기
 	for (let i = monsters.length - 1; i >= 0; i--) {
 		const monster = monsters[i];
-		if (monster.isDead) {
-			monsters.splice(i, 1); // 이미 죽은 몬스터 제거
-			continue;
-		}
+		const img = new Image();
+		img.src = monster.image;
+		ctx.drawImage(img, monster.x, monster.y, monster.width, monster.height);
+		// if (monster.hp > 0) {
+		// 	const isDestroyed = monster.move(base);
+		// 	if (isDestroyed) {
+		// 		/* 게임 오버 */
+		// 		const response = await sendEvent(3, { currentRound: round, timestamp: currentTime });
+		// 		const { message, userName, highScore, time } = response;
+		// 		console.log(
+		// 			'message : ',
+		// 			message,
+		// 			'userName : ',
+		// 			userName,
+		// 			'highScore : ',
+		// 			highScore,
+		// 			'time : ',
+		// 			time,
+		// 		);
+		// 		showModal(message, userName, highScore, 1, time);
 
-		if (monster.hp > 0) {
-			const isDestroyed = monster.move(base);
-			if (isDestroyed) {
-				/* 게임 오버 */
-				const response = await sendEvent(3, { currentRound: round, timestamp: currentTime });
-				const { message, userName, highScore, time } = response;
-				console.log(
-					'message : ',
-					message,
-					'userName : ',
-					userName,
-					'highScore : ',
-					highScore,
-					'time : ',
-					time,
-				);
-				showModal(message, userName, highScore, 1, time);
-
-				// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기
-				stopGame();
-			}
-			monster.draw(ctx);
-		} else {
-			/* 몬스터가 죽었을 때 */
-			monster.dead();
-			monsters.splice(i, 1);
-		}
+		// 		// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기
+		// 		stopGame();
+		// 	}
+		// 	monster.draw(ctx);
+		// } else {
+		// 	/* 몬스터가 죽었을 때 */
+		// 	monster.dead();
+		// 	monsters.splice(i, 1);
+		// }
 	}
 
 	// towers 배열 정렬하기(아래쪽에 그려진 타워일수록 나중에 그려지게 하려고)
@@ -461,7 +483,7 @@ export async function initGame(receivedUserData, getReset = false) {
 		return;
 	}
 
-	initMap(); // 맵 초기화 (배경, 경로 그리기)
+	//initMap(); // 맵 초기화 (배경, 경로 그리기)
 	// placeInitialTowers(); // 초기 타워 배치
 	placeBase(); // 기지 배치
 	//setInterval(spawnMonster, monsterSpawnInterval); // 주기적으로 몬스터 생성
@@ -492,7 +514,6 @@ export function resetGame() {
 	//sendEvent(4, {0, timestamp:Date.now()});
 
 	// 몬스터 스폰 초기화
-	sendEvent(12, {});
 	eventQueue.length = 0;
 
 	// 캔버스 초기화
@@ -795,4 +816,5 @@ export function setRound(roundInfo, unlockMonsters) {
 	round_timer = roundInfo.time;
 	roundUnlock = unlockMonsters;
 	isRoundExpired = false;
+	spawnWatingTime = 0;
 }
