@@ -44,4 +44,8 @@ export class Base {
 		this.hp = Math.floor(this.hp + this.maxHp * 0.02);
 		if (this.hp >= this.maxHp) this.hp = this.maxHp;
 	}
+
+	getCurrentHp() {
+		return this.hp;
+	}
 }

@@ -49,6 +49,8 @@ export const handlerEvent = async (io, socket, data) => {
 	// console.log('handlerId : ', data.handlerId);
 	// console.log('response : ', response);
 
+	response.handlerId = data.handlerId;
+
 	if (response.broadcast) {
 		io.emit('response', response);
 		return;

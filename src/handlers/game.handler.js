@@ -34,7 +34,7 @@ export const gameStart = (userId, payload, socket) => {
 	const initRoundInfo = response.nextRoundInfo;
 	const unlockMonsters = response.unlockMonsters;
 
-	return { handlerId:2, status: 'success', initRoundInfo, unlockMonsters };
+	return { status: 'success', initRoundInfo, unlockMonsters };
 };
 
 // Base의 Hp <= 0 일 시 호출되는 이벤트

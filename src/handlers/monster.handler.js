@@ -8,8 +8,8 @@ export const monsterCreate = (userId, payload, socket) => {
 	console.log('getMonsterCreateHandler', payload);
 
 	const round = payload.round;
-	createRoundInfo(round);
-	const roundInfo = getRoundInfo(round);
+	createRoundInfo(userId, round);
+	const roundInfo = getRoundInfo(userId);
 	console.log('roundInfo: ', roundInfo);
 
 	if (!roundInfo) {
@@ -30,4 +30,4 @@ export const monsterCreate = (userId, payload, socket) => {
 export const stopCreateMonster = (userId, payload, socket) => {
 	clearInterval(spawnInterval);
 	return { status: 'success', message: `Monster Spawn Stop}` };
-}
+};
