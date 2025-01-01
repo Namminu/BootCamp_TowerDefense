@@ -219,7 +219,6 @@ let isRoundExpired = false;
 
 async function gameLoop(frameTime) {
 	if (!isGameRun) {
-		console.log("9++++++++++++++++++++++++++++++++++++");
 		return;
 	}
 	// 캔버스 새로 그리기
@@ -242,7 +241,6 @@ async function gameLoop(frameTime) {
 			deathSheets = [];
 		}
 	}
-	console.log("10++++++++++++++++++++++++++++++++++++");
 	//게임 반복.
 	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -529,18 +527,15 @@ async function gameLoop(frameTime) {
 
 	// TO DO : 피버타임 때?
 	// 캔버스 한 번 지워주기
-	console.log("12++++++++++++++++++++++++++++++++++++");
 	gameLoopId = requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
 export async function initGame(receivedUserData, getReset = false) {
 	if ((isInitGame && !getReset) || !receivedUserData) {
-		console.log("2++++++++++++++++++++++++++++++++++++");
 		return; // 이미 초기화된 경우 방지
 	}
 
 	if (getReset) {
-		console.log("3++++++++++++++++++++++++++++++++++++");
 		isInitGame = false;  // resetGame으로 강제 초기화
 	}
 	userData = receivedUserData;
@@ -559,7 +554,6 @@ export async function initGame(receivedUserData, getReset = false) {
 	//await initModal();
 
 	if (monsterPath.length === 0) {
-		console.log("4++++++++++++++++++++++++++++++++++++");
 		console.error('monsterPath is not defined');
 		return;
 	}
@@ -567,14 +561,11 @@ export async function initGame(receivedUserData, getReset = false) {
 	// base hp 받아오기
 	const initBaseInfo = await sendEvent(20, {});
 	baseHp = initBaseInfo.message;
-	console.log("5++++++++++++++++++++++++++++++++++++");
 	await sendEvent(2);
 	// initMap(); // 맵 초기화 (배경, 경로 그리기)
 	placeBase(); // 기지 배치
 	// 서버에 몬스터 스폰 주기와 타이밍 동기화 -> 라운드 정보를 가져와서 초기화해야함 -> 0으로 초기화된거 너무 짜친다다
-	console.log("6++++++++++++++++++++++++++++++++++++");
 	queueEvent(13, { round: round, timestamp: Date.now() });
-	console.log("7++++++++++++++++++++++++++++++++++++");
 	gameLoop(); // 게임 루프 시작
 
 	await initModal(); // 게임오버 모달창 초기 로드
@@ -612,7 +603,6 @@ export function resetGame() {
 
 	// 캔버스 초기화
 	// ctx.clearRect(0, 0, canvas.width, canvas.height);
-	console.log("1++++++++++++++++++++++++++++++++++++");
 	// 게임 재시작
 	initGame(userData, true);
 }
