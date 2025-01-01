@@ -208,7 +208,10 @@ let previousTime = null;
 let isRoundExpired = false;
 
 async function gameLoop(frameTime) {
-	if (!isGameRun) return;
+	if (!isGameRun) {
+		console.log("작동 확인 4");
+		return;
+	}
 	// 캔버스 새로 그리기
 	ctx.textAlign = 'left';
 	drawGridAndPath(ctx, cellSize, paths);
@@ -523,11 +526,14 @@ async function gameLoop(frameTime) {
 
 export async function initGame(receivedUserData, getReset = false) {
 	if ((isInitGame && !getReset) || !receivedUserData) {
+		console.log("작동 확인 1");
 		return; // 이미 초기화된 경우 방지
 	}
 
-	if (getReset) isInitGame = false; // resetGame으로 강제 초기화
-
+	if (getReset) {
+		console.log("작동 확인 2");
+		isInitGame = false;  // resetGame으로 강제 초기화
+	}
 	userData = receivedUserData;
 	isInitGame = true;
 	isGameRun = true;
@@ -543,6 +549,7 @@ export async function initGame(receivedUserData, getReset = false) {
 	//await initModal();
 
 	if (monsterPath.length === 0) {
+		console.log("작동 확인 6");
 		console.error('monsterPath is not defined');
 		return;
 	}
@@ -550,13 +557,14 @@ export async function initGame(receivedUserData, getReset = false) {
 	// base hp 받아오기
 	// const initBaseInfo = await sendEvent(20, {});
 	// baseHp = initBaseInfo.initBaseHp;
-
+	console.log("작동 확인 7");
 	await sendEvent(2);
-
+	console.log("작동 확인 8");
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
 	placeBase(); // 기지 배치
 	// 서버에 몬스터 스폰 주기와 타이밍 동기화 -> 라운드 정보를 가져와서 초기화해야함 -> 0으로 초기화된거 너무 짜친다다
 	queueEvent(13, { round: round, timestamp: Date.now() });
+	console.log("작동 확인 3");
 	gameLoop(); // 게임 루프 시작
 
 	await initModal(); // 게임오버 모달창 초기 로드
@@ -580,13 +588,14 @@ export function resetGame() {
 	killCount = 0;
 	monsterLevel = 1;
 	feverTriggered = false;
+	paths = [];
 
 	// 몬스터 스폰 초기화
-	sendEvent(12, {});
+	//sendEvent(12, {}); --> 게임 스타트에 편입.
 	eventQueue.length = 0;
 
 	// 캔버스 초기화
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	// ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	// 게임 재시작
 	initGame(userData, true);
