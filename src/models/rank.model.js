@@ -3,11 +3,14 @@ import { prisma } from "../utils/prisma/index.js";
 // DB - HighScores 테이블에 접근, 유저의 최고 기록 갱신 함수
 export const updateHighScore = async (userId, currentRound, elapsedTime) => {
     // 유저 이름 탐색
-    const userInfo = await prisma.users.findUnique({ where: { id: userId } });
-    if (!userInfo) console.error("update High Score Error : userInfo missing");
+    const userInfo = await prisma.users.findFirst({ where: { id: userId } });
+    if (!userInfo) {
+        console.error("update High Score Error : userInfo missing");
+        return { updated: false, userName: null, currentHighScore: 0, elapsedTime: 0 };
+    }
     const userName = userInfo.nickName || 'NULL Name';
 
-    // 테이블 안에서 highScore 찾는 과정
+    // 테이블 안에서 highScore 찾기
     const userHighScore = await prisma.highScores.findFirst({
         where: { userId: userId },
         select: {
@@ -15,7 +18,8 @@ export const updateHighScore = async (userId, currentRound, elapsedTime) => {
             elapsed: true
         }
     });
-    // HighScores 테이블에 정보가 없을 경우 데이터 새로 생성 
+
+    // HighScores 테이블에 정보가 없을 경우 데이터 새로 생성
     if (!userHighScore) {
         await prisma.highScores.create({
             data: {
@@ -27,34 +31,24 @@ export const updateHighScore = async (userId, currentRound, elapsedTime) => {
         return { updated: true, userName, currentHighScore: currentRound, elapsedTime };
     }
 
-    const userHighScore_round = userHighScore.highScore;
-    const userHighScore_time = userHighScore.elapsed;
-    if (!userHighScore_round || !userHighScore_time)
-        console.error(`${!userHighScore_round ? `userHighScore_round` : `userHighScore_time`} missing Error`);
+    const { highScore: userHighScore_round, elapsed: userHighScore_time } = userHighScore;
 
-    // 현재 라운드와 비교 후 갱신 여부 확인
-    if (userHighScore_round < currentRound) {
-        // DB에 최고기록 업데이트
-        await prisma.highScores.update({
-            where: { userId: userId },
-            data: { highScore: userHighScore_round }
-        });
-        // 최고기록 갱신 시 return
-        return { updated: true, userName, currentHighScore: currentRound, elapsedTime };
-    }
-
-    if (userHighScore_round < currentRound ||   // 라운드로 최고기록 갱신
-        (userHighScore_round === currentRound && userHighScore_time < elapsedTime)) {   // 플레이 시간으로 최고기록 갱신
-        // DB에 최고기록 업데이트
+    // 최고기록 갱신 조건 확인
+    if (
+        currentRound > userHighScore_round || // 현재 라운드가 더 높거나
+        (currentRound === userHighScore_round && elapsedTime < userHighScore_time) // 라운드가 같고 시간이 더 짧을 때
+    ) {
+        // 최고기록 갱신
         await prisma.highScores.update({
             where: { userId: userId },
             data: {
-                highScore: userHighScore_round,
-                elapsed: userHighScore_time
+                highScore: currentRound, // 새로운 최고 라운드
+                elapsed: elapsedTime     // 새로운 최고 시간
             }
         });
         return { updated: true, userName, currentHighScore: currentRound, elapsedTime };
     }
-    // 최고기록 갱신 아닐 시 return
-    return { updated: false, userName, currentHighScore: userHighScore_round, elapsedTime };
+
+    // 최고기록 갱신 아님
+    return { updated: false, userName, currentHighScore: userHighScore_round, elapsedTime: userHighScore_time };
 };
