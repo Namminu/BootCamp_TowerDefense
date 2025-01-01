@@ -31,5 +31,5 @@ export const monsterCreate = (userId, payload, socket) => {
 
 export const stopCreateMonster = (userId, payload, socket) => {
 	clearInterval(spawnInterval);
-	return { status: 'success', message: `Monster Spawn Stop}` };
+	// return { status: 'success', message: `Monster Spawn Stop}` };
 };
