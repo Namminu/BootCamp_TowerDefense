@@ -707,7 +707,7 @@ canvas.addEventListener('click', async (event) => {
 			let towerX = previewTower.x;
 			let towerY = previewTower.y;
 
-			const newTower = new Tower(
+			let newTower = new Tower(
 				ctx,
 				towerX,
 				towerY,
@@ -743,6 +743,7 @@ canvas.addEventListener('click', async (event) => {
 			previewTower = null;
 			towerImage = null;
 			towerCost = null;
+			newTower = null;
 			// isPreview = false;
 			document.body.style.cursor = 'default';
 		} else {
