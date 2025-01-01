@@ -42,11 +42,17 @@ export const gameStart = (userId, payload, socket) => {
 // Base의 Hp <= 0 일 시 호출되는 이벤트
 // sendEvent(3, payload : { currentRound, timestamp })
 export const gameOver = async (userId, payload, socket) => {
-	const currentRound = payload.currentRound;
+
+	const currentuserdata = getUserData(userId);
+	const currentRound = currentuserdata.round;
 	if (!userId || !currentRound)
 		return { status: 'fail', message: `${!userId ? 'userId' : 'currentRound'} missing error` };
 
-	const elapsedTime = (payload.timestamp - getUserData(userId).timestamp) / 1000;
+	if(currentRound !==payload.currentRound){
+		return { status: 'fail', message: `라운드가 다름` };
+	}
+
+	const elapsedTime = (payload.timestamp - currentuserdata.timestamp) / 1000;
 	// const roundTime = getRoundInfo(currentRound).time / 1000;
 	// if (elapsedTime < roundTime - 10 || elapsedTime > roundTime + 10)
 	// 	return { status: 'fail', message: 'elapsedTime out of scope' };

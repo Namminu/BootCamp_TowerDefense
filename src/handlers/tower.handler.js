@@ -124,9 +124,6 @@ export const upgradeTower = (userId, payload, socket) => {
 		.map((tower, i) => (tower.towerDataIndex === index ? i : -1)) // 조건을 만족하는 인덱스 반환, 아니면 -1
 		.filter((i) => i !== -1); // 유효한 인덱스만 필터링
 
-	console.log('currentTowersQueue', currentTowersQueue);
-	console.log('matchingTowerQueueIndex', matchingTowerQueueIndex);
-
 	if (matchingTowerQueueIndex.length < 2) {
 		return { status: 'fail', message: '타워가 인벤토리에 없음.' };
 	}
@@ -172,9 +169,9 @@ export const atteckTower = (userId, payload, socket) => {
 		return { status: 'fail', message: '8렙은 안됩니다~' };
 	}
 
-	if (!matchingTower) {
-		return { status: 'fail', message: '어캐 때림? 이거 뜨면 꼭 알려주셈.' };
-	}
+	// if (!matchingTower) {
+	// 	return { status: 'fail', message: '어캐 때림? 이거 뜨면 꼭 알려주셈.' };
+	// }
 	if (payload.feverTriggered) {
 		matchingTower.range *= 1.2;
 		matchingTower.damage *= 1.5;
@@ -227,7 +224,7 @@ export const killTower = (userId, deathSheets) => {
 	deathSheets = deathSheets.filter((item) => item.killer === 'killtower');
 	const currentTowers = getTower(userId);
 	const damageSheet = getowerAttackSheet(userId);
-	const targetRound = currentRound - 1;
+	const targetRound = currentRound - 3;
 
 	const isValid = deathSheets.every((sheet) => {
 		//데미지 시트를 확인해 데미지를 준게 맞는지 확인합니다.
