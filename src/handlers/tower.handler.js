@@ -163,7 +163,12 @@ export const atteckTower = (userId, payload, socket) => {
 		(tower) => tower.x === payload.atteckerX && tower.y === payload.atteckerY,
 	);
 
-	if(matchingTower.level >8){
+	if (!matchingTower) {
+		console.log('뭔가 일이 일어났어');
+		console.log('currentTowers :', currentTowers);
+	}
+
+	if (matchingTower.level > 8) {
 		return { status: 'fail', message: '8렙은 안됩니다~' };
 	}
 
