@@ -25,7 +25,7 @@ export class Monster {
 		this.level = level; // 몬스터 레벨
 
 		// monster.json 데이터 기반으로 초기화
-		this.maxHp = monsterData.hp + level * 20;
+		this.maxHp = monsterData.hp + level * 40;
 		this.hp = this.maxHp;
 		this.attackPower = monsterData.damage + level * 20;
 		this.speed = monsterData.speed;
