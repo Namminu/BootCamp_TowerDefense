@@ -81,7 +81,7 @@ const towerImages = TOWER_CONFIG.map((tower) => {
 });
 
 const baseImage = new Image();
-baseImage.src = './images/base.png';
+baseImage.src = './images/bases/base_0.png';
 
 export const towerControl = new TowerControl(ctx, towerImages);
 
