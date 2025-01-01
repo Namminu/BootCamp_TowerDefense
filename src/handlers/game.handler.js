@@ -17,10 +17,12 @@ import {
 } from '../models/userData.model.js';
 import { getRoundInfo } from '../models/roundInfo.model.js';
 import { moveRoundHandler } from './round.handler.js';
+import { stopCreateMonster } from './monster.handler.js';
 
 export const gameStart = (userId, payload, socket) => {
 	const { tower } = getGameAssets(); //타워 에셋 가져오기.
 
+	stopCreateMonster(userId, payload, socket);
 	// 게임 시작시 유저 정보 초기값 세팅
 	createUserData(userId);
 	createTower(userId);
