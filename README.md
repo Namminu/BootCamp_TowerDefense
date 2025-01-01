@@ -86,6 +86,7 @@ register.html
 │        │  ├─ loginModal.js
 │        │  └─ registerModal.js
 │        └─ pages
+│           ├─ common.js
 │           └─ mainPage.js
 ├─ src
 │  ├─ app.js
