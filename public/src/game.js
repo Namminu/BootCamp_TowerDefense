@@ -73,6 +73,11 @@ const TOWER_CONFIG = towerData.data;
 const MONSTER_CONFIG = monsterData.data;
 const MONSTER_UNLOCK_CONFIG = monsterUnlockData.data;
 
+// 오디오 파일
+const bgmSound = new Audio();
+bgmSound.src = '../musics/roa-music-walk-around(chosic.com).mp3';
+bgmSound.volume = 0.4;
+
 // 경로를 저장할 배열
 let paths = [];
 // 몬스터의 죽음을 기록할 배열. 라운드마다 보네주고 초기화.
@@ -225,6 +230,7 @@ async function gameLoop(frameTime) {
 	ctx.textAlign = 'left';
 	drawGridAndPath(ctx, cellSize, paths);
 	setMonsterPathFromGeneratedPath(); // 경로 다시 그리기
+	bgmSound.play();
 
 	if (previousTime === null) {
 		previousTime = Date.now();
@@ -319,6 +325,7 @@ async function gameLoop(frameTime) {
 				// 몬스터가 있는 그리드의 좌표 구하기
 
 				tower.attack(monster);
+				// towerSound.play();
 
 				if (monster.hp <= 0) {
 					addDeathSheet({
@@ -370,7 +377,7 @@ async function gameLoop(frameTime) {
 		if (
 			tower.isClicked &&
 			tower.upgradeBtnClicked &&
-			userGold >= tower.cost * 1.6 &&
+			userGold >= tower.cost * 1.1 &&
 			towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2 &&
 			tower.level >= 7
 		) {
@@ -381,7 +388,7 @@ async function gameLoop(frameTime) {
 		if (
 			tower.isClicked &&
 			tower.upgradeBtnClicked &&
-			userGold >= tower.cost * 1.6 &&
+			userGold >= tower.cost * 1.1 &&
 			towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2
 		) {
 			const upgradePrice = tower.upgradeTower(tower, userGold); //업그레이드.
@@ -389,14 +396,14 @@ async function gameLoop(frameTime) {
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
 			towerControl.getTowerqueue(monsterLevel);
-		} else if (tower.isClicked && tower.upgradeBtnClicked && userGold < tower.cost * 1.6) {
+		} else if (tower.isClicked && tower.upgradeBtnClicked && userGold < tower.cost * 1.1) {
 			printMessage = true;
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
 		} else if (
 			tower.isClicked &&
 			tower.upgradeBtnClicked &&
-			userGold >= tower.cost * 1.6 &&
+			userGold >= tower.cost * 1.1 &&
 			towerControl.towerqueue.filter((t) => t.type === tower.type).length < 2
 		) {
 			printMessage2 = true;
@@ -502,7 +509,7 @@ async function gameLoop(frameTime) {
 	ctx.fillStyle = 'white';
 	ctx.fillText(`점수: ${score}`, canvas.width - 250, canvas.height - 80); // 현재 스코어 표시
 	ctx.fillStyle = 'yellow';
-	ctx.fillText(`골드: ${userGold}`, canvas.width - 250, canvas.height - 110); // 골드 표시
+	ctx.fillText(`골드: ${Math.floor(userGold)}`, canvas.width - 250, canvas.height - 110); // 골드 표시
 	ctx.fillStyle = 'black';
 	ctx.fillText(`현재 레벨: ${monsterLevel}`, canvas.width - 250, canvas.height - 160); // 최고 기록 표시
 
