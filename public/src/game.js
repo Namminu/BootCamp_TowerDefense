@@ -525,6 +525,8 @@ export async function initGame(receivedUserData, getReset = false) {
 		return;
 	}
 
+	sendEvent(2);
+
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
 	placeBase(); // 기지 배치
 	// 서버에 몬스터 스폰 주기와 타이밍 동기화 -> 라운드 정보를 가져와서 초기화해야함 -> 0으로 초기화된거 너무 짜친다다
@@ -543,6 +545,7 @@ export function resetGame() {
 	cancelAnimationFrame(gameLoopId);
 
 	// 게임 상태 초기화
+	deathSheets = [];
 	monsters.length = 0;
 	towerControl.towers.length = 0;
 	userGold = 0;
@@ -555,7 +558,7 @@ export function resetGame() {
 	// 몬스터 스폰 초기화
 	sendEvent(12, {});
 	eventQueue.length = 0;
-
+	
 	// 캔버스 초기화
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
