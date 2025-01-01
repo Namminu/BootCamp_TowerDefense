@@ -30,11 +30,11 @@ export const gameStart = (userId, payload, socket) => {
 	setTowerQueue(userId, tower);
 
 	// 현재 시간으로 라운드 시작
-	const response = moveRoundHandler(userId, { currentRound: 0, timestamp: Date.now() });
+	const response = moveRoundHandler(userId, { currentRound: 0, timestamp: Date.now(), deathSheets: [] });
 	const initRoundInfo = response.nextRoundInfo;
 	const unlockMonsters = response.unlockMonsters;
 
-	return { handlerId:2, status: 'success', initRoundInfo, unlockMonsters };
+	return { status: 'success', initRoundInfo, unlockMonsters };
 };
 
 // Base의 Hp <= 0 일 시 호출되는 이벤트

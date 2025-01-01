@@ -25,7 +25,7 @@ let userGold = 0; // 유저 골드
 let base; // 기지 객체
 let baseHp = 10; // 기지 체력
 
-//베이스의 체력 | 라운드 별 증가량 
+//베이스의 체력 | 라운드 별 증가량
 
 // 시간 변수
 let deltaTime = 0;
@@ -42,6 +42,7 @@ let previewTower = null; // 미리보기를 위한 타워 객체
 // 메시지 출력 플래그
 let printMessage = false;
 let printMessage2 = false;
+let printMessage3 = false;
 
 const monsters = [];
 let ableToMoveRound = false; // 라운드 이동 가능 여부
@@ -57,6 +58,12 @@ let userData = null;
 // 베이스 위치 관련 변수
 let basePointX = 0;
 let basePointY = 0;
+
+// 라운드 관련 변수
+let round = 0;
+let spawn_count = 0;
+let round_timer = 20;
+let roundUnlock = null;
 
 // 상수 정의
 const TOWER_CONFIG = towerData.data;
@@ -126,10 +133,8 @@ function processQueue() {
 setInterval(processQueue, 10); //10ms마다 처리. 따라서 이벤트가 한없이 쌓이면 좀 버거움.
 
 export function addDeathSheet(data) {
-    deathSheets.push(data);
-};
-
-
+	deathSheets.push(data);
+}
 
 function setMonsterPathFromGeneratedPath() {
 	// generatePath 결과를 기반으로 몬스터 경로 설정
@@ -241,51 +246,50 @@ async function gameLoop(frameTime) {
 	// 몬스터 그리기
 	for (let i = monsters.length - 1; i >= 0; i--) {
 		const monster = monsters[i];
-		if (monster.isDead) {
-			monsters.splice(i, 1); // 이미 죽은 몬스터 제거
-			continue;
-		}
 
-		// 몬스터 이동 관련 
+		// 몬스터 이동 관련
 		if (monster.hp > 0) {
 			const isDestroyed = monster.move(base);
 			if (isDestroyed) {
 				/* 게임 오버 */
 				const response = await sendEvent(3, { currentRound: round, timestamp: currentTime });
+				console.log('INGAME response : ', response);
 				const { message, userName, highScore, time } = response;
-				console.log(
-					'message : ',
-					message,
-					'userName : ',
-					userName,
-					'highScore : ',
-					highScore,
-					'time : ',
-					time,
-				);
-				showModal(message, userName, highScore, 1, time);
-
 				// 게임 오버 시 몬스터/타워 등 로직 멈추게 하기
 				stopGame();
+				showModal(message, userName, highScore, round, time);
 			}
 			monster.draw(ctx);
-		} else {
+		}
+
+		if (monster.isEnd) {
 			/* 몬스터가 베이스에 부딪혀 죽었을 때 */
-			addDeathSheet({ 
-				killer: 'killbase', 
-				x: monster.x, 
-				y: monster.y, 
-				monsterId: monster.uniqueId, 
-				monsterHp: monster.maxHp, 
-				monsterGold: monster.gold, 
-				monsterX: monster.x, 
+			// 코드 리뷰 : 조건식을 그냥 hp < 0이라고 하면 안 되지 않을까요. 타워한테 죽은 애들까지 다 베이스가 죽인 걸로 데이터가 덮어쓰기 될 텐데 그럼 오류가 나요.
+			addDeathSheet({
+				killer: 'killbase',
+				x: monster.x,
+				y: monster.y,
+				monsterId: monster.uniqueId,
+				monsterHp: monster.maxHp,
+				monsterGold: monster.gold,
+				monsterX: monster.x,
 				monsterY: monster.y,
 				baseX: basePointX,
-				baseY: basePointY, 
-				monsterTimestemp: Date.now() 
+				baseY: basePointY,
+				monsterTimestemp: Date.now(),
 			});
 			monster.dead();
 			monsters.splice(i, 1);
+
+			// base 이미지 변경 여부 판단
+			// const baseHp = base.getCurrentHp();
+			// const changeInfo = await sendEvent(21, { baseHp });
+			// if (changeInfo.isChange) changeBaseImage(changeInfo.isChange);
+		}
+
+		if (monster.isDead) {
+			monsters.splice(i, 1); // 이미 죽은 몬스터 제거
+			continue;
 		}
 	}
 
@@ -357,6 +361,17 @@ async function gameLoop(frameTime) {
 			tower.isClicked &&
 			tower.upgradeBtnClicked &&
 			userGold >= tower.cost * 1.2 &&
+			towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2 &&
+			tower.level >= 7
+		) {
+			printMessage3 = true;
+			tower.upgradeBtnClicked = false;
+			tower.isClicked = false;
+		}
+		if (
+			tower.isClicked &&
+			tower.upgradeBtnClicked &&
+			userGold >= tower.cost * 1.2 &&
 			towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2
 		) {
 			const upgradePrice = tower.upgradeTower(tower, userGold); //업그레이드.
@@ -365,7 +380,6 @@ async function gameLoop(frameTime) {
 			tower.isClicked = false;
 			towerControl.getTowerqueue(monsterLevel);
 		} else if (tower.isClicked && tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
-			console.log('Not enough gold to upgrade the tower.');
 			printMessage = true;
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
@@ -400,6 +414,15 @@ async function gameLoop(frameTime) {
 
 			setTimeout(() => {
 				printMessage2 = false;
+			}, 1500);
+		}
+		if (printMessage3) {
+			ctx.font = 'bold 25px Arial';
+			ctx.fillStyle = '#FF2929';
+			ctx.fillText('충분히 강해졌어요!', tower.x, tower.y - 10);
+
+			setTimeout(() => {
+				printMessage3 = false;
 			}, 1500);
 		}
 
@@ -452,7 +475,6 @@ async function gameLoop(frameTime) {
 
 	// 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
 	base.draw(ctx, baseImage);
-	//base.selfHeal(currentTime);
 
 	// 인벤토리 그리기
 	if (towerControl.towerqueue.length < 5) {
@@ -525,12 +547,16 @@ export async function initGame(receivedUserData, getReset = false) {
 		return;
 	}
 
-	sendEvent(2);
+	// base hp 받아오기
+	// const initBaseInfo = await sendEvent(20, {});
+	// baseHp = initBaseInfo.initBaseHp;
+
+	await sendEvent(2);
 
 	initMap(); // 맵 초기화 (배경, 경로 그리기)
 	placeBase(); // 기지 배치
 	// 서버에 몬스터 스폰 주기와 타이밍 동기화 -> 라운드 정보를 가져와서 초기화해야함 -> 0으로 초기화된거 너무 짜친다다
-	queueEvent(13, { round: 0, timestamp: Date.now() });
+	queueEvent(13, { round: round, timestamp: Date.now() });
 	gameLoop(); // 게임 루프 시작
 
 	await initModal(); // 게임오버 모달창 초기 로드
@@ -558,7 +584,7 @@ export function resetGame() {
 	// 몬스터 스폰 초기화
 	sendEvent(12, {});
 	eventQueue.length = 0;
-	
+
 	// 캔버스 초기화
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -844,13 +870,9 @@ canvas.addEventListener('click', (event) => {
 	}
 });
 
-let round = 0;
-let spawn_count = 0;
-let round_timer = 0;
-let roundUnlock = null;
-
 export function setRound(roundInfo, unlockMonsters) {
 	round = roundInfo.round;
+	console.log('라운드 정보:', roundInfo);
 	//monsterSpawnInterval = roundInfo.duration;
 	spawn_count = roundInfo.count;
 	round_timer = roundInfo.time;

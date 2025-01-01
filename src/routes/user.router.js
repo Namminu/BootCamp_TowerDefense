@@ -13,16 +13,26 @@ router.post('/sign-up', async (req, res) => {
 	try {
 		const { userId, password, confirmPassword, nickName } = req.body;
 
-		const existingUser = await prisma.users.findUnique({
+		const existingUserId = await prisma.users.findUnique({
+			where: { userId },
+		});
+
+		if (existingUserId) {
+			return res.status(409).json({
+				errorMessage: '아이디가 이미 존재합니다.',
+			});
+		}
+
+		const existingNickName = await prisma.users.findUnique({
 			where: { nickName },
 		});
 		// 닉네임 중복
-		if (existingUser) {
+		if (existingNickName) {
 			return res.status(409).json({
 				errorMessage: '닉네임이 이미 존재합니다.',
 			});
 		}
-		// 비밀번호 확인 불일치 
+		// 비밀번호 확인 불일치
 		if (password !== confirmPassword) {
 			return res.status(400).json({
 				errorMessage: '비밀번호 확인이 일치하지 않습니다.',
@@ -60,13 +70,13 @@ router.post('/sign-in', async (req, res) => {
 		});
 
 		if (!user) {
-			return res.status(404).json({ message: '유저를 찾을 수 없습니다' });
+			return res.status(404).json({ errorMessage: '아이디 또는 비밀번호를 확인해주세요.' });
 		}
 
 		const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
 		if (!isPasswordCorrect) {
-			return res.status(401).json({ message: '비밀번호가 일치하지 않습니다' });
+			return res.status(401).json({ errorMessage: '아이디 또는 비밀번호를 확인해주세요.' });
 		}
 
 		// 비밀번호가 일치하면 JWT 생성
@@ -77,6 +87,7 @@ router.post('/sign-in', async (req, res) => {
 			process.env.JWT_KEY, // 비밀 키를 사용하여 서명
 			{ expiresIn: '8h' }, // 토큰 유효 기간을 8시간으로 설정
 		);
+
 		// 성공 시 authorization 헤더에 토큰 추가
 		res.setHeader('authorization', `Bearer ${token}`);
 

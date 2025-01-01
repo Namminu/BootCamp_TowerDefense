@@ -21,17 +21,16 @@ const default_time = 20000;
 */
 
 // 라운드 생성
-export const createRoundInfo = (id) => {
-	const round = id;
-	roundInfo[round] = {
-		round: id,
+export const createRoundInfo = (userId, round) => {
+	roundInfo[userId] = {
+		round: round,
 		duration: default_duration - Math.floor(round / 10),
 		count: default_count,
 		time: default_time,
 	};
-	return roundInfo[id];
+	return roundInfo[userId];
 };
 
-export const getRoundInfo = (id) => {
-	return roundInfo[id];
+export const getRoundInfo = (userId) => {
+	return roundInfo[userId];
 };

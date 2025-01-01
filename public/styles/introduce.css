@@ -1,0 +1,243 @@
+/* 게임 소개 배너 스타일 */
+.introduce-banner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	color: var(--white);
+}
+
+.introduce-banner h2 {
+	font-size: 3.5rem;
+	margin-bottom: 1rem;
+	font-family: 'Ownglyph_ParkDaHyun';
+}
+
+.introduce-banner p {
+	font-size: 1.5rem;
+	opacity: 0.9;
+}
+
+/* 게임 소개 콘텐츠 스타일 */
+.introduce-content {
+	margin: 2rem 0;
+	padding: 2rem;
+	background-color: var(--white);
+	border-radius: 1rem;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 섹션 공통 스타일 */
+.intro-section {
+	margin-bottom: 3rem;
+}
+
+.intro-section h3 {
+	font-size: 2rem;
+	color: var(--text-primary);
+	margin-bottom: 1.5rem;
+	font-family: 'Ownglyph_ParkDaHyun';
+	border-bottom: 2px solid var(--accent);
+	padding-bottom: 0.5rem;
+}
+
+.intro-section p {
+	font-size: 1.1rem;
+	line-height: 1.6;
+	color: var(--text-secondary);
+	word-break: keep-all;
+}
+
+/* 게임 특징 그리드 */
+.feature-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 2rem;
+	margin-top: 1.5rem;
+}
+
+.feature-item {
+	background-color: var(--softprimary);
+	padding: 1.5rem;
+	border-radius: 0.8rem;
+	transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+	transform: translateY(-5px);
+}
+
+.feature-item h4 {
+	font-size: 1.3rem;
+	color: var(--text-primary);
+	margin-bottom: 0.8rem;
+}
+
+.feature-item p {
+	font-size: 1rem;
+	color: var(--text-secondary);
+}
+
+/* 조작 방법 리스트 */
+.control-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.control-item {
+	display: flex;
+	align-items: center;
+	padding: 1rem;
+	background-color: var(--softprimary);
+	border-radius: 0.8rem;
+}
+
+.control-item .key {
+	background-color: var(--primary);
+	color: var(--white);
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	font-weight: bold;
+	min-width: 120px;
+	text-align: center;
+	margin-right: 1.5rem;
+}
+
+.control-item .description {
+	color: var(--text-secondary);
+	font-size: 1.1rem;
+}
+
+/* 시작하기 버튼 */
+.start-game {
+	text-align: center;
+	margin-top: 3rem;
+}
+
+#startGameBtn {
+	padding: 1rem 2.5rem;
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: var(--text-primary);
+	background-color: var(--white);
+	border: 2px solid var(--accent);
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	font-family: 'Ownglyph_ParkDaHyun';
+}
+
+#startGameBtn:hover {
+	background-color: var(--accent);
+	color: var(--white);
+	animation: bounce 0.8s infinite;
+}
+
+.tower-grid,
+.monster-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 2rem;
+	margin: 2rem 0;
+}
+
+.tower-item,
+.monster-item {
+	background: #fff;
+	border-radius: 8px;
+	padding: 1.5rem;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	text-align: center;
+}
+
+.tower-item img,
+.monster-item img {
+	width: 150px;
+	height: 150px;
+	object-fit: contain;
+	margin-bottom: 1rem;
+}
+
+.tower-item h4,
+.monster-item h4 {
+	color: #333;
+	margin-bottom: 0.5rem;
+}
+
+.tower-item p,
+.monster-item p {
+	color: #666;
+	font-size: 0.9rem;
+	margin-bottom: 1rem;
+}
+
+.tower-item ul,
+.monster-item ul {
+	list-style: none;
+	padding: 0;
+	text-align: left;
+}
+
+.tower-item li,
+.monster-item li {
+	color: #444;
+	margin: 0.5rem 0;
+	font-size: 0.9rem;
+}
+
+.tower-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 2rem;
+	margin: 2rem 0;
+}
+
+.tower-images {
+	display: flex;
+	justify-content: space-around;
+	margin-bottom: 1rem;
+}
+
+.level-image {
+	text-align: center;
+}
+
+.level-image span {
+	display: block;
+	margin-bottom: 0.5rem;
+	font-weight: bold;
+	color: #666;
+}
+
+.level-image img {
+	width: 100px;
+	height: 100px;
+	object-fit: contain;
+}
+
+.tower-item {
+	background: #fff;
+	border-radius: 8px;
+	padding: 1.5rem;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.monster-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 2rem;
+	margin: 2rem 0;
+}
+
+@media (max-width: 1024px) {
+	.monster-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 768px) {
+	.monster-grid {
+		grid-template-columns: 1fr;
+	}
+}
