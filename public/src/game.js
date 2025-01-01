@@ -7,6 +7,7 @@ import { TowerControl } from './towerControl.js';
 import { sendEvent } from './socket.js';
 import { initModal, showModal } from './webpages/modals/gameOverModal.js';
 import { drawGridAndPath, generatePath } from './path.js';
+import { Tower } from './tower.js';
 // import {} from './modals/gameOverModal.js';
 
 const canvas = document.getElementById('gameCanvas');
@@ -703,15 +704,31 @@ canvas.addEventListener('click', async (event) => {
 		if (canPlaceTower(cellX, cellY)) {
 			previewTower.x = cellSize.WIDTH * cellX;
 			previewTower.y = cellSize.HEIGHT * cellY;
-			towerControl.towers.push(previewTower);
+			let towerX = previewTower.x;
+			let towerY = previewTower.y;
 
-			console.log('타워 설치 좌표 : ', previewTower.x, previewTower.y);
+			const newTower = new Tower(
+				ctx,
+				towerX,
+				towerY,
+				previewTower.damage,
+				previewTower.range,
+				previewTower.cooldown,
+				previewTower.cost,
+				previewTower.imageSet,
+				previewTower.type,
+				previewTower.id,
+			);
+
+			towerControl.towers.push(newTower);
+
+			console.log('타워 설치 좌표 : ', towerX, towerY);
 
 			//타워 구매 - sendEvent
 			await sendEvent(5, {
-				type: previewTower.type,
-				x: previewTower.x,
-				y: previewTower.y,
+				type: newTower.type,
+				x: newTower.x,
+				y: newTower.y,
 				timestamp: Date.now(),
 				index: towerIndex,
 			});
