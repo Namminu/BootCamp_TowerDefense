@@ -76,7 +76,7 @@ const MONSTER_UNLOCK_CONFIG = monsterUnlockData.data;
 // 오디오 파일
 const bgmSound = new Audio();
 bgmSound.src = '../musics/roa-music-walk-around(chosic.com).mp3';
-bgmSound.volume = 0.4;
+bgmSound.volume = 0.15;
 
 // 경로를 저장할 배열
 let paths = [];
