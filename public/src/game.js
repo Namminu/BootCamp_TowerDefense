@@ -504,14 +504,8 @@ async function gameLoop(frameTime) {
 	// ctx.fillStyle = 'white';
 	// ctx.fillRect(canvas.width - 250, canvas.height - 180, 200, 100);
 	ctx.font = '25px Times New Roman';
-	ctx.fillStyle = '#074799';
-	ctx.fillText(`최고 기록: ${highScore}`, canvas.width - 250, canvas.height - 30); // 최고 기록 표시
-	ctx.fillStyle = 'white';
-	ctx.fillText(`점수: ${score}`, canvas.width - 250, canvas.height - 80); // 현재 스코어 표시
-	ctx.fillStyle = 'yellow';
+	ctx.fillStyle = 'rgb(0, 0, 0)';
 	ctx.fillText(`골드: ${Math.floor(userGold)}`, canvas.width - 250, canvas.height - 110); // 골드 표시
-	ctx.fillStyle = 'black';
-	ctx.fillText(`현재 레벨: ${monsterLevel}`, canvas.width - 250, canvas.height - 160); // 최고 기록 표시
 
 	// 피버 게이지바 그리기
 	gageBar.drawBG();
