@@ -2,6 +2,7 @@ import { gameOver, gameStart, updateUserGold } from './game.handler.js';
 import { atteckTower, buyTower, sellingTower, upgradeTower } from './tower.handler.js';
 import { monsterCreate, stopCreateMonster } from './monster.handler.js';
 import { moveRoundHandler } from './round.handler.js';
+import { setBaseInitHp } from './base.hanlder.js';
 // import { moveStageHandler } from "./stage.handler.js";
 
 const handlerMappings = {
@@ -15,9 +16,10 @@ const handlerMappings = {
 	12: stopCreateMonster, // 몬스터 생성 중지 핸들러
 	13: monsterCreate, // 몬스터 생성 핸들러
 	14: atteckTower,
+	20: setBaseInitHp
 	// 라운드 종료 핸들러?
 };
 
 export default handlerMappings;
- 
+
 //

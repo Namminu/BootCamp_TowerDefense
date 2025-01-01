@@ -548,8 +548,8 @@ export async function initGame(receivedUserData, getReset = false) {
 	}
 
 	// base hp 받아오기
-	// const initBaseInfo = await sendEvent(20, {});
-	// baseHp = initBaseInfo.initBaseHp;
+	const initBaseInfo = await sendEvent(20, {});
+	baseHp = initBaseInfo.message;
 
 	await sendEvent(2);
 
@@ -608,7 +608,7 @@ Promise.all([
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),
-]).then(() => {});
+]).then(() => { });
 
 // 타워를 설치할 수 있는지 판별하는 함수
 function canPlaceTower(x, y) {

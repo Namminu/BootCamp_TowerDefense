@@ -1,5 +1,5 @@
 import { getUserData } from '../models/userData.model.js';
-
+const baseInitHp = 500;
 export const baseHitEnemyCheck = (userId, deathSheets) => {
 	const currentRound = getUserData(userId).round;
 
@@ -34,3 +34,8 @@ export const baseHitEnemyCheck = (userId, deathSheets) => {
 	// 충돌 조건을 만족하지 못하면 false 반환
 	return false;
 };
+export const setBaseInitHp = (userId, payload, socket) => {
+	const userData = getUserData(userId);
+	if (!userData) return { status: 'fail', message: '유효하지 않은 유저 정보입니다.' };
+	return { status: 'success', message: baseInitHp };
+}
