@@ -360,7 +360,7 @@ async function gameLoop(frameTime) {
 		if (
 			tower.isClicked &&
 			tower.upgradeBtnClicked &&
-			userGold >= tower.cost * 1.2 &&
+			userGold >= tower.cost * 1.6 &&
 			towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2 &&
 			tower.level >= 7
 		) {
@@ -371,7 +371,7 @@ async function gameLoop(frameTime) {
 		if (
 			tower.isClicked &&
 			tower.upgradeBtnClicked &&
-			userGold >= tower.cost * 1.2 &&
+			userGold >= tower.cost * 1.6 &&
 			towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2
 		) {
 			const upgradePrice = tower.upgradeTower(tower, userGold); //업그레이드.
@@ -379,14 +379,14 @@ async function gameLoop(frameTime) {
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
 			towerControl.getTowerqueue(monsterLevel);
-		} else if (tower.isClicked && tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
+		} else if (tower.isClicked && tower.upgradeBtnClicked && userGold < tower.cost * 1.6) {
 			printMessage = true;
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
 		} else if (
 			tower.isClicked &&
 			tower.upgradeBtnClicked &&
-			userGold >= tower.cost * 1.2 &&
+			userGold >= tower.cost * 1.6 &&
 			towerControl.towerqueue.filter((t) => t.type === tower.type).length < 2
 		) {
 			printMessage2 = true;

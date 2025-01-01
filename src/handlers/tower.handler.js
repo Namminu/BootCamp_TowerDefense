@@ -133,11 +133,11 @@ export const upgradeTower = (userId, payload, socket) => {
 
 	const matchingTowerData = tower.data[index];
 
-	if (currentUserData.gold < 1.2 * matchingTowerData.cost) {
+	if (currentUserData.gold < 1.6 * matchingTowerData.cost) {
 		return { status: 'fail', message: '돈 없음' };
 	}
 
-	currentUserData.gold -= 1.2 * matchingTowerData.cost;
+	currentUserData.gold -= 1.6 * matchingTowerData.cost;
 	const isUpgrade = upTower(userId, payload.x, payload.y, payload.level); //이 레벨을 올라가고 싶은 레벨임. 안에서 레벨검증함.
 
 	for (let i = 1; i < 3; i++) {
@@ -196,25 +196,20 @@ export const atteckTower = (userId, payload, socket) => {
 	return { status: 'success', message: '때릴 수 있는 놈이군.' };
 };
 
-
 //배열을 자르는 함수로, 너무 길어지지 않게 잘라줍니다.
 function removeOldRoundDamage(damageSheet, targetRound) {
 	for (let i = damageSheet.length - 1; i >= 0; i--) {
-        const round = parseInt(damageSheet[i].hitEntity.split('_')[0]); // hitEntity의 앞 숫자 추출
-        if (round === targetRound) {
-            damageSheet.splice(i, 1); // 조건에 맞으면 배열에서 제거
-        }
-    }
-
+		const round = parseInt(damageSheet[i].hitEntity.split('_')[0]); // hitEntity의 앞 숫자 추출
+		if (round === targetRound) {
+			damageSheet.splice(i, 1); // 조건에 맞으면 배열에서 제거
+		}
+	}
 }
-
-
 
 //킬 목록을 가져온다. 목록은 [{ killer{killer ,killerX, killerY}, dethEntity{id,hp,speed,gold,timestemp}, x, y,},...] 나는 x,y(죽은위치) 안쓰지만 베이스랑 라운드에서 쓰기 때문.
 export const killTower = (userId, deathSheets) => {
-
 	const currentRound = getUserData(userId).round;
-	
+
 	if (currentRound === 1 && !deathSheets) {
 		//가장 처음에 한번 부르는 용.
 		return true;
@@ -225,59 +220,57 @@ export const killTower = (userId, deathSheets) => {
 	const damageSheet = getowerAttackSheet(userId);
 	const targetRound = currentRound - 1;
 
-
 	const isValid = deathSheets.every((sheet) => {
 		//데미지 시트를 확인해 데미지를 준게 맞는지 확인합니다.
 		const relatedDamage = damageSheet.filter((damage) => damage.hitEntity === sheet.monsterId);
 		// damage 값의 합계 계산
 		const totalDamage = relatedDamage.reduce((sum, damage) => sum + damage.damage, 0);
 
-		if (totalDamage+20 < sheet.monsterHp) { //소수점 보정.
-			console.log("damageSheet",damageSheet);
-			console.log("relatedDamage",relatedDamage);
-			console.log("totalDamage",totalDamage);
-			console.log("sheet.monsterHp",sheet.monsterHp);
+		if (totalDamage + 20 < sheet.monsterHp) {
+			//소수점 보정.
+			console.log('damageSheet', damageSheet);
+			console.log('relatedDamage', relatedDamage);
+			console.log('totalDamage', totalDamage);
+			console.log('sheet.monsterHp', sheet.monsterHp);
 
-			
 			console.log('타워 데미지 이상');
 			return false;
 		}
 		return true;
 	});
 
-	
-
 	if (!isValid) {
 		removeOldRoundDamage(damageSheet, targetRound);
 		return false;
 	}
 
-
 	const isValid2 = currentTowers.every((tower) => {
-		const currentDamageSheet = damageSheet.filter((sheet) => tower.x === sheet.atteckerX && tower.y === sheet.atteckerY);
+		const currentDamageSheet = damageSheet.filter(
+			(sheet) => tower.x === sheet.atteckerX && tower.y === sheet.atteckerY,
+		);
 		let previousTimestamp = null;
-    	const isValid3 =currentDamageSheet.every((sheet) => {
-        if (previousTimestamp !== null) {
-            const timeDifference = sheet.timestemp - previousTimestamp;
-			let adjustedCooldown = tower.cooldown;
-			if (sheet.feverTriggered){
-				adjustedCooldown = tower.cooldown / 2;
-			}
+		const isValid3 = currentDamageSheet.every((sheet) => {
+			if (previousTimestamp !== null) {
+				const timeDifference = sheet.timestemp - previousTimestamp;
+				let adjustedCooldown = tower.cooldown;
+				if (sheet.feverTriggered) {
+					adjustedCooldown = tower.cooldown / 2;
+				}
 
-			if(timeDifference < adjustedCooldown*3){ 
-				console.log("timeDifference",timeDifference);
-				console.log("tower.cooldown",tower.cooldown*3);
-				console.log("타워 공속 이상");
-				return false;
+				if (timeDifference < adjustedCooldown * 3) {
+					console.log('timeDifference', timeDifference);
+					console.log('tower.cooldown', tower.cooldown * 3);
+					console.log('타워 공속 이상');
+					return false;
+				}
 			}
-        }
-        previousTimestamp = sheet.timestemp;
-		return true;
-    });
+			previousTimestamp = sheet.timestemp;
+			return true;
+		});
 
-	if (!isValid3) {
-		return false;
-	}
+		if (!isValid3) {
+			return false;
+		}
 		return true;
 	});
 
@@ -285,10 +278,6 @@ export const killTower = (userId, deathSheets) => {
 		removeOldRoundDamage(damageSheet, targetRound);
 		return false;
 	}
-
-
-
-	
 
 	removeOldRoundDamage(damageSheet, targetRound);
 	return true;

@@ -73,7 +73,8 @@ const sendEvent = (handlerId, payload) => {
 
 // 서버에게 생성주기가 완료되면 생성하라는 데이터를 받는다.
 socket.on('spawnMonster', (data) => {
-	console.log('서버로부터 몬스터 생성 명령 수신', data);
+	// 이벤트 큐로 관리하고 있기 때문에 1라운드에 요청한 데이터가 그대로 출력돼서 로그를 찍지 않는 게 나아보입니다.
+	// console.log('서버로부터 몬스터 생성 명령 수신', data);
 	spawnMonster(); // 클라이언트의 spawnMonster 함수 호출
 });
 
