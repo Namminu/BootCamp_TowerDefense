@@ -4,7 +4,7 @@ import { prisma } from '../utils/prisma/index.js';
 const router = express.Router();
 
 // 전체 랭킹 조회 API
-router.get('/rank', authmiddlewares, async (req, res) => {
+router.get('/rank', async (req, res) => {
 	try {
 		// highScores 테이블 조회
 		const rankers = await prisma.highScores.findMany({
@@ -18,9 +18,9 @@ router.get('/rank', authmiddlewares, async (req, res) => {
 
 		// highScore 컬럼명 Round 로 가공
 		const transformRankers = rankers.map(rank => ({
-			UserId: rankers.userId,
+			UserId: rank.userId,
 			Round: rank.highScore,
-			Time: rankers.elapsed
+			Time: rank.elapsed
 		}));
 
 		// 데이터 가공 후 정렬 : Round 우선, 같은 경우 Time 비교

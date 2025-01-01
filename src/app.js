@@ -3,9 +3,11 @@ import bodyParser from 'body-parser';
 import { createServer } from 'http';
 import initSocket from './init/socket.js';
 import userRouter from './routes/user.router.js';
+import rankRouter from './routes/rank.router.js'
 import path from 'path';
 import cors from 'cors';
 import { loadGameAssets } from './init/assets.js';
+
 
 const app = express();
 const server = createServer(app);
@@ -33,7 +35,7 @@ app.use(
 app.get('/', (req, res) => {
 	return res.sendFile(path.join(publicPath, '/htmls/index.html'));
 });
-app.use('/api', [userRouter]);
+app.use('/api', [userRouter, rankRouter]);
 
 initSocket(server); //웹소켓 서버 연결.
 
