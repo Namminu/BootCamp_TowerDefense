@@ -189,7 +189,7 @@ export class Tower {
 	}
 
 	upgradeTower(tower, userGold) {
-		const upgradeCost = tower.cost * 1.6; // 업그레이드 비용은 타워 가격의 120%
+		const upgradeCost = tower.cost * 1.1; // 업그레이드 비용은 타워 가격의 110%
 
 		if (userGold < upgradeCost) {
 			return 0; // 골드 부족

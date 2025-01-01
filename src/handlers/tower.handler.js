@@ -130,11 +130,11 @@ export const upgradeTower = (userId, payload, socket) => {
 
 	const matchingTowerData = tower.data[index];
 
-	if (currentUserData.gold < 1.6 * matchingTowerData.cost) {
+	if (currentUserData.gold < 1.1 * matchingTowerData.cost) {
 		return { status: 'fail', message: '돈 없음' };
 	}
 
-	currentUserData.gold -= 1.6 * matchingTowerData.cost;
+	currentUserData.gold -= 1.1 * matchingTowerData.cost;
 	const isUpgrade = upTower(userId, payload.x, payload.y, payload.level); //이 레벨을 올라가고 싶은 레벨임. 안에서 레벨검증함.
 
 	for (let i = 1; i < 3; i++) {
