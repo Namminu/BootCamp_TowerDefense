@@ -15,7 +15,8 @@ router.get('/rank', async (req, res) => {
 					select: {
 						nickName: true, // userName으로 출력할 값
 					}
-				}
+				},
+				createdAt: true
 			}
 		});
 
@@ -27,7 +28,15 @@ router.get('/rank', async (req, res) => {
 		const transformRankers = rankers.map(rank => ({
 			UserName: rank.users.nickName, // nickName을 UserName으로 매핑
 			Round: rank.highScore, // highScore를 Round로 매핑
-			Time: rank.elapsed // elapsed 값을 그대로 사용
+			Time: rank.elapsed, // elapsed 값을 그대로 사용
+			createdAt: new Date(rank.createdAt).toLocaleString('ko-KR', {
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit',
+				hour: '2-digit',
+				minute: '2-digit',
+				hour12: false
+			}).replace(/\. /g, '.').replace(',', '') // 날짜는 .으로 구분, 날짜와 시간은 공백으로 구분
 		}));
 
 		// 데이터 가공 후 정렬: Round 우선, 같은 경우 Time 비교
