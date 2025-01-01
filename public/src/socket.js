@@ -1,10 +1,10 @@
 import { setRound, spawnMonster, initGame } from './game.js';
 
-let token = sessionStorage.getItem('authToken');
+let somewhere = sessionStorage.getItem('authToken');
 
 const socket = io('http://localhost:8080', {
 	query: {
-		token: token,
+		token: somewhere,
 	},
 });
 
@@ -43,16 +43,31 @@ const loadTowerQueue = () => {
 
 const sendEvent = (handlerId, payload) => {
 	return new Promise((resolve, reject) => {
+		const listener = (data) => {
+			//console.log(`response : `, data);
+			if (data.handlerId === handlerId) {
+				if (data.status === 'success') {
+					resolve(data);
+				} else {
+					reject(new Error(data.message || 'Unknown error'));
+				}
+			}
+		};
+
+		// 한 번만 실행될 리스너 등록
+		socket.once('response', listener);
+
+		// // 이벤트 전송
 		socket.emit('event', {
-			token,
+			token: somewhere,
 			handlerId,
 			payload,
 		});
 
-		socket.once('response', (data) => {
-			if (data.status === 'success') resolve(data);
-			else reject(new Error(data.message));
-		});
+		// socket.once('response', (data) => {
+		// 	if (data.status === 'success') resolve(data);
+		// 	else reject(new Error(data.message));
+		// });
 	});
 };
 

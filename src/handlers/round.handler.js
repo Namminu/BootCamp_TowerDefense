@@ -49,7 +49,7 @@ export const moveRoundHandler = (userId, payload, socket) => {
 	// 다음 라운드 정보를 담은 객체 생성
 	// 서버에 저장된 다음 라운드 정보가 있다면 바로 저장, 없다면 생성 후 저장
 	let nextRoundInfo = getRoundInfo(userId);
-	if (!nextRoundInfo) nextRoundInfo = createRoundInfo(userId, nextRound);
+	// if (!nextRoundInfo) nextRoundInfo = createRoundInfo(userId, nextRound);
 
 	// 다음 라운드 해금 정보
 	const { monster, monster_unlock } = getGameAssets();
@@ -57,7 +57,6 @@ export const moveRoundHandler = (userId, payload, socket) => {
 	const unlockMonsters = monster.data.filter((e) => unlockMonsterIds.includes(e.id));
 
 	return {
-		handlerId: 11,
 		status: 'success',
 		nextRoundInfo,
 		unlockMonsters,

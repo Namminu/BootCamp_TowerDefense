@@ -42,6 +42,7 @@ let previewTower = null; // 미리보기를 위한 타워 객체
 // 메시지 출력 플래그
 let printMessage = false;
 let printMessage2 = false;
+let printMessage3 = false;
 
 const monsters = [];
 let ableToMoveRound = false; // 라운드 이동 가능 여부
@@ -261,8 +262,9 @@ async function gameLoop(frameTime) {
 			monster.draw(ctx);
 		}
 
-		if (monster.hp <= 0) {
+		if (monster.isEnd) {
 			/* 몬스터가 베이스에 부딪혀 죽었을 때 */
+			// 코드 리뷰 : 조건식을 그냥 hp < 0이라고 하면 안 되지 않을까요. 타워한테 죽은 애들까지 다 베이스가 죽인 걸로 데이터가 덮어쓰기 될 텐데 그럼 오류가 나요.
 			addDeathSheet({
 				killer: 'killbase',
 				x: monster.x,
@@ -359,6 +361,17 @@ async function gameLoop(frameTime) {
 			tower.isClicked &&
 			tower.upgradeBtnClicked &&
 			userGold >= tower.cost * 1.2 &&
+			towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2 &&
+			tower.level >= 7
+		) {
+			printMessage3 = true;
+			tower.upgradeBtnClicked = false;
+			tower.isClicked = false;
+		}
+		if (
+			tower.isClicked &&
+			tower.upgradeBtnClicked &&
+			userGold >= tower.cost * 1.2 &&
 			towerControl.towerqueue.filter((t) => t.type === tower.type).length >= 2
 		) {
 			const upgradePrice = tower.upgradeTower(tower, userGold); //업그레이드.
@@ -367,7 +380,6 @@ async function gameLoop(frameTime) {
 			tower.isClicked = false;
 			towerControl.getTowerqueue(monsterLevel);
 		} else if (tower.isClicked && tower.upgradeBtnClicked && userGold < tower.cost * 1.2) {
-			console.log('Not enough gold to upgrade the tower.');
 			printMessage = true;
 			tower.upgradeBtnClicked = false;
 			tower.isClicked = false;
@@ -402,6 +414,15 @@ async function gameLoop(frameTime) {
 
 			setTimeout(() => {
 				printMessage2 = false;
+			}, 1500);
+		}
+		if (printMessage3) {
+			ctx.font = 'bold 25px Arial';
+			ctx.fillStyle = '#FF2929';
+			ctx.fillText('충분히 강해졌어요!', tower.x, tower.y - 10);
+
+			setTimeout(() => {
+				printMessage3 = false;
 			}, 1500);
 		}
 
