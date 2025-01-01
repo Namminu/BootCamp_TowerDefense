@@ -59,7 +59,7 @@ export class Monster {
 			const deltaX = nextPoint.x - this.x;
 			const deltaY = nextPoint.y - this.y;
 			// 2차원 좌표계에서 두 점 사이의 거리를 구할 땐 피타고라스 정리를 활용하면 됩니다! a^2 = b^2 + c^2니까 루트를 씌워주면 되죠!
-			const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY); 
+			const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
 			// 이동 방향에 따라 이미지 방향 설정
 			this.isFlipped = deltaX < 0; // x 좌표가 감소하면 왼쪽으로 이동
@@ -69,16 +69,8 @@ export class Monster {
 				this.currentIndex++;
 			} else {
 				// 거리가 속도보다 크면 일정한 비율로 이동하면 됩니다. 이 때, 단위 벡터와 속도를 곱해줘야 해요!
-				console.log("시작")
-				console.log("this.x",this.x)
-				console.log("this.x",this.x)
-				console.log("============================")
 				this.x += (deltaX / distance) * this.speed; // 단위 벡터: deltaX / distance
 				this.y += (deltaY / distance) * this.speed; // 단위 벡터: deltaY / distance
-				console.log("시작")
-				console.log("this.x",this.x)
-				console.log("this.x",this.x)
-				console.log("============================")
 			}
 			return false;
 		} else {
