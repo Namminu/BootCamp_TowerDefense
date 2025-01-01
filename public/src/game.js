@@ -542,7 +542,7 @@ export async function initGame(receivedUserData, getReset = false) {
 	isInitGame = true;
 	isGameRun = true;
 
-	userGold = 800; // 초기 골드 설정
+	userGold = 1000; // 초기 골드 설정
 	score = 0;
 	monsterLevel = 1;
 
