@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<link rel="stylesheet" href="../styles/modal.css" />
+	</head>
+	<body>
+		<div class="modal-overlay" id="registerOverlay">
+			<div id="registerModal" class="modal-content">
+				<span class="close" id="closeRegister">&times;</span>
+				<h2>회원가입</h2>
+				<form onsubmit="event.preventDefault()">
+					<input type="text" id="registerUsername" name="username" placeholder="ID" required />
+					<input
+						type="password"
+						id="registerPassword"
+						name="password"
+						placeholder="비밀번호"
+						required />
+					<input
+						type="password"
+						id="confirmPassword"
+						name="confirmPassword"
+						placeholder="비밀번호 확인"
+						required />
+					<input type="nickName" id="nickName" name="nickName" placeholder="닉네임" required />
+					<button type="button" id="modal_RegisterButton">확인</button>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

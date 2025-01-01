@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>내일배움캠프 디펜스 게임</title>
+		<link rel="stylesheet" href="../styles/common.css" />
+		<link rel="stylesheet" href="../styles/style.css" />
+	</head>
+	<body>
+		<header id="header">
+			<div class="container header">
+				<div class="header-left">
+					<a href="/" class="header-logo-link">
+						<img
+							class="header-logo"
+							src="https://profiles.greetinghr.com/group/45f1fba4-e463-4b1b-922f-c243dacfad8b"
+							alt="SPARTA 로고" />
+					</a>
+					<a href="/" class="header-title-link">
+						<h1 class="header-title">♧ † 내배캠 타워디펜스£ ¢</h1>
+					</a>
+				</div>
+				<div class="header-right">
+					<nav class="text-md">
+						<a href="/htmls/introduce.html" id="introduceHeader">게임 소개</a>
+						<a href="#" id="rankingHeader">랭킹 조회</a>
+						<a href="#" id="boardHeader">게시판</a>
+					</nav>
+					<div>
+						<button class="nav-button" id="loginButton">로그인</button>
+						<button class="nav-button" id="registerButton">회원가입</button>
+						<button class="nav-button" id="logoutButton" style="display: none">로그아웃</button>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<canvas id="gameCanvas" width="1920" height="920" style="display: none"></canvas>
+
+		<main class="container">
+			<!-- 메인 배너 -->
+			<div class="banner">
+				<div>
+					<button id="playButton">게임 시작</button>
+				</div>
+			</div>
+		</main>
+
+		<!-- 모달 로드 영역 -->
+		<div id="modalConatiner"></div>
+
+		<!-- 랭킹/게시판 등 -->
+		<div class="container content">
+			<!-- 랭킹 -->
+			<div class="ranking">
+				<div>
+					<h3>랭킹 TOP 10</h3>
+					<a href="#" class="more-link">+ 더보기</a>
+				</div>
+
+				<ul class="ranking-list">
+					<!-- 여기서부터 JavaScript로 동적으로 데이터를 추가 -->
+				  </ul>
+			</div>
+
+			<!-- 게시판 -->
+			<div class="board">
+				<div>
+					<h3>게시판</h3>
+					<a href="#" class="more-link">+ 더보기</a>
+				</div>
+
+				<ul>
+					<li>
+						<span>1</span>
+						<span>쥐들이 너무 귀여워요 ㅜㅜ</span>
+						<span>잣냥이</span>
+						<span>2024.01.01 14:23</span>
+					</li>
+					<li>
+						<span>2</span>
+						<span>고양이 탑이 너무 귀여워요!</span>
+						<span>냥덕후</span>
+						<span>2024.01.01 15:45</span>
+					</li>
+					<li>
+						<span>3</span>
+						<span>쥐들이 도망가는 모습이 너무 웃겨요!ㅋㅋㅋㅋㅋ</span>
+						<span>웃음냥</span>
+						<span>2024.01.02 09:15</span>
+					</li>
+					<li>
+						<span>4</span>
+						<span>레벨 올라갈수록 더 재밌네요!</span>
+						<span>타워마스터</span>
+						<span>2024.01.02 10:30</span>
+					</li>
+					<li>
+						<span>5</span>
+						<span>쥐와 고양이의 대결이 신선해요!</span>
+						<span>신선냥</span>
+						<span>2024.01.02 11:50</span>
+					</li>
+					<li>
+						<span>6</span>
+						<span>음악도 귀여운 게임이에요!</span>
+						<span>멜로냥</span>
+						<span>2024.01.03 08:10</span>
+					</li>
+					<li>
+						<span>7</span>
+						<span>쥐들 모션이 너무 디테일해요!</span>
+						<span>디테냥</span>
+						<span>2024.01.03 12:00</span>
+					</li>
+					<li>
+						<span>8</span>
+						<span>타워 강화할 때 효과가 멋져요!</span>
+						<span>강화냥</span>
+						<span>2024.01.03 14:45</span>
+					</li>
+					<li>
+						<span>9</span>
+						<span>애니메이션이 정말 부드럽네요.</span>
+						<span>부드냥</span>
+						<span>2024.01.04 16:20</span>
+					</li>
+					<li>
+						<span>10</span>
+						<span>친구들이랑 같이 하니 더 재밌어요!</span>
+						<span>함께냥</span>
+						<span>2024.01.04 18:05</span>
+					</li>
+				</ul>
+			</div>
+
+		</div>
+
+			
+		</div>
+
+		<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+		<script type="module">
+			import '/src/webpages/pages/mainPage.js';
+		</script>
+		<script type="module">
+			import '/src/webpages/pages/common.js';
+		</script>
+	</body>
+</html>

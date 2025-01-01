@@ -1,0 +1,106 @@
+{
+	"name": "tower",
+	"version": "1.0.0",
+	"data": [
+		{
+			"type": 1,
+			"name": "평범한 고양이",
+			"damage": 40,
+			"range": 225,
+			"cooldown": 130,
+			"cost": 100,
+			"imageSet": {
+				"idle": [
+					"../images/cat/normalCat/normal_lv1_0.png",
+					"../images/cat/normalCat/normal_lv2_0.png",
+					"../images/cat/normalCat/normal_lv3_0.png",
+					"../images/cat/normalCat/normal_lv4_0.png"
+				],
+				"attacking": [
+					["../images/cat/normalCat/normal_lv1_1.png", "../images/cat/normalCat/normal_lv1_2.png"],
+					["../images/cat/normalCat/normal_lv2_1.png", "../images/cat/normalCat/normal_lv2_2.png"],
+					["../images/cat/normalCat/normal_lv3_1.png", "../images/cat/normalCat/normal_lv3_2.png"],
+					["../images/cat/normalCat/normal_lv4_1.png", "../images/cat/normalCat/normal_lv4_2.png"]
+				]
+			}
+		},
+		{
+			"type": 2,
+			"name": "고양이 궁수",
+			"damage": 30,
+			"range": 300,
+			"cooldown": 140,
+			"cost": 130,
+			"imageSet": {
+				"idle": [
+					"../images/cat/archerCat/archer_lv1_0.png",
+					"../images/cat/archerCat/archer_lv2_0.png",
+					"../images/cat/archerCat/archer_lv3_0.png",
+					"../images/cat/archerCat/archer_lv4_0.png"
+				],
+				"attacking": [
+					["../images/cat/archerCat/archer_lv1_1.png", "../images/cat/archerCat/archer_lv1_2.png"],
+					["../images/cat/archerCat/archer_lv2_1.png", "../images/cat/archerCat/archer_lv2_2.png"],
+					["../images/cat/archerCat/archer_lv3_1.png", "../images/cat/archerCat/archer_lv3_2.png"],
+					["../images/cat/archerCat/archer_lv4_1.png", "../images/cat/archerCat/archer_lv4_2.png"]
+				]
+			}
+		},
+		{
+			"type": 3,
+			"name": "고양이 전사",
+			"damage": 50,
+			"range": 150,
+			"cooldown": 120,
+			"cost": 150,
+			"imageSet": {
+				"idle": [
+					"../images/cat/warriorCat/warrior_lv1_0.png",
+					"../images/cat/warriorCat/warrior_lv2_0.png",
+					"../images/cat/warriorCat/warrior_lv3_0.png",
+					"../images/cat/warriorCat/warrior_lv4_0.png"
+				],
+				"attacking": [
+					[
+						"../images/cat/warriorCat/warrior_lv1_1.png",
+						"../images/cat/warriorCat/warrior_lv1_2.png"
+					],
+					[
+						"../images/cat/warriorCat/warrior_lv2_1.png",
+						"../images/cat/warriorCat/warrior_lv2_2.png"
+					],
+					[
+						"../images/cat/warriorCat/warrior_lv3_1.png",
+						"../images/cat/warriorCat/warrior_lv3_2.png"
+					],
+					[
+						"../images/cat/warriorCat/warrior_lv4_1.png",
+						"../images/cat/warriorCat/warrior_lv4_2.png"
+					]
+				]
+			}
+		},
+		{
+			"type": 4,
+			"name": "마법사 고양이",
+			"damage": 40,
+			"range": 225,
+			"cooldown": 180,
+			"cost": 170,
+			"imageSet": {
+				"idle": [
+					"../images/cat/wizardCat/wizard_lv1_0.png",
+					"../images/cat/wizardCat/wizard_lv2_0.png",
+					"../images/cat/wizardCat/wizard_lv3_0.png",
+					"../images/cat/wizardCat/wizard_lv4_0.png"
+				],
+				"attacking": [
+					["../images/cat/wizardCat/wizard_lv1_1.png", "../images/cat/wizardCat/wizard_lv1_2.png"],
+					["../images/cat/wizardCat/wizard_lv2_1.png", "../images/cat/wizardCat/wizard_lv2_2.png"],
+					["../images/cat/wizardCat/wizard_lv3_1.png", "../images/cat/wizardCat/wizard_lv3_2.png"],
+					["../images/cat/wizardCat/wizard_lv4_1.png", "../images/cat/wizardCat/wizard_lv4_2.png"]
+				]
+			}
+		}
+	]
+}

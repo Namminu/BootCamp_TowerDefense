@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<link rel="stylesheet" href="../styles/modal.css" />
+	</head>
+	<body>
+		<div class="modal-overlay" id="loginOverlay">
+			<div id="loginModal" class="modal-content">
+				<span id="closeLogin" class="close">&times;</span>
+				<h2>로그인</h2>
+				<form onsubmit="event.preventDefault()">
+					<input type="text" id="userId" name="userId" placeholder="ID" required />
+					<input type="password" id="password" name="password" placeholder="비밀번호" required />
+					<button type="button" id="modal_LoginButton">로그인</button>
+				</form>
+				<a href="#" id="registerLink">아직 회원이 아니신가요?</a>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,76 @@
+{
+	"name": "monster",
+	"version": "1.0.0",
+	"data": [
+		{
+			"id": 101,
+			"name": "평범한 실험실 쥐",
+			"damage": 40,
+			"hp": 150,
+			"speed": 3,
+			"gold": 20,
+			"imageSet": {
+				"idle": ["images/monster/monster1.png", "images/monster/monster1_1.png"],
+				"hit": "images/monster/monster1_hit.png"
+			},
+			"width": 120,
+			"height": 70
+		},
+		{
+			"id": 102,
+			"name": "약삭빠른 도둑쥐",
+			"damage": 30,
+			"hp": 80,
+			"speed": 5,
+			"gold": 25,
+			"imageSet": {
+				"idle": ["images/monster/monster2.png", "images/monster/monster2_1.png"],
+				"hit": "images/monster/monster2_hit.png"
+			},
+			"width": 120,
+			"height": 104
+		},
+		{
+			"id": 103,
+			"name": "햄버거 매니아 쥐",
+			"damage": 50,
+			"hp": 250,
+			"speed": 2,
+			"gold": 30,
+			"imageSet": {
+				"idle": ["images/monster/monster3.png", "images/monster/monster3_1.png"],
+				"hit": "images/monster/monster3_hit.png"
+			},
+			"width": 120,
+			"height": 101
+		},
+		{
+			"id": 104,
+			"name": "근육왕 헬창쥐",
+			"damage": 80,
+			"hp": 400,
+			"speed": 2.4,
+			"gold": 50,
+			"imageSet": {
+				"idle": ["images/monster/monster4.png", "images/monster/monster4_1.png"],
+				"hit": "images/monster/monster4_hit.png"
+			},
+			"width": 120,
+			"height": 208
+		},
+		{
+			"id": 105,
+			"name": "굶주린 질주쥐",
+			"damage": 35,
+			"hp": 60,
+			"speed": 7,
+			"gold": 25,
+			"imageSet": {
+				"idle": ["images/monster/monster5.png", "images/monster/monster5_1.png"],
+				"hit": "images/monster/monster5_hit.png"
+			},
+			"width": 120,
+			"height": 104
+		}
+	]
+}

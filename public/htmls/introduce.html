@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>게임 소개 - 내일배움캠프 디펜스 게임</title>
+		<link rel="stylesheet" href="../styles/common.css" />
+		<link rel="stylesheet" href="../styles/style.css" />
+		<link rel="stylesheet" href="../styles/modal.css" />
+		<link rel="stylesheet" href="../styles/introduce.css" />
+	</head>
+	<body>
+		<header id="header">
+			<div class="container header">
+				<div class="header-left">
+					<a href="/" class="header-logo-link">
+						<img
+							class="header-logo"
+							src="https://profiles.greetinghr.com/group/45f1fba4-e463-4b1b-922f-c243dacfad8b"
+							alt="SPARTA 로고" />
+					</a>
+					<a href="/" class="header-title-link">
+						<h1 class="header-title">♧ † 내배캠 타워디펜스£ ¢</h1>
+					</a>
+				</div>
+				<div class="header-right">
+					<nav class="text-md">
+						<a href="/htmls/introduce.html" id="introduceHeader">게임 소개</a>
+						<a href="#" id="rankingHeader">랭킹 조회</a>
+						<a href="#" id="boardHeader">게시판</a>
+					</nav>
+					<div>
+						<button class="nav-button" id="loginButton">로그인</button>
+						<button class="nav-button" id="registerButton">회원가입</button>
+						<button class="nav-button" id="logoutButton" style="display: none">로그아웃</button>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<main class="container">
+			<!-- 게임 소개 배너 -->
+			<div class="banner introduce-banner">
+				<h2>내배캠 타워디펜스</h2>
+				<p>귀여운 고양이들과 함께하는 타워디펜스 게임!</p>
+			</div>
+
+			<!-- 게임 소개 콘텐츠 -->
+			<div class="introduce-content">
+				<!-- 게임 설명 섹션 -->
+				<section class="intro-section">
+					<h3>게임 소개</h3>
+					<p>
+						내배캠 타워디펜스는 귀여운 고양이 타워들을 배치하여 쥐들의 침입을 막는 전략 게임입니다.
+						<br />
+						다양한 특성을 가진 타워들을 적절히 배치하고 업그레이드하여 최대한 오래 버텨보세요!
+					</p>
+				</section>
+
+				<!-- 게임 특징 섹션 -->
+				<section class="intro-section">
+					<h3>게임 특징</h3>
+					<div class="feature-grid">
+						<div class="feature-item">
+							<h4>다양한 타워</h4>
+							<p>각기 다른 특성을 가진 고양이 타워들로 전략적 플레이</p>
+						</div>
+						<div class="feature-item">
+							<h4>타워 강화</h4>
+							<p>골드를 모아 타워를 강화하고 더 강력한 공격력 획득</p>
+						</div>
+						<div class="feature-item">
+							<h4>웨이브 시스템</h4>
+							<p>라운드가 진행될수록 더욱 강력해지는 적들과의 전투</p>
+						</div>
+						<div class="feature-item">
+							<h4>랭킹 시스템</h4>
+							<p>다른 플레이어들과 기록을 비교하며 경쟁</p>
+						</div>
+					</div>
+				</section>
+
+				<!-- 타워 소개 섹션 -->
+				<section class="intro-section">
+					<h3>고양이 타워 소개</h3>
+					<div class="tower-grid">
+						<div class="tower-item">
+							<div class="tower-images">
+								<div class="level-image">
+									<span>Level 1</span>
+									<img src="../images/cat/normalCat/normal_lv1_0.png" alt="평범한 고양이 레벨1" />
+								</div>
+								<div class="level-image">
+									<span>Level 7 (maxLv)</span>
+									<img src="../images/cat/normalCat/normal_lv4_0.png" alt="평범한 고양이 레벨4" />
+								</div>
+							</div>
+							<h4>평범한 고양이</h4>
+							<p>기본적인 공격력을 가진 타워입니다. 균형 잡힌 성능으로 게임 초반에 유용합니다.</p>
+							<ul>
+								<li>공격력: ★★☆☆☆ (30)</li>
+								<li>사거리: ★★★☆☆ (150)</li>
+								<li>공격 속도: ★★★☆☆ (1.0)</li>
+								<li>비용: 100G</li>
+							</ul>
+						</div>
+						<div class="tower-item">
+							<div class="tower-images">
+								<div class="level-image">
+									<span>Level 1</span>
+									<img src="../images/cat/archerCat/archer_lv1_0.png" alt="고양이 궁수 레벨1" />
+								</div>
+								<div class="level-image">
+									<span>Level 7 (maxLv)</span>
+									<img src="../images/cat/archerCat/archer_lv4_0.png" alt="고양이 궁수 레벨4" />
+								</div>
+							</div>
+							<h4>고양이 궁수</h4>
+							<p>긴 사거리를 가진 타워입니다. 멀리 있는 적을 효과적으로 공격할 수 있습니다.</p>
+							<ul>
+								<li>공격력: ★★☆☆☆ (25)</li>
+								<li>사거리: ★★★★★ (250)</li>
+								<li>공격 속도: ★★☆☆☆ (0.8)</li>
+								<li>비용: 130G</li>
+							</ul>
+						</div>
+						<div class="tower-item">
+							<div class="tower-images">
+								<div class="level-image">
+									<span>Level 1</span>
+									<img src="../images/cat/warriorCat/warrior_lv1_0.png" alt="전사 고양이 레벨1" />
+								</div>
+								<div class="level-image">
+									<span>Level 7 (maxLv)</span>
+									<img src="../images/cat/warriorCat/warrior_lv4_0.png" alt="전사 고양이 레벨4" />
+								</div>
+							</div>
+							<h4>전사 고양이</h4>
+							<p>높은 공격력을 가진 타워입니다. 근거리에서 강력한 공격을 가합니다.</p>
+							<ul>
+								<li>공격력: ★★★★☆ (45)</li>
+								<li>사거리: ★★☆☆☆ (100)</li>
+								<li>공격 속도: ★★★☆☆ (1.2)</li>
+								<li>비용: 150G</li>
+							</ul>
+						</div>
+						<div class="tower-item">
+							<div class="tower-images">
+								<div class="level-image">
+									<span>Level 1</span>
+									<img src="../images/cat/wizardCat/wizard_lv1_0.png" alt="마법사 고양이 레벨1" />
+								</div>
+								<div class="level-image">
+									<span>Level 7 (maxLv)</span>
+									<img src="../images/cat/wizardCat/wizard_lv4_0.png" alt="마법사 고양이 레벨4" />
+								</div>
+							</div>
+							<h4>마법사 고양이</h4>
+							<p>마법 공격을 하는 타워입니다. 강력한 마법으로 적을 공격합니다.</p>
+							<ul>
+								<li>공격력: ★★★☆☆ (40)</li>
+								<li>사거리: ★★★☆☆ (180)</li>
+								<li>공격 속도: ★★☆☆☆ (0.7)</li>
+								<li>비용: 170G</li>
+							</ul>
+						</div>
+					</div>
+				</section>
+
+				<!-- 몬스터 소개 섹션 -->
+				<section class="intro-section">
+					<h3>몬스터 소개</h3>
+					<div class="monster-grid">
+						<div class="monster-item">
+							<img src="../images/monster/monster1.png" alt="평범한 실험실 쥐" />
+							<h4>평범한 실험실 쥐</h4>
+							<p>기본적인 능력치를 가진 몬스터입니다.</p>
+							<ul>
+								<li>체력: ★★☆☆☆ (150)</li>
+								<li>이동 속도: ★★★☆☆ (1.5)</li>
+								<li>공격력: ★★☆☆☆ (40)</li>
+								<li>골드 보상: 100G</li>
+							</ul>
+						</div>
+						<div class="monster-item">
+							<img src="../images/monster/monster2.png" alt="약삭빠른 도둑쥐" />
+							<h4>약삭빠른 도둑쥐</h4>
+							<p>빠른 속도가 특징인 몬스터입니다.</p>
+							<ul>
+								<li>체력: ★☆☆☆☆ (80)</li>
+								<li>이동 속도: ★★★★☆ (2.5)</li>
+								<li>공격력: ★★☆☆☆ (30)</li>
+								<li>골드 보상: 120G</li>
+							</ul>
+						</div>
+						<div class="monster-item">
+							<img src="../images/monster/monster3.png" alt="햄버거 매니아 쥐" />
+							<h4>햄버거 매니아 쥐</h4>
+							<p>높은 체력을 가진 몬스터입니다.</p>
+							<ul>
+								<li>체력: ★★★★☆ (250)</li>
+								<li>이동 속도: ★☆☆☆☆ (1.0)</li>
+								<li>공격력: ★★★☆☆ (50)</li>
+								<li>골드 보상: 150G</li>
+							</ul>
+						</div>
+						<div class="monster-item">
+							<img src="../images/monster/monster4.png" alt="근육왕 헬창쥐" />
+							<h4>근육왕 헬창쥐</h4>
+							<p>매우 강력한 공격력과 체력을 가진 몬스터입니다.</p>
+							<ul>
+								<li>체력: ★★★★★ (400)</li>
+								<li>이동 속도: ★★☆☆☆ (1.2)</li>
+								<li>공격력: ★★★★★ (80)</li>
+								<li>골드 보상: 200G</li>
+							</ul>
+						</div>
+						<div class="monster-item">
+							<img src="../images/monster/monster5.png" alt="굶주린 질주쥐" />
+							<h4>굶주린 질주쥐</h4>
+							<p>가장 빠른 이동 속도를 가진 몬스터입니다.</p>
+							<ul>
+								<li>체력: ★☆☆☆☆ (60)</li>
+								<li>이동 속도: ★★★★★ (3.5)</li>
+								<li>공격력: ★★☆☆☆ (35)</li>
+								<li>골드 보상: 130G</li>
+							</ul>
+						</div>
+					</div>
+				</section>
+
+				<!-- 조작 방법 섹션 -->
+				<section class="intro-section">
+					<h3>조작 방법</h3>
+					<div class="control-list">
+						<div class="control-item">
+							<span class="key">마우스 좌클릭</span>
+							<span class="description">마우스 좌클릭으롤 모든 조작 가능!</span>
+						</div>
+						
+				</section>
+			</div>
+		</main>
+
+		<!-- 모달 로드 영역 -->
+		<div id="modalConatiner"></div>
+
+		<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+
+		<script type="module">
+			import '/src/webpages/pages/common.js';
+		</script>
+	</body>
+</html>
