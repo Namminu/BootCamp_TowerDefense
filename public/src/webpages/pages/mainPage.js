@@ -39,8 +39,8 @@ async function fetchRanking() {
 		li.innerHTML = `
 		  <span>${index + 1}</span>
 		  <span>${rank.Round} 라운드 ${rank.Time}초</span>
-		  <span>${rank.UserId}</span>
-		  <span>${new Date().toLocaleString()}</span>
+		  <span>${rank.UserName}</span>
+		  <span>${rank.createdAt}</span>
 		`;
 		rankingList.appendChild(li);
 	  });
