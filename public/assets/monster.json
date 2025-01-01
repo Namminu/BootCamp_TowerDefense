@@ -7,7 +7,7 @@
 			"name": "평범한 실험실 쥐",
 			"damage": 40,
 			"hp": 150,
-			"speed": 1.5,
+			"speed": 3,
 			"gold": 100,
 			"imageSet": {
 				"idle": ["images/monster/monster1.png", "images/monster/monster1_1.png"],
@@ -21,7 +21,7 @@
 			"name": "약삭빠른 도둑쥐",
 			"damage": 30,
 			"hp": 80,
-			"speed": 2.5,
+			"speed": 5,
 			"gold": 120,
 			"imageSet": {
 				"idle": ["images/monster/monster2.png", "images/monster/monster2_1.png"],
@@ -35,7 +35,7 @@
 			"name": "햄버거 매니아 쥐",
 			"damage": 50,
 			"hp": 250,
-			"speed": 1,
+			"speed": 2,
 			"gold": 150,
 			"imageSet": {
 				"idle": ["images/monster/monster3.png", "images/monster/monster3_1.png"],
@@ -49,7 +49,7 @@
 			"name": "근육왕 헬창쥐",
 			"damage": 80,
 			"hp": 400,
-			"speed": 1.2,
+			"speed": 2.4,
 			"gold": 200,
 			"imageSet": {
 				"idle": ["images/monster/monster4.png", "images/monster/monster4_1.png"],
@@ -63,7 +63,7 @@
 			"name": "굶주린 질주쥐",
 			"damage": 35,
 			"hp": 60,
-			"speed": 3.5,
+			"speed": 7,
 			"gold": 130,
 			"imageSet": {
 				"idle": ["images/monster/monster5.png", "images/monster/monster5_1.png"],
