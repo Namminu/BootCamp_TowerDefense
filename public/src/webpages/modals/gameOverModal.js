@@ -28,7 +28,7 @@ export function showModal(message, userName, highScore, currentRound, time) {
     modal.style.display = 'flex';
     modal.classList.add('show');
 
-    document.getElementById('restartButton').addEventListener('click', () => {
+    document.getElementById('restartButton').addEventListener('click', () => {        
         console.log('재시작 버튼 클릭');
         closeModal();
         resetGame(); // 게임 재시작
