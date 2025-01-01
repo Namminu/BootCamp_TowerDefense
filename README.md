@@ -47,8 +47,77 @@ https://github.com/ssini-oh
 
 ## 파일 구조
 
-조금 있다가 추가
-
+``` txt
+📦 
+.gitignore
+.prettierrc
+├─ README.md
+├─ package.json
+├─ prisma
+│  └─ schema.prisma
+public
+│  ├─ assets
+│  │  ├─ monster.json
+│  │  ├─ monster_unlock.json
+│  │  └─ tower.json
+│  ├─ htmls
+index.html
+login.html
+modalHTMLs
+│  │  │  ├─ gameOverModal.html
+│  │  │  ├─ loginModal.html
+│  │  │  └─ registerModal.html
+register.html
+│  │  └─ test.html
+│  ├─ images
+│  └─ src
+│     ├─ base.js
+│     ├─ constants.js
+│     ├─ game.js
+│     ├─ grid.js
+│     ├─ monster.js
+│     ├─ path.js
+│     ├─ socket.js
+│     ├─ tower.js
+│     ├─ towerControl.js
+│     └─ webpages
+│        ├─ modals
+│        │  ├─ gameOverModal.js
+│        │  ├─ loginModal.js
+│        │  └─ registerModal.js
+│        └─ pages
+│           └─ mainPage.js
+├─ src
+│  ├─ app.js
+│  ├─ handlers
+│  │  ├─ base.hanlder.js
+│  │  ├─ game.handler.js
+│  │  ├─ handlerMapping.js
+│  │  ├─ helper.js
+│  │  ├─ monster.handler.js
+│  │  ├─ register.handler.js
+│  │  ├─ round.handler.js
+│  │  └─ tower.handler.js
+│  ├─ init
+│  │  ├─ assets.js
+│  │  └─ socket.js
+│  ├─ middlewares
+│  │  └─ auth.middleware.js
+│  ├─ models
+│  │  ├─ rank.model.js
+│  │  ├─ roundInfo.model.js
+│  │  ├─ tower.model.js
+│  │  ├─ user.model.js
+│  │  └─ userData.model.js
+│  ├─ routes
+│  │  ├─ rank.router.js
+│  │  └─ user.router.js
+│  └─ utils
+│     └─ prisma
+│        └─ index.js
+└─ yarn.lock
+```
+<br>
 
 ## 필수 기능
 ``` txt
