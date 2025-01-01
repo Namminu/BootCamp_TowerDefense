@@ -67,7 +67,6 @@ let spawn_count = 0;
 let round_timer = 20;
 let roundUnlock = null;
 
-
 // 상수 정의
 const TOWER_CONFIG = towerData.data;
 const MONSTER_CONFIG = monsterData.data;
@@ -536,7 +535,7 @@ export async function initGame(receivedUserData, getReset = false) {
 	}
 
 	if (getReset) {
-		isInitGame = false;  // resetGame으로 강제 초기화
+		isInitGame = false; // resetGame으로 강제 초기화
 	}
 	userData = receivedUserData;
 	isInitGame = true;
@@ -594,11 +593,11 @@ export function resetGame() {
 	lastFrameTime = 0;
 	accumulatedTime = 0;
 	previousTime = null;
-    isRoundExpired = false;
+	isRoundExpired = false;
 
 	// 몬스터 스폰 초기화
 	//sendEvent(12, {}); --> 게임 스타트에 편입.
-	
+
 	eventQueue.length = 0;
 
 	// 캔버스 초기화
@@ -633,15 +632,16 @@ function canPlaceTower(x, y) {
 	}
 
 	// 몬스터 공격로에 설치하려고 하면 return false
-	const isOnPath = paths.some((pathCell) => pathCell.x === x && pathCell.y === y);
+	let isOnPath = paths.some((pathCell) => pathCell.x === x && pathCell.y === y);
 	previewTower.isInvalidPlacement = isOnPath;
 	if (previewTower.isInvalidPlacement) {
 		console.log('Cannot place tower: on path.');
+		previewTower.isInvalidPlacement = false;
 		return false;
 	}
 
 	// 이미 타워가 설치된 곳에 설치하려고 하면 return false
-	const isOnExistingTower = towerControl.towers.some((tower) => {
+	let isOnExistingTower = towerControl.towers.some((tower) => {
 		const towerCellX = Math.floor(tower.x / cellSize.WIDTH);
 		const towerCellY = Math.floor(tower.y / cellSize.HEIGHT);
 		return towerCellX === x && towerCellY === y;
@@ -649,6 +649,7 @@ function canPlaceTower(x, y) {
 	previewTower.isInvalidPlacement = isOnExistingTower;
 	if (previewTower.isInvalidPlacement) {
 		console.log('Cannot place tower: position occupied by another tower.');
+		previewTower.isInvalidPlacement = false;
 		return false;
 	}
 
@@ -703,6 +704,8 @@ canvas.addEventListener('click', async (event) => {
 			previewTower.x = cellSize.WIDTH * cellX;
 			previewTower.y = cellSize.HEIGHT * cellY;
 			towerControl.towers.push(previewTower);
+
+			console.log('타워 설치 좌표 : ', previewTower.x, previewTower.y);
 
 			//타워 구매 - sendEvent
 			await sendEvent(5, {
