@@ -15,7 +15,7 @@ const cellSize = { WIDTH: 280 / 2.5, HEIGHT: 320 / 2.5 };
 
 const startPoint = { x: 0, y: 0 };
 const endPoint = { x: 16, y: 4 };
-const path = generatePath(startPoint, endPoint);
+// const path = generatePath(startPoint, endPoint);
 
 // 게임 실행 관련 변수
 let isGameRun = false;
@@ -146,7 +146,7 @@ export function addDeathSheet(data) {
 
 function setMonsterPathFromGeneratedPath() {
 	// generatePath 결과를 기반으로 몬스터 경로 설정
-	const generatedPath = path;
+	const generatedPath = paths;
 	if (!generatedPath || generatedPath.length === 0) {
 		console.error('Path generation failed or empty.');
 		return [];
@@ -161,13 +161,14 @@ function setMonsterPathFromGeneratedPath() {
 
 function initMap() {
 	// 배경 이미지 그리기
-	paths = setMonsterPathFromGeneratedPath();
+	paths = generatePath(startPoint, endPoint);
 	drawGridAndPath(ctx, cellSize, paths);
+	setMonsterPathFromGeneratedPath();
 }
 
 function placeBase() {
 	//플레이어 베이스를 만드는 함수.
-	const lastPoint = path[path.length - 1];
+	const lastPoint = paths[paths.length - 1];
 	if (lastPoint) {
 		basePointX = lastPoint.x * cellSize.WIDTH;
 		basePointY = lastPoint.y * cellSize.HEIGHT;
@@ -251,7 +252,7 @@ async function gameLoop(frameTime) {
 
 	// 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
 	// // 그리드 생성 및 호출
-	drawGridAndPath(ctx, cellSize, path);
+	drawGridAndPath(ctx, cellSize, paths);
 
 	// 몬스터 그리기
 	for (let i = monsters.length - 1; i >= 0; i--) {
@@ -536,7 +537,7 @@ export async function initGame(receivedUserData, getReset = false) {
 	}
 
 	if (getReset) {
-		isInitGame = false;  // resetGame으로 강제 초기화
+		isInitGame = false; // resetGame으로 강제 초기화
 	}
 	userData = receivedUserData;
 	isInitGame = true;
@@ -549,6 +550,7 @@ export async function initGame(receivedUserData, getReset = false) {
 	console.log('userData: ', userData);
 
 	//monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
+	paths = generatePath(startPoint, endPoint);
 	monsterPath = setMonsterPathFromGeneratedPath();
 	//await initModal();
 
@@ -562,7 +564,7 @@ export async function initGame(receivedUserData, getReset = false) {
 	baseHp = initBaseInfo.message;
 
 	await sendEvent(2);
-	initMap(); // 맵 초기화 (배경, 경로 그리기)
+	// initMap(); // 맵 초기화 (배경, 경로 그리기)
 	placeBase(); // 기지 배치
 	// 서버에 몬스터 스폰 주기와 타이밍 동기화 -> 라운드 정보를 가져와서 초기화해야함 -> 0으로 초기화된거 너무 짜친다다
 	queueEvent(13, { round: round, timestamp: Date.now() });
@@ -631,7 +633,7 @@ function canPlaceTower(x, y) {
 	}
 
 	// 몬스터 공격로에 설치하려고 하면 return false
-	const isOnPath = path.some((pathCell) => pathCell.x === x && pathCell.y === y);
+	const isOnPath = paths.some((pathCell) => pathCell.x === x && pathCell.y === y);
 	previewTower.isInvalidPlacement = isOnPath;
 	if (previewTower.isInvalidPlacement) {
 		console.log('Cannot place tower: on path.');
