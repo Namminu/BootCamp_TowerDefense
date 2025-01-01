@@ -624,7 +624,7 @@ function stopGame() {
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
 Promise.all([
 	new Promise((resolve) => (towerImages.onload = resolve)),
-	new Promise((resolve) => (baseImage.onload = resolve)),
+	new Promise((resolve) => (baseImages.onload = resolve)),
 	// ...monsterImages.map(
 	//   (img) => new Promise((resolve) => (img.onload = resolve))
 	// ),
