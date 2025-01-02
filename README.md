@@ -1,7 +1,6 @@
 # Tower Defense Game
 
 #### 타워 디펜스 게임 팀프로젝트
-<br>
 
 ## w. 1조
 
@@ -196,11 +195,11 @@ server| src/rank.model.js
 <br>
 
 ## 필수 기능 구현
-1. 회원가입 / 로그인 기능<br>
+### 1. 회원가입 / 로그인 기능<br>
 ![image](https://github.com/user-attachments/assets/e5ba5383-e073-4406-8440-54c8034b1fb8)
 
 
-2. 유저별 게임 데이터 관리<br>
+### 2. 유저별 게임 데이터 관리<br>
 ```js
 const userData = {};
 
@@ -217,7 +216,7 @@ export const setUserData = (uuid, round, timestamp, gold) => {
 };
 ```
 
-3. 클라이언트가 서버로부터 수신하는 이벤트<br>
+### 3. 클라이언트가 서버로부터 수신하는 이벤트<br>
 (웹소켓 이벤트 명세서 표를 첨부할 테니 반드시!! 본인 파트 작성해주세요)
 
 | 핸들러 ID | 핸들러 함수명           | payload                                                             | 역할                                                      |
@@ -234,7 +233,7 @@ export const setUserData = (uuid, round, timestamp, gold) => {
 | 14     | attackTower       | atteckerX ,atteckerY , hitEntity ,x ,y , timestemp , feverTriggered | 타워가 타격할때 정보를 서버에 저장.                                    |
 | 20     | setBaseInitHp     |                                                                     | 게임 최초 시작 시 Base 의 디폴트 체력을 받아와 설정하기 위함                   |
 
-5. 클라이언트가 서버로 송신하는 이벤트<br>
+### 4. 클라이언트가 서버로 송신하는 이벤트<br>
 (웹소켓 이벤트 명세서 표를 첨부할 테니 반드시!! 본인 파트 작성해주세요)
 
 | 핸들러ID | data                               |
@@ -267,21 +266,19 @@ client| public/src/tower.js -> feverTime함수를 사용합니다.
 ```
 
 ## 도전 기능 구현
-1. 타워 환불 & 업그레이드 기능<br>
+### 1. 타워 환불 & 업그레이드 기능<br>
 
 ![image](https://github.com/user-attachments/assets/d56179ff-1957-4ba2-ae67-c1883b60c572)
 
-<br>
-
-### addEventListener로 클릭 이벤트 감지
-#### 환불 버튼 
+#### addEventListener로 클릭 이벤트 감지
+##### 환불 버튼 
 - 클라이언트: 타워 객체 삭제 후 골드 환불, 서버로 데이터 송신 
 - 서버: 클라이언트로부터 수신받은 데이터 검증, 검증 결과 반환
-#### 업그레이드 버튼
+##### 업그레이드 버튼
 - 클라이언트 : 타워 데이터 업데이트, 골드 차감, 서버로 데이터 송신
 - 서버: 클라이언트로부터 수신받은 데이터 검증, 검증 결과 반환
 
-3. 그리드 형식의 맵으로 변경
+### 2. 그리드 형식의 맵으로 변경
 #### 랜덤 워크 이론이란?
 주어진 공간에서 매 순간 랜덤으로, 즉 확률적으로 이동하는 모습을 수학적으로 표현한 알고리즘
 #### (1) 기본적인 변수 선언
@@ -304,7 +301,7 @@ const directions = [
 ];
 ```
 #### (2) 랜덤한 경로 생성
-조건 1 : 몬스터가 이미 지나간 좌표는 다시 지나갈 수 없다.
+조건 1 : 몬스터가 이미 지나간 좌표는 다시 지나갈 수 없다.<br>
 조건 2 : 타워를 설치하기 위해, 몬스터는 반드시 “2칸씩” 움직여야 한다.
 ```js
 while (path.length < minlength) {
@@ -329,6 +326,6 @@ while (path.length < minlength) {
 }
 ```
 
-4. 피버 타임 기능
+### 3. 피버 타임 기능
 ![image](https://github.com/user-attachments/assets/7434e522-e685-4142-990d-4aad956ffce0)
 
