@@ -1,6 +1,6 @@
-# Tower Defense Game
-
-#### 타워 디펜스 게임 팀프로젝트
+# 타워 디펜스 팀프로젝트 - <Cheese Defense!>
+![image](https://github.com/user-attachments/assets/da4f03ba-b6de-4c07-95b7-336da2755df9)
+플레이할 수 있는 곳 : 
 http://astraiosis.shop:8080/
 
 ## w. 1조
@@ -295,6 +295,8 @@ const directions = [
 #### (2) 랜덤한 경로 생성
 조건 1 : 몬스터가 이미 지나간 좌표는 다시 지나갈 수 없다.<br>
 조건 2 : 타워를 설치하기 위해, 몬스터는 반드시 “2칸씩” 움직여야 한다.
+조건 3 : 몬스터 공격로는 최소 길이 40을 넘어야 한다.<br>
+(16x4 그리드에서 게임 플레이를 위해 임의로 정한 값)
 ```js
 while (path.length < minlength) {
 	const possibleMoves = directions
