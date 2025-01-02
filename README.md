@@ -1,6 +1,7 @@
 # Tower Defense Game
 
 #### 타워 디펜스 게임 팀프로젝트
+http://astraiosis.shop:8080/
 
 ## w. 1조
 
@@ -217,38 +218,29 @@ export const setUserData = (uuid, round, timestamp, gold) => {
 ```
 
 ### 3. 클라이언트가 서버로부터 수신하는 이벤트<br>
-(웹소켓 이벤트 명세서 표를 첨부할 테니 반드시!! 본인 파트 작성해주세요)
 
-| 핸들러 ID | 핸들러 함수명           | payload                                                             | 역할                                                      |
-| ------ | ----------------- | ------------------------------------------------------------------- | ------------------------------------------------------- |
-| 2      | gameStart         | none                                                                | 유저 라운드를 생성                                              |
-| 3      | gameOver          | timestamp,round                                                     | 게임 종료 시 최종 검증                                           |
-| 5      | createTower       | type, x, y, timestamp, index                                        | 서버에 타워 기록                                               |
-| 6      | sellingTower      | x, y, type                                                          | 서버에 타워 삭제                                               |
-| 7      | upgradeTower      | type, x, y, level                                                   | 유저 타워 데이터 갱신                                            |
-| 8      | updateUserGold    | monster.gold                                                        | 유저 골드 업데이트                                              |
-| 11     | moveRoundHandler  | round, score, monsterkill, gold, timenow, 등등 점수 검증에 필요한 것들.         | 라운드 넘어갈때 시간 저장(시간 확인용), 점수, 몬스터 킬수 등등 저장해서 게임 엔드에서 검증용. |
-| 12     | stopCreateMonster |                                                                     | 몬스터의 생성 주기를 막기 위함                                       |
-| 13     | monsterCreate     | round                                                               | roundInfo의 생성주기를 round로 가져와서 계산 후 생성주기마다 클라에게 송신        |
-| 14     | attackTower       | atteckerX ,atteckerY , hitEntity ,x ,y , timestemp , feverTriggered | 타워가 타격할때 정보를 서버에 저장.                                    |
-| 20     | setBaseInitHp     |                                                                     | 게임 최초 시작 시 Base 의 디폴트 체력을 받아와 설정하기 위함                   |
+| 핸들러 네임/ID | 핸들러 함수명           | payload                                                             | 역할                                               |
+| --------- | ----------------- | ------------------------------------------------------------------- | ------------------------------------------------ |
+| 2         | gameStart         | none                                                                | 유저 라운드 정보를 생성                                    |
+| 3         | gameOver          | currentRound, timestamp                                             | 게임 종료 시 최종 검증 및 최종 점수 업데이트                       |
+| 5         | createTower       | type, x, y, timestamp, index                                        | 서버에 타워 기록                                        |
+| 6         | sellingTower      | x, y, type                                                          | 서버에 타워 삭제                                        |
+| 7         | upgradeTower      | type, x, y, level                                                   | 유저 타워 데이터 갱신                                     |
+| 8         | updateUserGold    | monster.gold                                                        | 유저 골드 업데이트                                       |
+| 11        | moveRoundHandler  | currentRound, timestamp, deathSheet                                 | 라운드 종료 시 검증 후 유저 라운드 정보 갱신, 클라이언트에 다음 라운드 정보 전달  |
+| 12        | stopCreateMonster |                                                                     | 몬스터의 생성 주기를 막기 위함                                |
+| 13        | monsterCreate     | round                                                               | roundInfo의 생성주기를 round로 가져와서 계산 후 생성주기마다 클라에게 송신 |
+| 14        | attackTower       | attackerX ,attackerY , hitEntity ,x ,y , timestemp , feverTriggered | 타워가 타격할때 정보를 서버에 저장.                             |
+| 20        | setBaseInitHp     |                                                                     | 게임 최초 시작 시 Base 의 디폴트 체력을 받아와 설정하기 위함            |
 
 ### 4. 클라이언트가 서버로 송신하는 이벤트<br>
-(웹소켓 이벤트 명세서 표를 첨부할 테니 반드시!! 본인 파트 작성해주세요)
 
-| 핸들러ID | data                               |
-| ----- | ---------------------------------- |
-| 2     | initRoundInfo, unlockMonsters      |
-| 3     | message, userName, highScore, time |
-| 5     |                                    |
-| 6     |                                    |
-| 7     |                                    |
-| 8     |                                    |
-| 11    | nextRoundInfo, unlockMonsters      |
-| 12    |                                    |
-| 13    |                                    |
-| 14    |                                    |
-| 20    | baseInitHp                         |
+| HandlerId | 핸들러 함수명          | data                               |
+| --------- | ---------------- | ---------------------------------- |
+| 2         | gameStart        | initRoundInfo, unlockMonsters      |
+| 3         | gameOver         | message, userName, highScore, time |
+| 11        | moveRoundHandler | nextRoundInfo, unlockMonsters      |
+| 20        | setBaseInitHp    | baseInitHp                         |
 
 ## 도전 기능 리스트
 ``` txt
