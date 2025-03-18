@@ -39,6 +39,7 @@ export function generatePath(start, end, minlength = 40) {
 			return generatePath(start, end, minlength);
 		}
 
+		// 이동 가능한 좌표 중에서 랜덤한 좌표로 이동
 		const nextMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
 
 		// 중간 좌표 추가
